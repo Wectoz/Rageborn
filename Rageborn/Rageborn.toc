@@ -12,6 +12,8 @@ Util.lua
 Data.lua
 Database.lua
 ArtList.lua
+Detect.lua
+Engine.lua
 Styles.lua
 Bars.lua
 Init.lua
