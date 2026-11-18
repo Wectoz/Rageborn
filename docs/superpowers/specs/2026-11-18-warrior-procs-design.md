@@ -31,7 +31,7 @@ from, per alert, with everything adjustable.
   text or weapon-skill bars.
 - Other clients (Retail, Classic).
 - Art that changes with stack count (nothing a Forever warrior has needs it).
-- Loading the player's own image files. **[call]**
+- Loading the player's own image files from a folder. **[call]** (Painted art ships with the addon.)
 - Translations. All texts live in one table (`Locale.lua`, enUS) so they can be added later. **[call]**
 - Profile import/export strings. **[call]**
 - Custom sound files; sounds come from a fixed list of game sounds. **[call]**
@@ -147,7 +147,13 @@ other than low health fails, stop and bring it back to the owner.
 
 ## Alert look
 
-Two families, chosen per alert in one picker:
+Three families, chosen per alert in the gallery (below):
+
+- **Painted art** — our own painted emblems, generated with Codex's image tool at the owner's
+  request (2026-11-18), several options per proc. Painted on pure black and drawn with additive
+  blending, so black is transparent. Shipped as 256x256 TGA in `Media/Art/`. Any painted art
+  can be put on any alert; an alert's own options are listed first. Tint, scale, opacity.
+  The first painted option is the default style of an alert that has one. **[call]**
 
 - **Game art** — every proc overlay the client has, any art on any alert. Layout per art:
   both sides (mirrored), top, or single. Tint, scale, opacity, spread between the sides.
@@ -169,6 +175,15 @@ timer text for anything with a known end.
 Placement: each alert has its own position, dragged on screen in a "move" mode, with a reset.
 Defaults place `usable` alerts around the screen centre and `active` ones in a row below it.
 **[call]**
+
+### Gallery
+
+The owner asked for a menu like MageProcs' that shows every design. A Gallery page in the
+settings window: a scrolling grid of large animated previews of every style, grouped Painted /
+Shapes / Game art, drawn in the selected alert's colour. A dropdown at the top picks which
+alert the gallery is for; clicking a design applies it to that alert at once and marks it as
+the current one. The alert page has a "Browse designs" button that opens the gallery for that
+alert. Previews animate only while the page is visible.
 
 ## Button glows
 
