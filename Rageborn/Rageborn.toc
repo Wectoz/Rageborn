@@ -21,4 +21,5 @@ Alerts.lua
 Mover.lua
 Options.lua
 Bars.lua
+Glow.lua
 Init.lua

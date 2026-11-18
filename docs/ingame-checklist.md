@@ -36,3 +36,11 @@ Run `/console scriptErrors 1` first so Lua errors show. Tick a line once it is s
 - [ ] Profiles: create, copy, rename, delete (asks first), switch; a blank or taken name shows an error; switching in combat is refused.
 - [ ] The game's Options > AddOns list has Rageborn with a button that opens the window.
 - [ ] `/reload` keeps every change.
+
+## Task 9: button glow
+
+- [ ] The Overpower button glows while the proc is up, on the bars in use (EllesmereUI) and on the default bars.
+- [ ] A macro with `/cast Overpower` glows too; with "Glow for every spell in a macro" on, a macro naming the spell further down glows as well.
+- [ ] All four glow kinds draw and take the chosen colour: Proc loop, Marching ants, Pulsing border, Rotating corners.
+- [ ] No "action blocked" message when a glow appears or disappears in combat.
+- [ ] Switch stance in a fight, then get a Revenge proc: does the Revenge button on the new bar page glow? (Known risk: buttons are only re-read after combat.)
