@@ -10,4 +10,5 @@
 Locale.lua
 Util.lua
 Data.lua
+Database.lua
 Init.lua
