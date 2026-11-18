@@ -151,7 +151,14 @@ Three families, chosen per alert in the gallery (below):
 
 - **Painted art** — our own painted emblems, generated with Codex's image tool at the owner's
   request (2026-11-18), several options per proc. Painted on pure black and drawn with additive
-  blending, so black is transparent. Shipped as 256x256 TGA in `Media/Art/`. Any painted art
+  blending, so black is transparent. Shipped as 256x256 TGA in `Media/Art/`. **Placement rule
+  (owner, 2026-11-18): proc art goes around and above the character, never over it**, like
+  SpellActivationOverlay and MageProcs. So painted art comes in two layouts: `sides` (a tall
+  piece drawn left of the character and mirrored on the right, 256x512) and `top` (a wide
+  piece arched above the head, 512x256). The spread setting moves side pieces apart and top
+  pieces up. The earlier centred emblems (256x256) are kept only as small `top` options.
+  The same rule sets the default positions of every proc style: nothing is drawn within the
+  middle of the screen where the character stands. Any painted art
   can be put on any alert; an alert's own options are listed first. Tint, scale, opacity.
   The first painted option is the default style of an alert that has one. **[call]**
 
