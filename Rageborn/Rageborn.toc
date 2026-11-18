@@ -16,5 +16,7 @@ PaintedList.lua
 Detect.lua
 Engine.lua
 Styles.lua
+Sounds.lua
+Alerts.lua
 Bars.lua
 Init.lua
