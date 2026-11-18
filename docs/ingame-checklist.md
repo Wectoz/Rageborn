@@ -18,3 +18,9 @@ Run `/console scriptErrors 1` first so Lua errors show. Tick a line once it is s
 - [ ] `/rb move` shows the alerts with a label on each; drag a label, `/reload`, the alert stays where it was dropped.
 - [ ] `/rb reset` returns the alerts to their default places (per-alert reset comes with the settings window).
 - [ ] Entering combat ends move mode by itself.
+
+## Sounds
+
+- [ ] `/rb crit` lists the sounds; `/rb crit bell` plays the bell and says it is set.
+- [ ] A critical hit on the target plays that sound; a normal hit doesn't.
+- [ ] `/rb sounds` turns every sound off, and on again.

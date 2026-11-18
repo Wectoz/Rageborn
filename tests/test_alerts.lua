@@ -21,8 +21,24 @@ return {
     assert(i == 1 or type(s.kit) == "number", s.key)
   end end},
 {"Play plays the kit; none and unknown keys are silent", function()
-  played = {}; ns.Sounds.Play("none"); ns.Sounds.Play("gone"); ns.Sounds.Play(nil); assert(#played == 0)
+  reset(); ns.Sounds.Play("none"); ns.Sounds.Play("gone"); ns.Sounds.Play(nil); assert(#played == 0)
   ns.Sounds.Play("raidWarning"); assert(played[1] == 8959) end},
+{"a crit on the target plays the crit sound, once for hits that land together", function()
+  reset(); local S = ns.Sounds; DB:Profile().critSound = "bell"
+  S.OnCombat("target", "WOUND", "CRITICAL", 10); S.OnCombat("target", "WOUND", "CRITICAL", 10.1)
+  assert(#played == 1 and played[1] == 6594)
+  S.OnCombat("target", "WOUND", nil, 11); S.OnCombat("player", "WOUND", "CRITICAL", 11)
+  S.OnCombat("target", "DODGE", "CRITICAL", 11); S.OnCombat(nil, nil, nil, 11); assert(#played == 1)
+  S.OnCombat("target", "WOUND", "CRITICAL", 11); assert(#played == 2) end},
+{"the crit sound is off by default, and the sounds switch silences everything but a try-out", function()
+  reset(); local S = ns.Sounds
+  assert(DB:Profile().critSound == "none" and DB:Profile().sounds == true)
+  S.OnCombat("target", "WOUND", "CRITICAL", 20); assert(#played == 0)
+  DB:Profile().sounds = false; S.Play("bell"); assert(#played == 0); S.Play("bell", true); assert(#played == 1) end},
+{"Find matches a key or a label whatever the capitals", function()
+  local S = ns.Sounds
+  assert(S.Find("RAIDWARNING").key == "raidWarning" and S.Find("raid warning").key == "raidWarning")
+  assert(S.Find("none").key == "none" and S.Find("") == nil and S.Find(nil) == nil) end},
 {"an alert appears, plays its sound once, fades and hides", function()
   reset(); DB:Alert("overpower").sound = "readyCheck"
   A:OnAlert("overpower", true, { spellID = 7384, expires = 105, duration = 5 })

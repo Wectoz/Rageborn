@@ -1,7 +1,9 @@
 local ADDON, ns = ...
 
--- Rageborn: the alert sounds. Game sounds only (by sound-kit ID), never sound files.
-local L = ns.L
+-- Rageborn: the sounds. Game sounds only (by sound-kit ID), never sound files.
+--   each alert has its own sound, played when it appears (Alerts.lua)
+--   the profile has one crit sound, and one switch that silences everything
+local U, L = ns.U, ns.L
 
 local Sounds = {}
 ns.Sounds = Sounds
@@ -26,7 +28,39 @@ Sounds.LIST = {
 local byKey = {}
 for _, s in ipairs(Sounds.LIST) do byKey[s.key] = s end
 
-function Sounds.Play(key)
+-- force: play even when the player turned sounds off (trying one out in the settings).
+function Sounds.Play(key, force)
     local s = byKey[key]
-    if s and s.kit and PlaySound then pcall(PlaySound, s.kit, "Master") end
+    if not (s and s.kit and PlaySound) then return end
+    if not force and ns.DB and ns.DB:Profile().sounds == false then return end
+    pcall(PlaySound, s.kit, "Master")
+end
+
+-- The sound whose key or label the player typed, whatever the capitals.
+function Sounds.Find(text)
+    text = (text or ""):lower()
+    for _, s in ipairs(Sounds.LIST) do
+        if s.key:lower() == text or s.label:lower() == text then return s end
+    end
+end
+
+-- A critical hit on your target. The combat log is closed to addons, so this is read from
+-- UNIT_COMBAT, which doesn't say who hit.
+-- shortcut: in a group other players' crits on your target count too; upgrade if the
+-- client ever tells an addon who dealt the hit.
+local CRIT_GAP = 0.3       -- one sound for hits that land together (Cleave, Whirlwind)
+local lastCrit = -1
+function Sounds.OnCombat(unit, action, flag, now)
+    if unit ~= "target" or action ~= "WOUND" or flag ~= "CRITICAL" then return end
+    if now - lastCrit < CRIT_GAP then return end
+    lastCrit = now
+    Sounds.Play(ns.DB:Profile().critSound)
+end
+
+function Sounds:Start()
+    local frame = CreateFrame("Frame")
+    pcall(frame.RegisterUnitEvent, frame, "UNIT_COMBAT", "target")
+    frame:SetScript("OnEvent", function(_, _, unit, action, flag)
+        Sounds.OnCombat(U.Clean(unit), U.Clean(action), U.Clean(flag), GetTime())
+    end)
 end

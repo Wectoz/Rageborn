@@ -34,3 +34,8 @@ L.SOUND_BELL = "Bell"
 L.ALERT_lowHealth = "Low health"
 L.MOVE_ON = "Drag the labels to move the alerts. Type /rb move again when done."
 L.MOVE_OFF = "Alerts locked in place."
+
+L.SOUNDS_ON = "Sounds on."
+L.SOUNDS_OFF = "Sounds off."
+L.CRIT_USAGE = "Type /rb crit and one of:"
+L.CRIT_SET = "Critical hit sound:"
