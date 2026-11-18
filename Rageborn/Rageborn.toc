@@ -13,4 +13,5 @@ Data.lua
 Database.lua
 ArtList.lua
 Styles.lua
+Bars.lua
 Init.lua
