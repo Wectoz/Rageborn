@@ -1,13 +1,21 @@
 local ADDON, ns = ...
 
 -- Rageborn: the alert styles.
+--   family "painted" our own painted art (Media\Art), painted on black and drawn with
+--                   additive blending so the black is transparent. Proc art goes around
+--                   and above the character, never over it: layout "sides" (a tall piece
+--                   left of the character, mirrored on the right), "top" (a wide piece
+--                   above the head) or "emblem" (a small piece above the head)
 --   family "shape"  drawn from our own white textures (Media\Textures), tinted in game
 --   family "game"   the game's own proc overlay art, by file ID, offered only when this
 --                   client has the file
 --
 -- A style is one builder: build(frame, ctx) -> style. frame is BASE_W x BASE_H, centred on
 -- the alert. ctx = { key = alert key, icon = texture }. The style object may have:
---   SetColor(r, g, b)             required
+--   SetColor(r, g, b, recolor)    required. Painted art keeps its own colours unless
+--                                 recolor is true (then it is greyed and tinted)
+--   SetSides(side)                two-sided styles: "both" | "left" | "right"; the two
+--                                 pieces are style.left and style.right
 --   SetIcon(texture)
 --   SetTime(remaining, duration)  remaining nil = no timer
 --   SetStacks(n)
@@ -67,15 +75,27 @@ function Styles.Get(key)
     return nil
 end
 
--- Shape styles first, then the game art this client has.
-function Styles.List()
+-- For the gallery: the alert's own painted art, the other painted art, the shape styles,
+-- then the game art this client has. Without an alert the painted art is simply first.
+function Styles.List(alertKey)
     local list = {}
-    for _, family in ipairs({ "shape", "game" }) do
+    local function take(test)
         for _, def in ipairs(catalog) do
-            if def.family == family and usable(def) then list[#list + 1] = def end
+            if usable(def) and test(def) then list[#list + 1] = def end
         end
     end
+    take(function(d) return d.family == "painted" and alertKey ~= nil and d.alert == alertKey end)
+    take(function(d) return d.family == "painted" and (alertKey == nil or d.alert ~= alertKey) end)
+    take(function(d) return d.family == "shape" end)
+    take(function(d) return d.family == "game" end)
     return list
+end
+
+-- The style a new profile gives an alert: its first painted side design when it has one.
+function Styles.DefaultFor(def)
+    local key = "paint:" .. def.key .. "_side1"
+    if Styles.Get(key) then return key end
+    return def.defaultStyle
 end
 
 function Styles.Resolve(key)
@@ -152,6 +172,28 @@ local function Base(f, ctx, o)
     return s
 end
 
+-- Two-sided styles: show both pieces or only one.
+local function Sides(s, left, right)
+    s.left, s.right = left, right
+    function s.SetSides(side)
+        left:SetShown(side ~= "right")
+        right:SetShown(side ~= "left")
+    end
+end
+
+-- Colour presets for the settings window.
+Styles.COLORS = {
+    { key = "gold",   r = 1,    g = 0.82, b = 0.2 },
+    { key = "rage",   r = 1,    g = 0.15, b = 0.1 },
+    { key = "orange", r = 1,    g = 0.5,  b = 0.1 },
+    { key = "tan",    r = 0.78, g = 0.61, b = 0.43 },   -- the warrior class colour
+    { key = "green",  r = 0.3,  g = 0.9,  b = 0.3 },
+    { key = "cyan",   r = 0.3,  g = 0.85, b = 1 },
+    { key = "blue",   r = 0.25, g = 0.45, b = 1 },
+    { key = "purple", r = 0.7,  g = 0.35, b = 1 },
+    { key = "white",  r = 1,    g = 1,    b = 1 },
+}
+
 local function breathe(t, speed) return 0.5 + 0.5 * sin(t * (speed or 4)) end
 
 ----------------------------------------------------------------------
@@ -194,6 +236,7 @@ local function BuildArcs(f, ctx)
     right:SetTexCoord(1, 0, 0, 1)
     left:SetBlendMode("ADD"); right:SetBlendMode("ADD")
     local spread = 1
+    Sides(s, left, right)
     function s.SetColor(r, g, b) left:SetVertexColor(r, g, b); right:SetVertexColor(r, g, b) end
     function s.SetSpread(k)
         spread = k or 1
@@ -307,6 +350,7 @@ local function BuildArt(file)
             art[1] = Tex(f, file, 128, 256, "ARTWORK", -150, 0)
             art[2] = Tex(f, file, 128, 256, "ARTWORK", 150, 0)
             art[2]:SetTexCoord(1, 0, 0, 1)
+            Sides(s, art[1], art[2])
         end
         for _, t in ipairs(art) do t:SetBlendMode("ADD") end
         function s.SetColor(r, g, b) for _, t in ipairs(art) do t:SetVertexColor(r, g, b) end end
@@ -335,4 +379,60 @@ for _, entry in ipairs(ns.ART or {}) do
     local file, name = entry[1], entry[2]
     Styles.Register({ key = "art" .. file, family = "game", label = name, file = file,
         sides = not TOP[file], build = BuildArt(file) })
+end
+
+----------------------------------------------------------------------
+-- Painted art: around and above the character, never over it
+----------------------------------------------------------------------
+local ART = "Interface\\AddOns\\Rageborn\\Media\\Art\\"
+local SIDE_X, TOP_Y = 150, 130     -- distance from the character, times the spread
+
+local function BuildPainted(entry)
+    local file = ART .. entry.file
+    return function(f, ctx)
+        local s = Base(f, ctx, { icon = 36, timerY = -150, nameY = -168, hintX = 0, hintY = -120 })
+        s.icon:SetPoint("CENTER", f, "CENTER", 0, -120)   -- under the character's feet, off by default
+        s.noIcon = true
+        local art = {}
+        local function place(k)
+            k = k or 1
+            if entry.layout == "sides" then
+                art[1]:SetPoint("CENTER", f, "CENTER", -SIDE_X * k, 0)
+                art[2]:SetPoint("CENTER", f, "CENTER", SIDE_X * k, 0)
+            else
+                art[1]:SetPoint("CENTER", f, "CENTER", 0, TOP_Y * k)
+            end
+        end
+        if entry.layout == "sides" then
+            art[1] = Tex(f, file, 120, 180, "ARTWORK")
+            art[2] = Tex(f, file, 120, 180, "ARTWORK")
+            art[2]:SetTexCoord(1, 0, 0, 1)
+            Sides(s, art[1], art[2])
+        elseif entry.layout == "top" then
+            art[1] = Tex(f, file, 180, 120, "ARTWORK")
+        else
+            art[1] = Tex(f, file, 110, 110, "ARTWORK")
+        end
+        for _, t in ipairs(art) do t:SetBlendMode("ADD") end
+        place(1)
+        function s.SetColor(r, g, b, recolor)
+            if not recolor then r, g, b = 1, 1, 1 end
+            for _, t in ipairs(art) do
+                t:SetDesaturated(recolor == true)
+                t:SetVertexColor(r, g, b)
+            end
+        end
+        s.SetSpread = place
+        function s.Animate(_, t)
+            local a = 0.75 + 0.25 * breathe(t, 3)
+            for _, tex in ipairs(art) do tex:SetAlpha(a) end
+        end
+        return s
+    end
+end
+
+for _, entry in ipairs(ns.PAINTED or {}) do
+    Styles.Register({ key = "paint:" .. entry.file, family = "painted", label = entry.label,
+        alert = entry.alert, layout = entry.layout, file = ART .. entry.file,
+        sides = entry.layout == "sides", build = BuildPainted(entry) })
 end

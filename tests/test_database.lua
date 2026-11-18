@@ -11,8 +11,14 @@ return {
   fresh(nil); local a = DB:Alert("battleShout")
   assert(a.enabled == true and a.style == "frame" and a.threshold == 3)
   assert(DB:Alert("bloodrage").enabled == false); assert(DB:Alert("lowHealth").threshold == 35) end},
+{"an alert with painted art starts on it once styles are loaded", function()
+  local n2 = Stub.load("Util.lua", {}); Stub.load("Locale.lua", n2); Stub.load("Data.lua", n2)
+  n2.Styles = { DefaultFor = function(def) return def.key == "overpower" and "paint:overpower_side1" or def.defaultStyle end }
+  Stub.load("Database.lua", n2); RagebornDB = nil; n2.DB:Init("Bob-Realm")
+  assert(n2.DB:Alert("overpower").style == "paint:overpower_side1"); assert(n2.DB:Alert("shieldWall").style == "ring") end},
 {"alert defaults for the look", function()
   fresh(nil); local a = DB:Alert("overpower")
+  assert(a.side == "both" and a.recolor == false)
   assert(a.size == 1 and a.opacity == 1 and a.spread == 1 and a.showIcon == true and a.showTimer == true)
   assert(a.sound == "none" and a.glow == true and a.glowStyle == "procLoop" and a.stanceHint == true)
   assert(type(a.color.r) == "number" and type(a.glowColor.b) == "number")

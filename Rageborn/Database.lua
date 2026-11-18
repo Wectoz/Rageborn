@@ -16,15 +16,19 @@ local GROUP_Y = { procs = 0, reminders = -140, defensives = -200, offensives = -
 local COLOR = { gameArt = { 1, 1, 1 }, vignette = { 1, 0.1, 0.1 } }
 
 local function alertDefaults(def, index, count)
-    local c = COLOR[def.defaultStyle] or { 1, 0.82, 0.2 }
+    local style = ns.Styles and ns.Styles.DefaultFor(def) or def.defaultStyle
+    local painted = style ~= def.defaultStyle
+    -- painted art keeps its own colours (white tint); art sits around the character
+    local c = painted and { 1, 1, 1 } or COLOR[def.defaultStyle] or { 1, 0.82, 0.2 }
     -- art overlays sit around the screen centre; the others line up in a row per group
-    local x = (def.defaultStyle == "gameArt" or def.defaultStyle == "vignette") and 0
-        or (index - (count + 1) / 2) * 70
+    local centred = painted or def.defaultStyle == "gameArt" or def.defaultStyle == "vignette"
+    local x = centred and 0 or (index - (count + 1) / 2) * 70
     return {
-        enabled = def.defaultOn, style = def.defaultStyle,
+        enabled = def.defaultOn, style = style,
         color = { r = c[1], g = c[2], b = c[3] }, size = 1, opacity = 1,
-        x = x, y = GROUP_Y[def.group] or 0, spread = 1,
-        showIcon = true, showName = false, showTimer = true,
+        x = x, y = centred and 0 or GROUP_Y[def.group] or 0, spread = 1,
+        side = "both", recolor = false,   -- two-sided art: which side; painted art: tint it
+        showIcon = not painted, showName = false, showTimer = true,
         sound = "none", combatOnly = def.combatOnly or false,
         glow = true, glowStyle = "procLoop", glowColor = { r = 1, g = 0.85, b = 0.3 },
         stanceHint = true, threshold = def.defaultThreshold or 0,

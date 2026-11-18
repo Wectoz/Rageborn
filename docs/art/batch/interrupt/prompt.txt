@@ -1,0 +1,18 @@
+Use your image generation tool to create game UI art, then save the files in the current directory.
+
+Context: "Rageborn" is an addon for a fantasy MMO, for the warrior class. When something important happens in a fight, the addon flashes a piece of art on screen near the character, like the game's own spell-alert overlays. I need three clearly different art options for one alert: INTERRUPT (the enemy is casting a spell: hit them now to stop it)
+
+Requirements for every image:
+- Square, 1024x1024.
+- Background must be pure flat black (#000000) with nothing in it: the art is drawn in game with additive blending, so black becomes transparent. No vignette, no smoke filling the frame, no ground, no scenery.
+- One bold emblem centred, filling about 70% of the frame, readable when shrunk to 128 pixels.
+- Hand-painted fantasy game-icon style: confident brush strokes, strong silhouette, glowing edges. Warm gold and orange for the warrior's strike, with cold violet-blue for the broken magic.
+- No text, no letters, no numbers, no borders or frames, no UI chrome, no logos, no faction crests, no characters or faces.
+- Original designs only; do not copy any existing game's artwork.
+
+The three options must differ in concept, not just colour:
+1. interrupt_1.png: a gauntleted fist smashing through a glowing magic rune circle, shattering it
+2. interrupt_2.png: a shield edge slamming into and breaking a spiral of arcane energy
+3. interrupt_3.png: a lightning-fast pommel strike cutting a spell glyph in half
+
+Save exactly these three PNG files in the current directory. Then reply with one line per file: the file name, its pixel size, and one sentence describing it. Do not create any other files.

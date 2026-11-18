@@ -1,0 +1,18 @@
+Use your image generation tool to create game UI art, then save the files in the current directory.
+
+Context: "Rageborn" is an addon for a fantasy MMO, for the warrior class. When something important happens in a fight, the addon flashes a piece of art on screen near the character, like the game's own spell-alert overlays. I need three clearly different art options for one alert: REVENGE (the warrior just blocked, dodged or parried, and strikes back from behind the shield)
+
+Requirements for every image:
+- Square, 1024x1024.
+- Background must be pure flat black (#000000) with nothing in it: the art is drawn in game with additive blending, so black becomes transparent. No vignette, no smoke filling the frame, no ground, no scenery.
+- One bold emblem centred, filling about 70% of the frame, readable when shrunk to 128 pixels.
+- Hand-painted fantasy game-icon style: confident brush strokes, strong silhouette, glowing edges. Warm warrior palette (ember orange, gold, hot white core), with one accent colour allowed.
+- No text, no letters, no numbers, no borders or frames, no UI chrome, no logos, no faction crests, no characters or faces.
+- Original designs only; do not copy any existing game's artwork.
+
+The three options must differ in concept, not just colour:
+1. revenge_1.png: a shield with a blade thrusting out from behind it
+2. revenge_2.png: a shield face cracking with fiery light as a counter-blow bursts through
+3. revenge_3.png: two mirrored blade arcs sweeping outward from a central shield boss
+
+Save exactly these three PNG files in the current directory. Then reply with one line per file: the file name, its pixel size, and one sentence describing it. Do not create any other files.

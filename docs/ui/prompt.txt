@@ -1,0 +1,21 @@
+You are the UI designer for "Rageborn", a World of Warcraft (WoW Forever client) addon for the warrior class. Design its settings window. Write files only in the current directory.
+
+Read first (read-only):
+- ../superpowers/specs/2026-11-18-warrior-procs-design.md  (the product design; see "Settings", "Gallery", "Macros page", "Alert look", "Button glows")
+- ../superpowers/plans/2026-11-18-rageborn.md  (Task 10 and Task 11 list the controls and pages)
+- ../../Rageborn/Data.lua  (the alerts and their groups)
+- ../../Rageborn/Styles.lua  (the styles the gallery shows)
+- ../art/around/overpower/sheet_around.png and ../art/pilot/sheet_overpower.png  (the painted proc art, for the visual tone)
+
+Hard constraints of the platform (the window is built by hand in Lua with WoW's frame API, no libraries):
+- Only rectangles of solid colour or texture, 1px borders, text (the game's fonts, e.g. Friz Quadrata; sizes 10 to 18), icons (square game icons), and our own small white textures tinted at run time. No blur, no drop shadows except a 1px text shadow, no rounded corners unless from a texture, no gradients except simple vertical two-colour ones.
+- Window size 860 x 560, movable, dark theme that sits well next to the game's UI.
+- Widgets to design: window frame with title bar and close button; left navigation list with group headings and rows (normal, hover, selected, disabled-with-reason); checkbox; slider with value text; dropdown; colour swatch; button (normal, hover, pressed, disabled); text input; scroll bar; gallery tile (preview area, label, hover, selected); section heading; inline error/info message.
+- Pages: General; one page per alert (with live preview at top right); Gallery (grid of 120 px animated previews grouped Painted / Shapes / Game art, a "Designs for: <alert>" dropdown); Macros (rows with name, description, macro text, Create button); Profiles.
+
+Deliver:
+1. ui-design.md: a build-ready spec. Exact numbers a programmer can type in: colours as hex with alpha, sizes and paddings in pixels, font sizes, the layout grid of each page with x/y/width/height of each region, every widget's states, tab order of sections, empty and error states, and how the window behaves at UI scales from 0.64 to 1.0. Keep one accent colour that fits a warrior (rage red / ember) and say where it is and is not used. State what makes this window look distinct from a generic addon options panel, in three bullet points, and keep that honest: it must still be simple to build.
+2. Three mock-up images made with your image generation tool, 1720 x 1120 (2x), saved as mock_alert_page.png, mock_gallery_page.png, mock_macros_page.png, that follow ui-design.md exactly (flat rectangles and text, as the platform allows; no fantasy chrome that cannot be built).
+3. In your final reply: list the files, and the five decisions in the design you are least sure about.
+
+Do not modify any file outside the current directory.
