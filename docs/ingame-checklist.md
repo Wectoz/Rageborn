@@ -24,3 +24,15 @@ Run `/console scriptErrors 1` first so Lua errors show. Tick a line once it is s
 - [ ] `/rb crit` lists the sounds; `/rb crit bell` plays the bell and says it is set.
 - [ ] A critical hit on the target plays that sound; a normal hit doesn't.
 - [ ] `/rb sounds` turns every sound off, and on again.
+
+## Task 10: settings window
+
+- [ ] `/rb` opens the window; it drags by the title bar, closes on Escape, and reopens where it was left after `/reload`.
+- [ ] The left list shows only alerts the warrior knows, grouped; clicking one opens its page with a moving preview.
+- [ ] On one alert, change every control (enabled, colour, tint, size, opacity, spread, side, icon, name, timer, sound + Play, combat only, stance hint, glow, glow kind, glow colour): the preview follows, and so does the real alert under `/rb test`.
+- [ ] Battle Shout and Low health show their threshold slider; other alerts don't.
+- [ ] Browse designs opens the Gallery for that alert; the grid scrolls; clicking a tile changes the design and moves the highlight.
+- [ ] General: enable, size of all alerts, play sounds, critical hit sound + Play, glow for every macro spell, Move, Test all, Reset everything (asks first).
+- [ ] Profiles: create, copy, rename, delete (asks first), switch; a blank or taken name shows an error; switching in combat is refused.
+- [ ] The game's Options > AddOns list has Rageborn with a button that opens the window.
+- [ ] `/reload` keeps every change.

@@ -19,5 +19,6 @@ Styles.lua
 Sounds.lua
 Alerts.lua
 Mover.lua
+Options.lua
 Bars.lua
 Init.lua

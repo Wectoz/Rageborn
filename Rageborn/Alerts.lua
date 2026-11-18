@@ -37,8 +37,10 @@ local function apply(a)
     local opt = ns.DB:Alert(a.key)
     if not opt then return end
     local f = a.frame
-    local styleKey = Styles.Resolve(opt.style)
-    local b = a.bodies[styleKey]
+    local styleKey = Styles.Resolve(a.fixedStyle or opt.style)
+    -- "gameArt" draws each alert's own art, so a preview that changes alert needs one per alert
+    local bodyKey = styleKey == "gameArt" and styleKey .. a.key or styleKey
+    local b = a.bodies[bodyKey]
     if not b then
         local body = CreateFrame("Frame", nil, f)
         body:SetSize(Styles.BASE_W, Styles.BASE_H)
@@ -49,10 +51,10 @@ local function apply(a)
             style.host:SetFrameStrata(f:GetFrameStrata())
         end
         b = { body = body, style = style }
-        a.bodies[styleKey] = b
+        a.bodies[bodyKey] = b
     end
     for _, other in pairs(a.bodies) do other.body:SetShown(other == b) end
-    a.body, a.style, a.opacity = b.body, b.style, opt.opacity or 1
+    a.body, a.style, a.opacity = b.body, b.style, a.fixedStyle and 1 or opt.opacity or 1
 
     if not a.preview then
         local scale = math.max(0.1, (opt.size or 1) * (ns.DB:Profile().scale or 1))
@@ -136,10 +138,12 @@ function Alerts:OnAlert(key, shown, info)
     a.info = info
 end
 
--- What the player calls the alert: its spell's name, or its own text when it has no spell.
+-- What the player calls the alert: its own text when it has one, else its spell's name.
 function Alerts:Name(key)
+    local own = rawget(ns.L, "ALERT_" .. key)
+    if own then return own end
     local id = highestSpell(key)
-    return id and U.Call(C_Spell and C_Spell.GetSpellName, id) or ns.L["ALERT_" .. key]
+    return id and U.Call(C_Spell and C_Spell.GetSpellName, id) or key
 end
 
 function Alerts:Frame(key)
@@ -159,14 +163,26 @@ function Alerts:Apply(key)
 end
 
 -- A second instance for the settings window: always shown, a 10 s timer running in a loop.
--- The caller places and sizes the frame.
-function Alerts:Preview(key, parent)
+-- The caller places and sizes the frame. With a style it shows that design at full opacity,
+-- whatever the alert is set to (the gallery).
+function Alerts:Preview(key, parent, style)
     local a = new(key, parent, true)
+    a.fixedStyle = style
     a.info = { spellID = highestSpell(key), duration = 10 }
+    a.frame.alert = a
     previews[#previews + 1] = a
     apply(a)
     a.frame:Show()
     return a.frame
+end
+
+-- Makes a preview show another alert.
+function Alerts:Retarget(frame, key)
+    local a = frame.alert
+    if a.key == key then return end
+    a.key = key
+    a.info = { spellID = highestSpell(key), duration = 10 }
+    apply(a)
 end
 
 function Alerts:Start()
