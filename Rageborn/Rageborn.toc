@@ -11,4 +11,6 @@ Locale.lua
 Util.lua
 Data.lua
 Database.lua
+ArtList.lua
+Styles.lua
 Init.lua

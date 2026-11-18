@@ -1,0 +1,18 @@
+Use your image generation tool to create game UI art, then save the files in the current directory.
+
+Context: "Rageborn" is an addon for a fantasy MMO, for the warrior class. When an ability becomes available ("procs"), the addon flashes a piece of art on screen near the character, like the game's own spell-alert overlays. I need three clearly different art options for one proc: OVERPOWER (the enemy dodged, so the warrior answers with a fast, heavy counter-strike).
+
+Requirements for every image:
+- Square, 1024x1024.
+- Background must be pure flat black (#000000) with nothing in it: the art is drawn in game with additive blending, so black becomes transparent. No vignette, no smoke filling the frame, no ground, no scenery.
+- One bold emblem centred, filling about 70% of the frame, readable when shrunk to 128 pixels.
+- Hand-painted fantasy game-icon style: confident brush strokes, strong silhouette, glowing edges. Warm warrior palette (ember orange, gold, hot white core), with one accent colour allowed.
+- No text, no letters, no numbers, no borders or frames, no UI chrome, no logos, no faction crests, no characters or faces.
+- Original designs only; do not copy any existing game's artwork.
+
+The three options must differ in concept, not just colour:
+1. overpower_1.png: a single sweeping blade slash arc, like a crescent of fire left by a sword swing.
+2. overpower_2.png: a downward-striking sword breaking through a cracked guard or shield line.
+3. overpower_3.png: two crossed slash marks forming an aggressive X of sparks and embers.
+
+Save exactly these three PNG files in the current directory. Then reply with one line per file: the file name, its pixel size, and one sentence describing it. Do not create any other files.
