@@ -12,3 +12,9 @@ Run `/console scriptErrors 1` first so Lua errors show. Tick a line once it is s
 - [ ] Execute appears under 20 % target health.
 - [ ] Victory Rush appears after a kill.
 - [ ] Each of the ten sounds plays (set one with `/run RagebornDB.profiles[next(RagebornDB.profiles)].alerts.overpower.sound = "raidWarning"`, then `/reload` and `/rb test`; keys are in `Rageborn/Sounds.lua`).
+
+## Task 8: mover
+
+- [ ] `/rb move` shows the alerts with a label on each; drag a label, `/reload`, the alert stays where it was dropped.
+- [ ] `/rb reset` returns the alerts to their default places (per-alert reset comes with the settings window).
+- [ ] Entering combat ends move mode by itself.

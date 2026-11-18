@@ -136,6 +136,12 @@ function Alerts:OnAlert(key, shown, info)
     a.info = info
 end
 
+-- What the player calls the alert: its spell's name, or its own text when it has no spell.
+function Alerts:Name(key)
+    local id = highestSpell(key)
+    return id and U.Call(C_Spell and C_Spell.GetSpellName, id) or ns.L["ALERT_" .. key]
+end
+
 function Alerts:Frame(key)
     if not alerts[key] then
         alerts[key] = new(key, UIParent)

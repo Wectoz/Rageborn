@@ -18,5 +18,6 @@ Engine.lua
 Styles.lua
 Sounds.lua
 Alerts.lua
+Mover.lua
 Bars.lua
 Init.lua

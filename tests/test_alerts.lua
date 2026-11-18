@@ -1,19 +1,5 @@
 -- Smoke test of Alerts and Sounds against a widget that accepts any call.
-local function widget()
-  local w = { calls = {}, shown = true }
-  return setmetatable(w, { __index = function(_, method)
-    return function(self, ...)
-      w.calls[method] = { ... }
-      if method == "GetFont" then return "Fonts\\FRIZQT__.TTF", 12, "" end
-      if method == "Show" then w.shown = true elseif method == "Hide" then w.shown = false end
-      if method == "SetShown" then w.shown = ... end
-      if method == "IsVisible" then return w.shown end
-      if method == "GetFrameStrata" then return "MEDIUM" end
-      if method == "SetTexture" then return true end
-      if method:match("^Create") then return widget() end
-    end
-  end })
-end
+local widget = Stub.widget
 CreateFrame = function() return widget() end
 UIParent, GameFontNormal = widget(), widget()
 local played = {}

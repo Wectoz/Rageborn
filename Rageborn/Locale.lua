@@ -30,3 +30,7 @@ L.SOUND_QUEST_COMPLETE = "Quest complete"
 L.SOUND_TELL = "Whisper"
 L.SOUND_ALARM = "Alarm clock"
 L.SOUND_BELL = "Bell"
+
+L.ALERT_lowHealth = "Low health"
+L.MOVE_ON = "Drag the labels to move the alerts. Type /rb move again when done."
+L.MOVE_OFF = "Alerts locked in place."
