@@ -1,0 +1,7 @@
+## Interface: 16001
+## AllowLoadGameType: camelot
+## Title: Rageborn Probe (throwaway)
+## Notes: Prints what an addon can read in combat. Delete after use.
+## SavedVariables: RagebornProbeDB
+
+Probe.lua
