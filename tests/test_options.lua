@@ -9,7 +9,7 @@ ACCEPT, CANCEL = "Accept", "Cancel"
 
 local ns = Stub.load("Util.lua", {})
 for _, f in ipairs({"Locale.lua", "Data.lua", "Database.lua", "ArtList.lua", "PaintedList.lua", "Styles.lua",
-                    "Sounds.lua", "Engine.lua", "Alerts.lua", "Mover.lua", "Options.lua"}) do Stub.load(f, ns) end
+                    "Sounds.lua", "Engine.lua", "Alerts.lua", "Mover.lua", "Macros.lua", "Options.lua"}) do Stub.load(f, ns) end
 ns.Say = function() end
 local combat = false
 ns.Detect = setmetatable({ IsKnown = function(id) return id ~= 871 end, InCombat = function() return combat end },
@@ -40,7 +40,10 @@ return {
   for _, d in ipairs(ns.Data.ALERTS) do
     O:Select("alert", d.key); O:Select("gallery", d.key)
   end
-  O:Select("profiles"); O:Select("nonsense"); O:Select("general") end},
+  O:Select("macros"); O:Select("profiles"); O:Select("nonsense"); O:Select("general") end},
+{"the macros page lists what the character knows and Create reports instead of failing", function()
+  O:Select("macros")
+  assert(press(ns.L.MACRO_CREATE) == #ns.Macros.Available(ns.Detect.IsKnown) and press(ns.L.MACRO_CREATE) > 0) end},
 {"an alert the character doesn't know can't be selected", function()
   O:Select("alert", "shieldWall")     -- spell 871 is unknown in this test
   O:Select("alert", "overpower"); press(ns.L.OPT_ENABLED) end},

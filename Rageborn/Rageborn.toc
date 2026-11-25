@@ -19,6 +19,7 @@ Styles.lua
 Sounds.lua
 Alerts.lua
 Mover.lua
+Macros.lua
 Options.lua
 Bars.lua
 Glow.lua

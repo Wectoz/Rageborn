@@ -654,6 +654,81 @@ local function BuildGallery()
     return p
 end
 
+---------------------------------------------------------------- Macros
+-- shortcut: visual lines are guessed at 80 characters each; measure the box if a body is ever cut off
+local function visualLines(body)
+    local n = 0
+    for line in body:gmatch("[^\n]+") do n = n + math.ceil(#line / 80) end
+    return n
+end
+
+local function BuildMacros()
+    local p = Page(L.OPT_LIBRARY, L.OPT_MACROS)
+    local M = ns.Macros
+    Label(p, 200, 103, 13, C.ink, L.MACRO_SUBTITLE)
+    local none = Label(p, 200, 140, 13, C.secondary, L.MACRO_NONE, 624)
+    local sf, child = Scroller(p, 200, 140, 624, 403)
+    local rows = {}
+
+    local function row(m)
+        local r = CreateFrame("Frame", nil, child)
+        Rule(r, 0, 0, 624)
+        Label(r, 8, 10, 15, C.ink, M.Name(m), nil, true)
+        Label(r, 8, 34, 13, C.secondary, L["MACRO_" .. m.key], 608)
+        local box = CreateFrame("EditBox", nil, r)
+        Fill(box, C.well); Border(box, C.rule)
+        box:SetMultiLine(true)
+        box:SetAutoFocus(false)
+        box:SetFont(ChatFontNormal:GetFont(), 12, "")
+        box:SetTextColor(C.ink[1], C.ink[2], C.ink[3])
+        box:SetTextInsets(10, 10, 7, 7)
+        -- read-only: typing puts the text back; it can still be selected and copied
+        box:SetScript("OnTextChanged", function(self, user) if user then self:SetText(r.body) end end)
+        box:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
+        box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+        r.box = box
+        r.note = Label(r, 8, 0, 13, C.ink, "", 608)
+        r.create = Button(r, 540, 10, 76, L.MACRO_CREATE, function()
+            local ok, err = M.Create(m.key)       -- eligibility is checked again here, at the click
+            r.created = r.created or ok
+            r.said = ok and L.OPT_INFO .. " " .. L.MACRO_ADDED:format(M.Name(m)) or L.OPT_ERROR .. " " .. L[err]
+            p.Refresh()
+        end)
+        return r
+    end
+
+    local refreshControls = p.Refresh
+    function p.Refresh()
+        refreshControls()
+        for _, r in pairs(rows) do r:Hide() end
+        local y = 0
+        for _, m in ipairs(M.Available(ns.Detect.IsKnown)) do
+            local r = rows[m.key] or row(m)
+            rows[m.key] = r
+            local body, why = M.Body(m)           -- the same text Create writes
+            local exists = M.Exists(m)
+            r.body = body
+            r.box:SetText(body)
+            local boxH = 17 + 15 * visualLines(body)
+            At(r.box, r, 8, 58, 608, boxH)
+            r.create.text:SetText(not exists and L.MACRO_CREATE or r.created and L.MACRO_CREATED or L.MACRO_EXISTS)
+            r.create.Able(not exists and not why)
+            -- one line under the text: what the last click did, else why Create is off
+            local said = r.said or why and L[why] or exists and not r.created and L.ERR_MACRO_EXISTS or ""
+            r.said = nil
+            r.note:SetText(said)
+            At(r.note, r, 8, 62 + boxH)
+            local h = 79 + boxH + (said ~= "" and 21 or 0)
+            At(r, child, 0, y, 624, h):Show()
+            y = y + h
+        end
+        none:SetShown(y == 0)
+        child.h = y
+        sf.Sync()
+    end
+    return p
+end
+
 ---------------------------------------------------------------- Profiles
 local function BuildProfiles()
     local p = Page(L.OPT_LIBRARY, L.OPT_PROFILES)
@@ -724,7 +799,8 @@ local function BuildProfiles()
     return p
 end
 
-local BUILD = { general = BuildGeneral, alert = BuildAlert, gallery = BuildGallery, profiles = BuildProfiles }
+local BUILD = { general = BuildGeneral, alert = BuildAlert, gallery = BuildGallery, macros = BuildMacros,
+                profiles = BuildProfiles }
 
 ----------------------------------------------------------------------
 -- The window and its rail
@@ -848,7 +924,7 @@ local function BuildWindow()
     Rule(win, 12, 443, 152)
     Label(win, 16, 452, 11, C.secondary, L.OPT_LIBRARY:upper())
     RailRow(win, 8, 473, 159, L.OPT_GALLERY, 8, "gallery")
-    if BUILD.macros then RailRow(win, 8, 499, 159, L.OPT_MACROS, 8, "macros") end
+    RailRow(win, 8, 499, 159, L.OPT_MACROS, 8, "macros")
     RailRow(win, 8, 525, 159, L.OPT_PROFILES, 8, "profiles")
 
     ns.DB:OnChange(function() if win:IsShown() then restorePosition(); Options:Refresh() end end)

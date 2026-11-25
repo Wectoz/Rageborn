@@ -44,3 +44,12 @@ Run `/console scriptErrors 1` first so Lua errors show. Tick a line once it is s
 - [ ] All four glow kinds draw and take the chosen colour: Proc loop, Marching ants, Pulsing border, Rotating corners.
 - [ ] No "action blocked" message when a glow appears or disappears in combat.
 - [ ] Switch stance in a fight, then get a Revenge proc: does the Revenge button on the new bar page glow? (Known risk: buttons are only re-read after combat.)
+
+## Task 11: macros page
+
+- [ ] The Macros page lists only macros whose spells the warrior knows; each shows its text, which can be selected and copied but not edited.
+- [ ] Create adds `RB <name>` to the character macros; the button turns to Created, and to Exists after `/reload`.
+- [ ] Each created macro works as described: Charge / Intercept by stance, Overpower and Pummel from any stance, Shield Bash and Shield Wall equip the shield (`[noworn:Shields]` and `/equipslot 17` are accepted by this client), Bloodrage + Battle Shout, Taunt on mouseover.
+- [ ] Dragged to a bar, a created macro's button glows with its proc (RB Overpower with the Overpower proc).
+- [ ] With no shield carried, the two shield macros show "Needs a shield" and Create is off.
+- [ ] Create in combat is refused with a message; with 18 character macros it says the list is full.
