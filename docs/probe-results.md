@@ -39,4 +39,29 @@ Filled in from the log. So far only the out-of-combat part has been run (log of 
 
 ## Spell ID and duration corrections
 
-None yet.
+Checked on 2026-11-25 against the Forever client's own data tables (product `wowf`, build
+1.60.1.71091, from wago.tools): spell names, stance requirements, durations, cooldowns, the
+warrior talent tree and the sound kits. Every spell and sound the addon uses exists there,
+except as corrected below.
+
+| What | Was (Classic) | Forever |
+|---|---|---|
+| Human racial | 59752 (not in the client) | Will to Survive 1259718: removes stuns, 3 min |
+| Orc racial (new) | none | Shatter Curse 1299026: removes curses |
+| Bloodthrill buff | 1289682 (that is the talent) | buff 1289681 / 1282733, 5 s |
+| Gore Drinker buff | 1323967 (the talent) | buff 1323969, 8 s: next melee attacks restore health |
+| Enrage | five talent ranks, five buffs | one talent 12317, buff 12880, 12 s |
+| Battle Shout | 120 s | 180 s |
+| Shield Wall | 10 s | 12 s |
+| Shield Block | 5 s | 7 s |
+| Demoralizing Shout | hidden 30 s after a cast | 45 s (its duration) |
+| Charge | Battle Stance only | also Defensive Stance with the talent Vanguard 1310317 |
+| Reckless Swings (new) | none | talent 1329555, 8 s, 15 s cooldown |
+
+Stances confirmed as the addon has them: Overpower Battle; Revenge, Taunt, Disarm, Shield
+Block, Shield Wall Defensive; Pummel, Intercept, Whirlwind, Recklessness, Berserker Rage
+Berserker; Execute and Hamstring Battle or Berserker; Rend, Thunder Clap, Shield Bash Battle or
+Defensive; Mocking Blow, Retaliation, Sweeping Strikes Battle. Forever has one warrior talent
+tree of 53 talents, not three tabs.
+
+Still only checkable in game: whether the client lets an addon read these in combat.

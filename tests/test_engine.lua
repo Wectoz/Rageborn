@@ -62,7 +62,7 @@ T("Demo Shout on a pull: enough enemies, in combat, ready, and not just cast", f
   DB:Alert("demoPull").threshold = 4; assert(E:Evaluate("demoPull", 1) == false); DB:Alert("demoPull").threshold = 2
   fake.cd = 5; assert(E:Evaluate("demoPull", 1) == false); fake.cd = 0
   fake.debuff = { stacks = 0, expires = 20 }; assert(E:Evaluate("demoPull", 1) == false); fake.debuff = nil
-  E:OnCast(11556, 10); assert(E:Evaluate("demoPull", 11) == false); assert(E:Evaluate("demoPull", 41) == true) end),
+  E:OnCast(11556, 10); assert(E:Evaluate("demoPull", 41) == false); assert(E:Evaluate("demoPull", 56) == true) end),
 T("the racial shows when it would help and is ready, and is glow-only by default", function()
   fake.usable = true; fake.known = {[20589] = true}                -- a gnome
   assert(E:Evaluate("racial", 1) == false)                          -- nothing wrong
@@ -70,7 +70,7 @@ T("the racial shows when it would help and is ready, and is glow-only by default
   fake.wrong = {SNARE = true}
   local s, i = E:Evaluate("racial", 1); assert(s == true and i.spellID == 20589)
   fake.cd = 90; assert(E:Evaluate("racial", 2) == false); fake.cd = 0
-  fake.known = {[59752] = true}; assert(E:Evaluate("racial", 3) == false)      -- a human, slowed
+  fake.known = {[1259718] = true}; assert(E:Evaluate("racial", 3) == false)      -- a human, slowed
   fake.wrong = {STUN = true}; assert(E:Evaluate("racial", 3) == true)
   fake.wrong = nil; assert(E:Evaluate("racial", 4) == false)                   -- unreadable
   assert(DB:Alert("racial").onScreen == false and DB:Alert("racial").glow == true and DB:Alert("overpower").opacity == 1) end),
@@ -132,9 +132,9 @@ T("victory rush opens for 20 s on a kill", function()
   assert(E:Evaluate("victoryRush", 120.5) == false) end),
 T("active: cast starts a timer of the data duration, estimated", function()
   E:OnCast(871, 100); local s, i = E:Evaluate("shieldWall", 104)
-  assert(s == true and i.remaining == 6 and i.duration == 10 and i.estimated == true and i.expires == 110) end),
+  assert(s == true and i.remaining == 8 and i.duration == 12 and i.estimated == true and i.expires == 112) end),
 T("active: hidden before any cast and after the duration", function()
-  assert(E:Evaluate("shieldWall", 50) == false); E:OnCast(871, 100); assert(E:Evaluate("shieldWall", 110.1) == false) end),
+  assert(E:Evaluate("shieldWall", 50) == false); E:OnCast(871, 100); assert(E:Evaluate("shieldWall", 112.1) == false) end),
 T("active: a lower rank ID of the same spell also starts it", function()
   E:OnCast(6673, 100); fake.buff = nil; fake.combat = true
   E:OnCast(78, 100)   -- a low rank of Heroic Strike is not an "active" timer
@@ -159,9 +159,9 @@ T("battle shout in combat with the buff unreadable runs on the last known expiry
 T("battle shout: missing when combat starts stays shown in combat, not dim", function()
   fake.combat = false; E:Evaluate("battleShout", 10); fake.combat = true
   local s, i = E:Evaluate("battleShout", 12); assert(s == true and not i.dim) end),
-T("battle shout: own cast in combat restarts the estimate at 120 s", function()
+T("battle shout: own cast in combat restarts the estimate at 180 s", function()
   fake.combat = true; E:OnCast(11551, 300)
-  assert(E:Evaluate("battleShout", 400) == false); assert(E:Evaluate("battleShout", 418) == true) end),
+  assert(E:Evaluate("battleShout", 460) == false); assert(E:Evaluate("battleShout", 478) == true) end),
 T("battle shout: gone when read out of combat clears the estimate", function()
   E:OnCast(6673, 300); fake.combat = false; fake.buff = nil; assert(E:Evaluate("battleShout", 310) == true) end),
 T("low health: shows below threshold when a checked defensive is ready", function()

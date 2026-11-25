@@ -38,7 +38,7 @@ return {
 {"spec values", function()
   assert(Data.BY_KEY.battleShout.defaultThreshold == 3); assert(Data.BY_KEY.lowHealth.defaultThreshold == 35)
   assert(Data.BY_KEY.overpower.window == 5 and Data.BY_KEY.victoryRush.window == 20)
-  assert(Data.BY_KEY.overpower.procBuff == 1289682) end},
+  assert(Data.BY_KEY.overpower.procBuff[1] == 1289681) end},
 {"Known returns the highest known rank", function()
   local known = {[7384] = true, [7887] = true}
   assert(Data.Known(Data.BY_KEY.overpower, function(id) return known[id] end) == 7887) end},

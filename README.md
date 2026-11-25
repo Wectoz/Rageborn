@@ -32,7 +32,7 @@ Buttons are found on the default bars, EllesmereUI, Dominos, Bartender4 and ElvU
 ## Known limits
 
 - Timers of pressed cooldowns are estimates from the spell's known duration, not read from the buff.
-- Spell IDs and durations are Classic values, still to be confirmed on Forever (`docs/ingame-checklist.md`).
+- Spell IDs, durations and stances are checked against the Forever client's data tables (build 1.60.1); how they behave in a fight is not yet confirmed in game (`docs/ingame-checklist.md`).
 - In combat the client hides some values from addons. What it hides is not fully measured yet (`docs/probe-results.md`); an alert that can't be read keeps its last state instead of erroring. Target-debuff alerts depend on this and are off by default.
 - The critical-hit sound plays for any crit on your target, including other players': the game doesn't say who dealt it.
 - Buttons are re-read after combat, not during it: a bar page that changes in a fight (stance bars) may glow late.

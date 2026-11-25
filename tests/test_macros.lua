@@ -50,6 +50,11 @@ return {
   for _, m in ipairs(Macros.LIST) do
     for _, s in ipairs(m.spec or {}) do assert(s == "arms" or s == "fury" or s == "prot", m.key) end
   end end},
+{"Charge macros allow Defensive Stance only with the Vanguard talent", function()
+  fresh(); assert(Macros.Body(Macros.BY_KEY.chargeIntercept):find("[stance:1/2,nocombat] Charge", 1, true))
+  unknown = 1310317
+  local body = Macros.Body(Macros.BY_KEY.chargeMouseover)
+  assert(body:find("stance:1] Charge", 1, true) and not body:find("<", 1, true) and not body:find("1/2", 1, true)) end},
 {"a lower rank is enough", function()
   fresh(); assert(#Macros.Available(function(id) return id == 6673 or id == 2687 end) == 1) end},
 {"Create refuses in combat", function() fresh(); inCombat = true; refused("rageShout", "ERR_IN_COMBAT") end},

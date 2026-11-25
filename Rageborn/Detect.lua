@@ -171,7 +171,7 @@ function Detect.Afflictions()
         local aura = Call(get, "player", i, "HARMFUL")
         if type(aura) ~= "table" then break end
         local kind = Clean(aura.dispelName)
-        if kind == "Poison" or kind == "Disease" then set[kind:upper()] = true end
+        if kind == "Poison" or kind == "Disease" or kind == "Curse" then set[kind:upper()] = true end
     end
     return set
 end
@@ -232,10 +232,10 @@ end
 
 -- Forever has no talent tabs: there the spec is the tree with the most of its key talents and
 -- abilities known (Mortal Strike, Sweeping Strikes, Bloodthrill ... / Bloodthirst, Death Wish,
--- Gore Drinker ... / Shield Slam, Last Stand, Defiance ...).
+-- Gore Drinker, Reckless Swings ... / Shield Slam, Last Stand, Vanguard ...).
 local SPEC_KEYS = {
     arms = { 12294, 12292, 1310222, 1289682, 1290261, 12862, 12163, 16493 },
-    fury = { 23881, 12328, 12319, 23584, 1310315, 12317, 1323967, 20500 },
+    fury = { 23881, 12328, 12319, 23584, 1310315, 12317, 1323967, 20500, 1329555 },
     prot = { 23922, 12809, 12975, 16538, 1310317, 1310316, 12792, 29787 },
 }
 function Detect.Spec()

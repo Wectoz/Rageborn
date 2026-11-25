@@ -30,7 +30,8 @@ local ADDON, ns = ...
 --   defaultOpacity  0 = nothing on screen, button glow only
 --   probe    the docs/probe-results.md line a "debuff" alert depends on
 --
--- IDs and durations are Classic values, to be confirmed on Forever (docs/probe-results.md).
+-- IDs, durations and stances are checked against the Forever client's own tables
+-- (build 1.60.1.71091, see docs/probe-results.md); behaviour in a fight is still unconfirmed.
 local Data = {}
 ns.Data = Data
 
@@ -55,7 +56,7 @@ Data.ALERTS = {
     -- Procs
     { key = "overpower", kind = "usable", group = "procs", defaultOn = true,
       spells = { 7384, 7887, 11584, 11585 }, proc = "targetDodge", window = 5, stances = { 1 },
-      procBuff = 1289682 },  -- Bloodthrill (Forever): a Rend tick opens Overpower for 5 s
+      procBuff = { 1289681, 1282733 } },  -- Bloodthrill (Forever talent 1289682): its 5 s buff opens Overpower
     { key = "revenge", kind = "usable", group = "procs", defaultOn = true,
       spells = { 6572, 6574, 7379, 11600, 11601, 25288 }, proc = "avoided", window = 5, stances = { 2 } },
     { key = "execute", kind = "usable", group = "procs", defaultOn = true,
@@ -67,26 +68,25 @@ Data.ALERTS = {
 
     -- Procs that are effects on you: shown while they last
     { key = "goreDrinker", kind = "buff", group = "procs", defaultOn = true,
-      spells = { 1323967 }, buffs = { 1323967 }, buffNames = { "gore drinker", "goredrinker" } },   -- Forever talent
+      spells = { 1323967 }, buffs = { 1323969 }, buffNames = { "gore drinker", "goredrinker" } },   -- Forever talent
     { key = "enrage", kind = "buff", group = "procs", defaultOn = true,
-      spells = { 12317, 13045, 13046, 13047, 13048 }, buffs = { 12880, 14201, 14202, 14203, 14204 },
-      buffNames = { "enrage" } },
+      spells = { 12317 }, buffs = { 12880 } },      -- one talent with ranks on Forever; the buff lasts 12 s
 
     -- Reminders
     { key = "shieldBlock", kind = "usable", group = "reminders", defaultOn = false,
       spells = { 2565 }, stances = { 2 }, needsShield = true, combatOnly = true },
     { key = "battleShout", kind = "reminder", group = "reminders", defaultOn = true,
-      spells = { 6673, 5242, 6192, 11549, 11550, 11551, 25289 }, duration = 120, defaultThreshold = 3 },
+      spells = { 6673, 5242, 6192, 11549, 11550, 11551, 25289 }, duration = 180, defaultThreshold = 3 },
     { key = "queued", kind = "active", group = "reminders", defaultOn = false,
       spells = join(HEROIC_STRIKE, CLEAVE), proc = "queued" },
     -- Demoralizing Shout when several enemies are in the fight
     { key = "demoPull", kind = "usable", group = "reminders", defaultOn = true,
-      spells = { 1160, 6190, 11554, 11555, 11556 }, enemies = true, ready = true, recast = 30, defaultThreshold = 2 },
+      spells = { 1160, 6190, 11554, 11555, 11556 }, enemies = true, ready = true, recast = 45, defaultThreshold = 2 },
 
     -- Defensives
-    { key = "shieldWall", kind = "active", group = "defensives", defaultOn = true, spells = { 871 }, duration = 10 },
+    { key = "shieldWall", kind = "active", group = "defensives", defaultOn = true, spells = { 871 }, duration = 12 },
     { key = "lastStand", kind = "active", group = "defensives", defaultOn = true, spells = { 12975 }, duration = 20 },
-    { key = "shieldBlockUp", kind = "active", group = "defensives", defaultOn = false, spells = { 2565 }, duration = 5 },
+    { key = "shieldBlockUp", kind = "active", group = "defensives", defaultOn = false, spells = { 2565 }, duration = 7 },
     -- Berserker Rage while it would free you: feared, sapped or incapacitated
     { key = "fearBreak", kind = "usable", group = "defensives", defaultOn = true, ready = true,
       spells = { 18499 }, stances = { 3 }, needs = { [18499] = { "FEAR", "SAP", "INCAPACITATE" } } },
@@ -100,14 +100,16 @@ Data.ALERTS = {
     { key = "sweepingStrikes", kind = "active", group = "offensives", defaultOn = false, spells = { 12292 }, duration = 20 },
     { key = "berserkerRage", kind = "active", group = "offensives", defaultOn = false, spells = { 18499 }, duration = 10 },
     { key = "bloodrage", kind = "active", group = "offensives", defaultOn = false, spells = { 2687 }, duration = 10 },
+    { key = "recklessSwings", kind = "active", group = "offensives", defaultOn = false, spells = { 1329555 }, duration = 8 },  -- Forever talent
     -- Rage about to overflow: Heroic Strike, or Cleave when there are two enemies or more
     { key = "rageDump", kind = "usable", group = "offensives", defaultOn = false,
       spells = join(HEROIC_STRIKE, CLEAVE), aoe = CLEAVE, rage = true, defaultThreshold = 80 },
-    -- The race's escape, when it would help: human (stunned), gnome (rooted or slowed),
-    -- undead (feared or charmed), dwarf (poisoned or diseased). Button glow only.
+    -- The race's escape, when it would help: human (Will to Survive: stunned), gnome (rooted or
+    -- slowed), undead (feared or charmed), dwarf (poisoned or diseased), orc (Shatter Curse:
+    -- cursed). Button glow only.
     { key = "racial", kind = "usable", group = "defensives", defaultOn = true, ready = true,
-      spells = { 59752, 20589, 7744, 20594 }, defaultOpacity = 0,
-      needs = { [59752] = { "STUN" }, [20589] = { "ROOT", "SNARE" }, [7744] = { "FEAR", "CHARM" },
+      spells = { 1259718, 20589, 7744, 20594, 1299026 }, defaultOpacity = 0,
+      needs = { [1259718] = { "STUN" }, [1299026] = { "CURSE" }, [20589] = { "ROOT", "SNARE" }, [7744] = { "FEAR", "CHARM" },
                 [20594] = { "POISON", "DISEASE" } } },
 
     -- Low health: warns while one of these defensives is ready

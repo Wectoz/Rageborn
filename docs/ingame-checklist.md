@@ -89,7 +89,7 @@ Use a mob your level. This is also the probe's fight: do steps 3–6 of `docs/pr
 - [ ] **Execute** under 20 % target health. **Victory Rush** after the kill, for 20 s.
 - [ ] **Interrupt** while a caster mob casts and Pummel or Shield Bash is ready.
 - [ ] **Battle Shout** when missing, and again 3 s before it runs out; quiet while resting or mounted.
-- [ ] **Gore Drinker** and **Enrage**: the alert appears with the proc and its timer matches the buff.
+- [ ] **Gore Drinker** (8 s, after Bloodthirst, Bloodrage, Enrage ...) and **Enrage** (12 s): the alert appears with the proc and its timer matches the buff.
 - [ ] Press each cooldown you have: Shield Wall, Last Stand, Shield Block, Retaliation, Recklessness, Death Wish, Sweeping Strikes, Berserker Rage, Bloodrage. Each shows from the press and its timer ends when the effect does.
 - [ ] **Low health** under 35 % with Shield Wall or Last Stand ready.
 - [ ] **Button glow:** the Overpower button glows with its proc, on your bars (EllesmereUI). A macro with `/cast Overpower` glows too. Try all four glow kinds and a colour.
@@ -100,6 +100,8 @@ Use a mob your level. This is also the probe's fight: do steps 3–6 of `docs/pr
   - [ ] "Rend missing" shows on a mob without Rend, hides when applied, returns when it falls off. Same for Thunder Clap.
   - [ ] At 80 rage Heroic Strike glows, and stops when you queue it.
 - [ ] A critical hit plays the crit sound (set one first); a normal hit doesn't.
+- [ ] With the Vanguard talent, the two RB Charge macros read `stance:1/2` and Charge from Defensive Stance; without it, `stance:1`.
+- [ ] Reckless Swings (turn it on): shows for 8 s from the press.
 - [ ] Macros in a fight: Charge/Intercept by stance, Overpower and Pummel from any stance, Shield Bash / Shield Wall / Shield Block equip the shield, Bloodrage + Battle Shout, Bloodrage + Death Wish, Hamstring, Mocking Blow, Berserker Rage, mouseover Taunt and mouseover Charge.
 - [ ] Create a macro in combat: refused with a message. Switch profile in combat: refused.
 
@@ -112,7 +114,7 @@ Use a mob your level. This is also the probe's fight: do steps 3–6 of `docs/pr
 ## Part 5: when you can (group, PvP, another character)
 
 - [ ] **Taunt** (turn it on), in a group: when your target turns to a party member the alert shows; gone when the mob is back on you.
-- [ ] **Racial:** its button glows only when it helps and is ready — human stunned, gnome rooted or slowed, undead feared or charmed, dwarf poisoned or diseased. Nothing is drawn on screen.
+- [ ] **Racial:** its button glows only when it helps and is ready — human stunned (Will to Survive), gnome rooted or slowed, undead feared or charmed, dwarf poisoned or diseased, orc cursed (Shatter Curse). Nothing is drawn on screen.
 - [ ] **Berserker Rage** when feared in Berserker Stance: its alert shows and its button glows.
 - [ ] Respec so another tree leads: the mapped profile switches (after combat if you were fighting).
 - [ ] With EllesmereUI Action Bars disabled: glows on the default bars. (Dominos, Bartender4, ElvUI are not installed here: untested.)

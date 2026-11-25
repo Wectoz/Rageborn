@@ -18,5 +18,5 @@ RED="Colour: one hue family only: blood red to dark orange, with a pale core."
 wait
 echo "ALL DONE"
 # Added later (run these two by hand, as above):
-#   ./run.sh goreDrinker "GORE DRINKER (a Fury warrior's blood-frenzy just triggered: he drinks strength from the gore of the fight)" "$RED"
+#   ./run.sh goreDrinker "GORE DRINKER (after a rage ability such as Bloodthirst or Enrage, the Fury warrior's next melee attacks drink health back from the enemy)" "$RED"
 #   ./run.sh enrage "ENRAGE (the warrior was struck hard and flies into a rage: for a few seconds he hits harder)" "$RED"

@@ -6,6 +6,7 @@ local ADDON, ns = ...
 --   key       unique id
 --   name      the macro is created as "RB <name>" (the game allows 16 characters)
 --   body      the macro text; <shield> becomes the name of a shield the character carries
+--             <charge> the stances Charge works in: 1, or 1/2 with the Vanguard talent
 --   requires  SPELLS keys; the macro is offered when one rank of each is known
 --   spec      the specs it is listed under ("arms", "fury", "prot"); none = every spec
 local U, Data = ns.U, ns.Data
@@ -48,7 +49,7 @@ Macros.SPELLS = {
 
 Macros.LIST = {
     { key = "chargeIntercept", name = "Charge",
-      body = "#showtooltip\n/dismount\n/startattack\n/cast [stance:1,nocombat] Charge; [stance:3] Intercept; [combat] Berserker Stance; Battle Stance",
+      body = "#showtooltip\n/dismount\n/startattack\n/cast [stance:<charge>,nocombat] Charge; [stance:3] Intercept; [combat] Berserker Stance; Battle Stance",
       requires = { "charge", "intercept", "battleStance", "berserkerStance" } },
     { key = "overpowerAny", name = "Overpower",
       body = "#showtooltip Overpower\n/startattack\n/cast [nostance:1] Battle Stance; Overpower",
@@ -69,7 +70,7 @@ Macros.LIST = {
       body = "#showtooltip Taunt\n/cast [nostance:2] Defensive Stance; [@mouseover,harm,nodead] Taunt; Taunt",
       requires = { "taunt", "defensiveStance" }, spec = { "prot" } },
     { key = "chargeMouseover", name = "Charge Mouse",
-      body = "#showtooltip\n/dismount\n/startattack\n/cast [@mouseover,harm,nodead,stance:1] Charge; [@mouseover,harm,nodead,stance:3] Intercept; [stance:1] Charge; [stance:3] Intercept",
+      body = "#showtooltip\n/dismount\n/startattack\n/cast [@mouseover,harm,nodead,stance:<charge>] Charge; [@mouseover,harm,nodead,stance:3] Intercept; [stance:<charge>] Charge; [stance:3] Intercept",
       requires = { "charge", "intercept" } },
     { key = "burst", name = "Death Wish",
       body = "#showtooltip Death Wish\n/cast Bloodrage\n/cast Death Wish",
@@ -157,11 +158,13 @@ local function shieldName()
 end
 
 -- The text Create writes, and why it can't be created yet ("MACRO_NEEDS_SHIELD") if so.
+local VANGUARD = 1310317      -- Forever talent: Charge also works in Defensive Stance
 function Macros.Body(m)
-    if not m.body:find("<shield>", 1, true) then return m.body end
+    local body = m.body:gsub("<charge>", ns.Detect.IsKnown(VANGUARD) and "1/2" or "1")
+    if not body:find("<shield>", 1, true) then return body end
     local shield = shieldName()
-    if not shield then return m.body, "MACRO_NEEDS_SHIELD" end
-    return (m.body:gsub("<shield>", (shield:gsub("%%", "%%%%"))))
+    if not shield then return body, "MACRO_NEEDS_SHIELD" end
+    return (body:gsub("<shield>", (shield:gsub("%%", "%%%%"))))
 end
 
 -- Whether the character already has a macro with this one's name.
