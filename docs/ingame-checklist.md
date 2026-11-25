@@ -1,139 +1,137 @@
-# In-game checklist
+# In-game test session
 
-Run `/console scriptErrors 1` first so Lua errors show. Tick a line once it is seen working.
+One route through everything, about 45 minutes. Nothing here has been seen in the client yet.
+Tick a line when it works; write what you saw next to one that doesn't. Parts 1 and 2 need no
+fighting; do them first, because an error at load makes the rest pointless.
 
-## Task 7: alerts on screen, sounds
+## Before you start
 
-- [ ] The addon loads on the warrior with no Lua error.
-- [ ] `/rb test` shows every enabled alert in its default style with a running timer; `/rb test` again hides them.
-- [ ] Painted art sits around and above the character, not over it.
-- [ ] Fighting a mob: Overpower appears after a dodge and disappears when used or after 5 s.
-- [ ] Revenge appears after a block, dodge or parry in Defensive Stance.
-- [ ] Execute appears under 20 % target health.
-- [ ] Victory Rush appears after a kill.
-- [ ] Each of the ten sounds plays (set one with `/run RagebornDB.profiles[next(RagebornDB.profiles)].alerts.overpower.sound = "raidWarning"`, then `/reload` and `/rb test`; keys are in `Rageborn/Sounds.lua`).
+- [ ] Run `./deploy.sh`, log in on the warrior, enable **Rageborn** and **Rageborn Probe (throwaway)**.
+- [ ] Type `/console scriptErrors 1` so Lua errors pop up. Keep BugSack on.
+- [ ] Turn enemy nameplates on (the multi-pull alerts count them).
 
-## Task 8: mover
+**If an error pops up at any point:** copy its first three lines and note what you had just done. That is worth more than the rest of the list.
 
-- [ ] `/rb move` shows the alerts with a label on each; drag a label, `/reload`, the alert stays where it was dropped.
-- [ ] `/rb reset` returns the alerts to their default places (per-alert reset comes with the settings window).
-- [ ] Entering combat ends move mode by itself.
+## Part 1: it loads (2 minutes)
 
-## Sounds
+- [ ] No Lua error at login.
+- [ ] `/rb` opens the settings window; `/rb` again closes it.
+- [ ] `/rb test` shows every enabled alert with a running timer; again hides them.
+- [ ] The minimap button is there, with the ring centred on the icon. Left click opens the settings, right click toggles test mode, the tooltip shows.
+- [ ] Options > AddOns lists Rageborn with a button that opens the window.
 
-- [ ] `/rb crit` lists the sounds; `/rb crit bell` plays the bell and says it is set.
-- [ ] A critical hit on the target plays that sound; a normal hit doesn't.
-- [ ] `/rb sounds` turns every sound off, and on again.
+## Part 2: the settings window, standing still (15 minutes)
 
-## Task 10: settings window
+### Look and General
 
-- [ ] `/rb` opens the window; it drags by the title bar, closes on Escape, and reopens where it was left after `/reload`.
-- [ ] The left list shows only alerts the warrior knows, grouped; clicking one opens its page with a moving preview.
-- [ ] On one alert, change every control (enabled, colour, tint, size, opacity, spread, side, icon, name, timer, sound + Play, combat only, stance hint, glow, glow kind, glow colour): the preview follows, and so does the real alert under `/rb test`.
-- [ ] Battle Shout and Low health show their threshold slider; other alerts don't.
-- [ ] Browse designs opens the Gallery for that alert; the grid scrolls; clicking a tile changes the design and moves the highlight.
-- [ ] General: enable, size of all alerts, play sounds, critical hit sound + Play, glow for every macro spell, Move, Test all, Reset everything (asks first).
-- [ ] Profiles: create, copy, rename, delete (asks first), switch; a blank or taken name shows an error; switching in combat is refused.
-- [ ] The game's Options > AddOns list has Rageborn with a button that opens the window.
-- [ ] `/reload` keeps every change.
+- [ ] The window is oxblood and bone: red title bar (darker at the foot), solid red selected row, red ticks; no orange anywhere.
+- [ ] It drags by the title bar, closes on Escape, and reopens where you left it after `/reload`.
+- [ ] General, bottom row: **Window** 70–130 % resizes it and it stays in place. The three lists open upwards.
+- [ ] **Headings** and **Text**: try Friz Quadrata, Morpheus, Skurri, Arial Narrow on each. Note which you like, and any page where text is cut off or overlaps.
+- [ ] Enable, size of all alerts, glow for every macro spell, Move, Test all, the minimap button tick box, Reset everything (asks first).
+- [ ] Drag the minimap button around the minimap; `/reload` keeps its place.
 
-## Task 9: button glow
+### An alert page (use Overpower)
 
-- [ ] The Overpower button glows while the proc is up, on the bars in use (EllesmereUI) and on the default bars.
-- [ ] A macro with `/cast Overpower` glows too; with "Glow for every spell in a macro" on, a macro naming the spell further down glows as well.
-- [ ] All four glow kinds draw and take the chosen colour: Proc loop, Marching ants, Pulsing border, Rotating corners.
-- [ ] No "action blocked" message when a glow appears or disappears in combat.
-- [ ] Switch stance in a fight, then get a Revenge proc: does the Revenge button on the new bar page glow? (Known risk: buttons are only re-read after combat.)
+- [ ] The left list shows only alerts the warrior knows, grouped. Every page has one line under its name starting "Press now", "Active effect", "Reminder", "On the target" or "Warning".
+- [ ] With `/rb test` on, change every control: enabled, show on screen, colour, tint, size, opacity, spread, side, icon, name, timer, sound + Play, combat only, stance hint, glow, glow kind, glow colour. The preview follows, and so does the real alert.
+- [ ] **Colour** opens the game's colour wheel; picking recolours the art live and ticks Tint; Cancel puts it back; unticking Tint returns the art's own colours.
+- [ ] The design's menu shows after its name, e.g. "Overpower: sides 1 (Legacy)".
+- [ ] Threshold sliders exist on Battle Shout, Low health, Demo Shout: pull, Sunder and Rage dump, and nowhere else.
+- [ ] Racial ability (under Defensives): "Show on screen" is off and the appearance controls are greyed.
+- [ ] Gore Drinker and Enrage are under Procs (only with the talent) and their pages have no Button glow section.
 
-## Task 11: macros page
+### Gallery
 
-- [ ] The Macros page lists only macros whose spells the warrior knows; each shows its text, which can be selected and copied but not edited.
+- [ ] Browse designs opens the Gallery for that alert; **Modern** and **Legacy** switch the list and the one in use is underlined; an alert opens on the menu its design is in.
+- [ ] The grid scrolls; clicking a tile changes the design and moves the highlight.
+- [ ] Legacy painted art (Overpower, Revenge, Victory Rush, Battle Shout) is bright at 100 % opacity and dims with the slider.
+- [ ] Painted art sits around and above the character, never over it.
+- [ ] Each shape draws on one alert: Ring, Side arcs, Pulsing frame, Bar, Screen edges. Four game arts draw.
+
+### Placing alerts
+
+- [ ] `/rb move` (or Move) labels each alert; drag one, `/reload`, it stays. Reset position on its page puts it back. A glow-only alert has no label.
+
+### Sounds
+
+- [ ] A new profile is silent: "Play sounds" off, every alert's sound None, crit sound None.
+- [ ] A sound list holds the ten game sounds, then class spell sounds ("Mage: Frost Nova" ...), and scrolls with the wheel.
+- [ ] Press Play down the list. Note any that is silent, wrong for its name, or too long. (About 100; do a sample of each class if short of time.)
+- [ ] `/rb sounds` turns all sounds on and off; `/rb crit bell` sets and plays the crit sound.
+
+### Macros
+
+- [ ] The page lists only macros whose spells the warrior knows. Each text box fits its text exactly, and the text can be selected and copied but not edited.
 - [ ] Create adds `RB <name>` to the character macros; the button turns to Created, and to Exists after `/reload`.
-- [ ] Each created macro works as described: Charge / Intercept by stance, Overpower and Pummel from any stance, Shield Bash and Shield Wall equip the shield (`[noworn:Shields]` and `/equipslot 17` are accepted by this client), Bloodrage + Battle Shout, Taunt on mouseover.
-- [ ] Dragged to a bar, a created macro's button glows with its proc (RB Overpower with the Overpower proc).
-- [ ] With no shield carried, the two shield macros show "Needs a shield" and Create is off.
-- [ ] Create in combat is refused with a message; with 18 character macros it says the list is full.
+- [ ] With the page open, deleting that macro in the game's macro window turns the row back by itself.
+- [ ] With no shield carried, the shield macros say "Needs a shield" and Create is off; putting a shield in the bags turns them on by itself.
+- [ ] Press each created macro from each stance (see Part 3 for the ones that need a fight).
 
-## Task 12: every alert
+### Profiles
 
-For each: it appears when it should, disappears when it should, and its timer (where it has one) looks right. Turn the off-by-default ones on first.
+- [ ] The page scrolls; the status line and Reset stay put.
+- [ ] Create, copy, rename, delete (asks first), switch. A blank or taken name shows an error.
+- [ ] **Start from** = Protection + New: Revenge, Sunder and Taunt are on, Overpower is off. **Empty**: every alert off.
+- [ ] Change one alert's design and position, then **Apply to current profile** with Fury: it asks first, and only which alerts are on changes.
+- [ ] **Export** shows text; a click selects it and Ctrl+C copies it. Paste it under a new name with **Import**: an identical profile appears. Pasting "hello" says it isn't a Rageborn profile.
+- [ ] Map your talent tree to a profile, `/reload`: the character switches to it with a chat line.
+- [ ] `/reload` keeps every change made in Part 2.
 
-- [ ] Overpower: after a target dodge and after a Rend tick (Bloodthrill); gone when used or after 5 s.
-- [ ] Revenge: after a block, dodge or parry in Defensive Stance; gone when used or after 5 s.
-- [ ] Execute: target under 20 % health, Battle or Berserker Stance.
-- [ ] Victory Rush: after a kill; gone when used or after 20 s.
-- [ ] Interrupt: while the target casts and Pummel or Shield Bash is ready.
-- [ ] Shield Block reminder: in combat, Defensive Stance, shield on, Shield Block ready.
-- [ ] Battle Shout: missing, and again 3 s before it runs out; quiet while resting, mounted or dead.
-- [ ] Queued swing: while Heroic Strike or Cleave is queued.
-- [ ] Shield Wall (10 s), Last Stand (20 s), Shield Block active (5 s), Retaliation (15 s): shown from the press, timer runs down to the real end.
-- [ ] Recklessness (15 s), Death Wish (30 s), Sweeping Strikes (20 s), Berserker Rage (10 s), Bloodrage (10 s): the same.
-- [ ] Low health: under 35 % with Shield Wall or Last Stand ready; not when both are on cooldown.
-- [ ] Sunder Armor, Rend, Demoralizing Shout, Thunder Clap on the target: shown with stacks or time left, or greyed out in the list if the client hides target debuffs.
-- [ ] Any spell ID or duration that was wrong is noted in `docs/probe-results.md` under corrections.
+## Part 3: one enemy (10 minutes)
 
-## Task 12: designs, bars, the rest
+Use a mob your level. This is also the probe's fight: do steps 3–6 of `docs/probe-results.md` here.
 
-- [ ] Each shape design draws on one alert: Ring, Side arcs, Pulsing frame, Bar, Screen edges.
-- [ ] Four game arts picked from the Gallery draw, and four painted ones.
-- [ ] Glows on EllesmereUI bars; then with EllesmereUI Action Bars disabled, on the default bars. (Dominos, Bartender4 and ElvUI are not installed here: untested.)
-- [ ] On a non-warrior: no Rageborn frames, no errors, `/rb` prints "Rageborn only works on a warrior."
-- [ ] A full fight (pull, stance dance, every proc, a defensive, death or kill) with `/console scriptErrors 1`: no error popup, BugSack empty, no "action blocked".
-- [ ] The probe's fight steps are run (`docs/probe-results.md`) before `RagebornProbe` is deleted.
+- [ ] **Overpower** after the target dodges, and after a Rend tick (Bloodthrill); gone when used or after 5 s.
+- [ ] **Revenge** after a block, dodge or parry in Defensive Stance.
+- [ ] **Execute** under 20 % target health. **Victory Rush** after the kill, for 20 s.
+- [ ] **Interrupt** while a caster mob casts and Pummel or Shield Bash is ready.
+- [ ] **Battle Shout** when missing, and again 3 s before it runs out; quiet while resting or mounted.
+- [ ] **Gore Drinker** and **Enrage**: the alert appears with the proc and its timer matches the buff.
+- [ ] Press each cooldown you have: Shield Wall, Last Stand, Shield Block, Retaliation, Recklessness, Death Wish, Sweeping Strikes, Berserker Rage, Bloodrage. Each shows from the press and its timer ends when the effect does.
+- [ ] **Low health** under 35 % with Shield Wall or Last Stand ready.
+- [ ] **Button glow:** the Overpower button glows with its proc, on your bars (EllesmereUI). A macro with `/cast Overpower` glows too. Try all four glow kinds and a colour.
+- [ ] Switch stance mid-fight, then get a Revenge proc: does the button on the new bar page glow? (Known risk.)
+- [ ] No "action blocked" message at any point.
+- [ ] Turn on **Sunder**, **Rend missing**, **Thunder Clap missing**, **Rage dump**:
+  - [ ] Sunder shows its stacks, and pulses fast at 5 s left.
+  - [ ] "Rend missing" shows on a mob without Rend, hides when applied, returns when it falls off. Same for Thunder Clap.
+  - [ ] At 80 rage Heroic Strike glows, and stops when you queue it.
+- [ ] A critical hit plays the crit sound (set one first); a normal hit doesn't.
+- [ ] Macros in a fight: Charge/Intercept by stance, Overpower and Pummel from any stance, Shield Bash / Shield Wall / Shield Block equip the shield, Bloodrage + Battle Shout, Bloodrage + Death Wish, Hamstring, Mocking Blow, Berserker Rage, mouseover Taunt and mouseover Charge.
+- [ ] Create a macro in combat: refused with a message. Switch profile in combat: refused.
 
-## Legacy menu and colours
+## Part 4: several enemies (5 minutes)
 
-- [ ] Gallery: the Modern and Legacy buttons switch the list; the menu in use is underlined; an alert opens on the menu its design is in.
-- [ ] Legacy painted art (Overpower, Revenge, Victory Rush, Battle Shout) is bright at 100 % opacity and dims with the Opacity slider.
-- [ ] On a painted design, Colour opens the game's colour wheel; picking a colour recolours the art live and ticks Tint; Cancel puts the art back; unticking Tint returns its own colours.
+- [ ] Pull two or more: **Demo Shout: pull** shows and its button glows; one mob alone doesn't. After shouting it stays away for 30 s. Its slider (2–6) changes when it appears.
+- [ ] With Rage dump on and two or more mobs, **Cleave** glows; with one left it goes back to Heroic Strike.
+- [ ] With enemy nameplates off, neither of these appears (known limit).
 
-## Settings window: red look, fonts, size
+## Part 5: when you can (group, PvP, another character)
 
-- [ ] The window is oxblood and bone: red title bar (darker at the foot), solid red selected row, red ticks; no orange left anywhere.
-- [ ] General, bottom row: Window size 70–130 % resizes the window and it stays where it was; `/reload` keeps size and place.
-- [ ] Headings and Text each offer Friz Quadrata, Morpheus, Skurri, Arial Narrow; every page changes at once, nothing is cut off or overlaps in any of them. The three lists open upwards.
-- [ ] The alert page shows the design's menu after its name, e.g. "Overpower: sides 1 (Legacy)".
-- [ ] Macros page: each text box fits its text exactly; with the page open, creating or deleting a macro in the game's macro window, or moving a shield in or out of the bags, updates the rows by itself.
+- [ ] **Taunt** (turn it on), in a group: when your target turns to a party member the alert shows; gone when the mob is back on you.
+- [ ] **Racial:** its button glows only when it helps and is ready — human stunned, gnome rooted or slowed, undead feared or charmed, dwarf poisoned or diseased. Nothing is drawn on screen.
+- [ ] **Berserker Rage** when feared in Berserker Stance: its alert shows and its button glows.
+- [ ] Respec so another tree leads: the mapped profile switches (after combat if you were fighting).
+- [ ] With EllesmereUI Action Bars disabled: glows on the default bars. (Dominos, Bartender4, ElvUI are not installed here: untested.)
+- [ ] On a non-warrior: no Rageborn frames, no minimap button, no errors; `/rb` prints "Rageborn only works on a warrior."
+- [ ] A full fight (pull, stance dance, procs, a defensive, a kill) with no error popup and BugSack empty.
 
-## Racial glow and Demo Shout on a pull
+## When something doesn't show
 
-- [ ] The racial's button glows only when it would help and is ready: human stunned, gnome rooted or slowed, undead feared or charmed, dwarf poisoned or diseased. It stops when pressed or when the effect ends; nothing is drawn on screen for it.
-- [ ] The racial's spell ID is right on this client (the alert "Racial ability" is listed under Defensives), and a stun, root, slow or fear is actually noticed in combat.
-- [ ] With enemy nameplates on, pulling two or more mobs shows "Demo Shout: pull" and glows its button; one mob doesn't. After shouting it stays away for 30 s.
-- [ ] Its "Enemies in the fight, at least" slider (2–6) changes when it appears.
-- [ ] With enemy nameplates off it never appears (known limit).
+| What | Run this, and send me the output |
+|---|---|
+| Gore Drinker or Enrage never appears | With the buff up: `/dump C_UnitAuras.GetAuraDataByIndex("player", 1, "HELPFUL")`, raising 1 until you find it. I need its `name` and `spellId`. |
+| An alert for a spell you have is missing from the list | `/dump IsPlayerSpell(12345)` with the spell's ID from its tooltip, and tell me the ID. |
+| Racial never glows | Your race, and with the stun/root/fear on you: `/dump C_LossOfControl.GetActiveLossOfControlData(1)`. |
+| Slowed gnome never glows | While slowed: `/dump GetUnitSpeed("player")`. |
+| Rend / Thunder Clap missing, or Sunder, never appears | In the fight: `/dump C_UnitAuras.GetAuraDataByIndex("target", 1, "HARMFUL")`. |
+| Demo Shout: pull never appears | `/dump #C_NamePlate.GetNamePlates()` with the mobs on you. |
+| Spec profile doesn't switch | `/dump GetTalentTabInfo(1)` and `/dump IsPlayerSpell(23881)` (Bloodthirst), `12294` (Mortal Strike), `23922` (Shield Slam). |
+| A sound is silent | Its name in the list. |
+| A button doesn't glow | Which bar addon, and whether it is a spell or a macro on the button. |
 
-## Show on screen, new macros, minimap button
+## Afterwards
 
-- [ ] Minimap button appears on the warrior with the ring centred on the icon; left click opens and closes the settings, right click toggles test mode, the tooltip shows.
-- [ ] Drag it around the minimap; `/reload` keeps its place; General > "Minimap button" hides and shows it.
-- [ ] Racial alert page: "Show on screen" is off and the appearance controls are greyed; in test mode nothing is drawn for it but its button glows. Ticking it makes the alert visible.
-- [ ] Macros page lists the six new macros when their spells are known; each works from each stance as described (mouseover Charge/Intercept, Bloodrage + Death Wish, Berserker Rage, Mocking Blow, Hamstring, Shield Block with shield swap).
-
-## New combat alerts
-
-- [ ] Sunder: stacks show; at 5 s left the alert pulses fast; its slider (1-15 s) moves that point.
-- [ ] "Rend missing" and "Thunder Clap missing" (turn them on): shown on a mob without the debuff, hidden once applied, back when it falls off; nothing with no target, a friendly or dead target, or out of combat.
-- [ ] Feared in Berserker Stance with Berserker Rage ready: its alert shows and its button glows.
-- [ ] Rage dump (turn it on): at 80 rage Heroic Strike glows, and goes out when queued; with two or more mobs Cleave glows instead; its slider (30-100) moves the point.
-- [ ] Taunt (turn it on), in a group: when your target turns to a party member the alert shows; gone when the mob is back on you.
-
-## Presets, sharing, spec profiles
-
-- [ ] Profiles page scrolls; "Start from" = Protection + New gives a profile with Revenge, Sunder and Taunt on and Overpower off; Empty gives one with every alert off.
-- [ ] "Apply to current profile" asks first and changes only which alerts are on; designs and positions stay.
-- [ ] Export shows text that selects and copies; pasting it under a new name with Import creates an identical profile; pasting junk says it isn't a Rageborn profile.
-- [ ] Map a talent tree to a profile, `/reload`: the character switches to it with a chat line; a respec switches again (after combat if in a fight). If nothing happens: `/dump GetTalentTabInfo(1)`.
-
-## Sounds
-
-- [ ] A new profile is silent: "Play sounds" is off, every alert's sound is None, the crit sound is None.
-- [ ] Every sound list (each alert, and the crit sound) offers spell sounds of all nine classes after the ten game sounds; the list scrolls with the wheel. Press Play on each: note any that is silent, wrong, or too long.
-
-## Gore Drinker, Enrage, descriptions, more sounds
-
-- [ ] Every alert page has one line under its name saying what it is: "Press now", "Active effect", "Reminder", "On the target" or "Warning".
-- [ ] Gore Drinker and Enrage are listed under Procs (only if the talent is taken); their pages have no Button glow section.
-- [ ] When Gore Drinker procs, its alert appears and its timer matches the buff; same for Enrage. If Gore Drinker never shows: with the buff up, run `/dump C_UnitAuras.GetAuraDataByIndex("player", 1, "HELPFUL")` for each buff slot and note its name and spellId.
-- [ ] Sound lists now also hold later-expansion sounds (Hot Streak, Shockwave, Devastate, Lava Burst, Death Knight sounds ...): press Play on each.
-- [ ] Spec profiles: with a tree mapped to a profile, `/reload` switches to it (Forever talents are read from key talents known).
+- [ ] `/reload` (writes the probe log), then tell Claude: it fills in `docs/probe-results.md`, fixes what failed, and removes `RagebornProbe`.
+- [ ] Wrong spell IDs or durations go into `docs/probe-results.md` under corrections.

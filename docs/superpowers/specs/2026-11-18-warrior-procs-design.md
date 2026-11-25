@@ -256,3 +256,29 @@ Status: design approved by the owner on 2026-11-18 ("begin working on the addon"
   branch of Gethe/wow-ui-source).
 - Internal structure of each file, the exact look of each shape style, default positions and
   colours, the sound list.
+
+## Built since this design (as of 2026-11-25)
+
+The sections above are the original design. These were added at the owner's request afterwards;
+where they differ from the text above, this list is what the addon does.
+
+- **Two gallery menus.** Every design is Modern (our first painted set, the drawn shapes) or
+  Legacy (painted art in the old-game look, and the game's own proc art). Legacy art is
+  brightened at conversion; the player dims with Opacity. The colour wheel tints painted art.
+- **Settings window look.** Oxblood and bone instead of steel and ember; the player picks the
+  heading and text fonts from the game's own (Friz Quadrata, Morpheus, Skurri, Arial Narrow)
+  and the window size (70-130 %). Each alert page has one line saying what the alert is:
+  "Press now", "Active effect", "Reminder", "On the target" or "Warning".
+- **More alerts.** Demo Shout on a multi-pull (enemies counted from nameplates); the racial
+  when it would free you (glow only); Berserker Rage when feared; rage dump (Heroic Strike, or
+  Cleave on several enemies); Taunt when the target turns to a party member; Sunder about to
+  fall off; Rend and Thunder Clap missing; Gore Drinker and Enrage (effects on you, listed
+  under Procs, nothing to press). The Bloodthrill buff opens Overpower like a dodge does.
+- **Show on screen** per alert: off = button glow and sound only.
+- **Sounds** are off in a new profile. Lists hold ten game sounds plus about ninety class spell
+  sounds (sound-kit IDs from the Classic Era tables).
+- **Profiles.** Start from a preset (Standard, Arms, Fury, Protection, Empty); apply a preset
+  to the current profile (changes only which alerts are on); export and import as text
+  (import always creates a new profile, and parses without executing anything); switch
+  profile by talent tree (never by stance: that would switch mid-fight).
+- **Macros:** thirteen, six of them added later. **Minimap button:** our own, no library.

@@ -80,6 +80,11 @@ T("an effect on you (Gore Drinker, Enrage) shows while it lasts, with its own ti
   local s, i = E:Evaluate("goreDrinker", 10); assert(s == true and i.remaining == 6 and i.duration == 8)
   assert(E:Evaluate("enrage", 10) == true)
   fake.known = false; assert(E:Evaluate("goreDrinker", 10) == false) end),      -- talent not taken
+T("overpower: the Bloodthrill buff opens it like a dodge does, for as long as the buff lasts", function()
+  fake.lacksRage = true; assert(E:Evaluate("overpower", 10) == false)
+  fake.buff = { expires = 14, duration = 5 }
+  local s, i = E:Evaluate("overpower", 10); assert(s == true and i.remaining == 4)
+  assert(E:Evaluate("overpower", 15) == false) end),
 T("unknown spell never shows", function()
   fake.known = false; fake.usable = true; local s, i = E:Evaluate("execute", 1); assert(s == false and i == nil) end),
 T("the highest known rank is reported", function()

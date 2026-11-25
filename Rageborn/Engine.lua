@@ -77,6 +77,10 @@ end
 local function evalUsable(def, opt, spells, now)
     local D = ns.Detect
     local left, closes = windowLeft(def.key, now)
+    if not left and def.procBuff then       -- a buff that opens it (Bloodthrill for Overpower)
+        local expires = D.PlayerBuff({ def.procBuff })
+        if expires and expires > now then left, closes = expires - now, expires end
+    end
     local procOpen = left ~= nil
     if def.key == "execute" then
         local hp = D.HealthPct("target")

@@ -126,6 +126,10 @@ local function Button(parent, x, y, w, label, onClick)
     local function paint(hot)
         local c = not b.on and C.cap or hot and C.hover or C.control
         fill:SetColorTexture(c[1], c[2], c[3], 1)
+        if CreateColor then     -- lit from above, where the client can shade a texture
+            pcall(fill.SetGradient, fill, "VERTICAL", CreateColor(c[1] * 0.82, c[2] * 0.82, c[3] * 0.82, 1),
+                  CreateColor(c[1] * 1.25, c[2] * 1.25, c[3] * 1.25, 1))
+        end
         local t = b.on and C.ink or C.quiet
         b.text:SetTextColor(t[1], t[2], t[3])
     end
@@ -134,6 +138,7 @@ local function Button(parent, x, y, w, label, onClick)
     b:SetScript("OnClick", function() if b.on then onClick(b) end end)
     function b.Able(on) b.on = on and true or false; paint(false) end
     function b.Refresh() end
+    paint(false)
     return b
 end
 
