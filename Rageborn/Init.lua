@@ -22,7 +22,7 @@ local COMMANDS = {
         local s = ns.Sounds.Find(arg)
         if not s then
             local keys = {}
-            for _, o in ipairs(ns.Sounds.LIST) do keys[#keys + 1] = o.key end
+            for _, o in ipairs(ns.Sounds.LIST) do if not o.class then keys[#keys + 1] = o.key end end   -- class sounds: in the settings
             say(L.CRIT_USAGE .. " " .. table.concat(keys, ", "))
             return
         end

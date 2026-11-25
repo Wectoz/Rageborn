@@ -243,7 +243,7 @@ local function OpenPopup(owner, items, current, onPick)
         end
         popup:EnableMouseWheel(true)
         popup:SetScript("OnMouseWheel", function(_, d)
-            popup.offset = math.max(0, math.min(#popup.items - 8, popup.offset - d))
+            popup.offset = math.max(0, math.min(#popup.items - 8, popup.offset - d * (#popup.items > 16 and 4 or 1)))   -- long lists move faster
             popup.Draw()
         end)
         popup:SetScript("OnShow", function() catcher:Show() end)

@@ -128,3 +128,4 @@ For each: it appears when it should, disappears when it should, and its timer (w
 ## Sounds
 
 - [ ] A new profile is silent: "Play sounds" is off, every alert's sound is None, the crit sound is None.
+- [ ] Every sound list (each alert, and the crit sound) offers spell sounds of all nine classes after the ten game sounds; the list scrolls with the wheel. Press Play on each: note any that is silent, wrong, or too long.
