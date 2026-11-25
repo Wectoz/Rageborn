@@ -56,7 +56,7 @@ T("the racial shows when it would help and is ready, and is glow-only by default
   fake.known = {[59752] = true}; assert(E:Evaluate("racial", 3) == false)      -- a human, slowed
   fake.wrong = {STUN = true}; assert(E:Evaluate("racial", 3) == true)
   fake.wrong = nil; assert(E:Evaluate("racial", 4) == false)                   -- unreadable
-  assert(DB:Alert("racial").opacity == 0 and DB:Alert("racial").glow == true and DB:Alert("overpower").opacity == 1) end),
+  assert(DB:Alert("racial").onScreen == false and DB:Alert("racial").glow == true and DB:Alert("overpower").opacity == 1) end),
 T("unknown spell never shows", function()
   fake.known = false; fake.usable = true; local s, i = E:Evaluate("execute", 1); assert(s == false and i == nil) end),
 T("the highest known rank is reported", function()

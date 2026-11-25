@@ -470,7 +470,9 @@ local function BuildGeneral()
     end))
     function move.Refresh() move.text:SetText(moveLabel()) end
     p.Add(Button(p, 336, 424, 84, L.OPT_TEST_ALL, toggleTest))
-    Label(p, 430, 430, 12, C.secondary, L.OPT_MOVE_HELP, 400)
+    Label(p, 430, 430, 12, C.secondary, L.OPT_MOVE_HELP, 260)
+    p.Add(Check(p, 700, 424, 140, L.OPT_MINIMAP, function() return not prof().minimap.hide end,
+        function(v) prof().minimap.hide = not v; if ns.Minimap then ns.Minimap:Apply() end; p.Refresh() end))
 
     p.statusY = 466
     Rule(p, 200, 499, 640)
@@ -523,7 +525,13 @@ local function BuildAlert()
     local only = {}
     local function when(control, test) only[control] = test; return p.Add(control) end
 
-    p.Add(Check(p, 200, 103, 160, L.OPT_ENABLED, field("enabled")))
+    p.Add(Check(p, 200, 103, 100, L.OPT_ENABLED, field("enabled")))
+    -- off: sound and button glow only. An opacity of 0 was the old way to say so.
+    p.Add(Check(p, 310, 103, 160, L.OPT_ON_SCREEN, function() return opt().onScreen end, function(v)
+        opt().onScreen = v
+        if v and opt().opacity == 0 then opt().opacity = 1 end
+        changed()
+    end))
     Label(p, 200, 139, 11, C.secondary, L.OPT_DESIGN:upper())
     local styleName = Label(p, 200, 154, 13, C.ink, "")
     p.Add(Button(p, 200, 177, 124, L.OPT_BROWSE, function() Options:Select("gallery", key()) end))
@@ -537,6 +545,7 @@ local function BuildAlert()
     stage:SetClipsChildren(true)
 
     Heading(p, 200, 212, 640, L.OPT_APPEARANCE)
+    local firstLook = #p.controls + 1       -- the appearance controls: greyed out when nothing is drawn
     -- Painted art keeps its own colours until one is picked on the wheel: picking turns Tint
     -- on, cancelling the wheel puts Tint back as it was.
     local getColour, setColour = colour("color")
@@ -561,6 +570,7 @@ local function BuildAlert()
     p.Add(Check(p, 476, 281, 90, L.OPT_ICON, field("showIcon")))
     p.Add(Check(p, 572, 281, 90, L.OPT_NAME, field("showName")))
     p.Add(Check(p, 668, 281, 100, L.OPT_TIMER, field("showTimer")))
+    local lastLook = #p.controls
 
     Heading(p, 200, 322, 640, L.OPT_BEHAVIOUR)
     Label(p, 200, 347, 13, C.ink, L.OPT_SOUND)
@@ -607,6 +617,7 @@ local function BuildAlert()
         for control, test in pairs(only) do control:SetShown(test() and true or false) end
         refreshControls()
         kind.Able(o.glow); glowColour.Able(o.glow)
+        for i = firstLook, lastLook do p.controls[i].Able(o.onScreen) end
 
         local st = style()
         styleName:SetText((st.label or st.key) .. "  (" .. L["OPT_ERA_" .. st.era] .. ")")

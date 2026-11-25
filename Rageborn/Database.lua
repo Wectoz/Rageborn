@@ -25,7 +25,8 @@ local function alertDefaults(def, index, count)
     local x = centred and 0 or (index - (count + 1) / 2) * 70
     return {
         enabled = def.defaultOn, style = style,
-        color = { r = c[1], g = c[2], b = c[3] }, size = 1, opacity = def.defaultOpacity or 1,
+        color = { r = c[1], g = c[2], b = c[3] }, size = 1, opacity = 1,
+        onScreen = def.defaultOpacity ~= 0,   -- false: sound and button glow only
         x = x, y = centred and 0 or GROUP_Y[def.group] or 0, spread = 1,
         side = "both", recolor = false,   -- two-sided art: which side; painted art: tint it
         showIcon = not painted, showName = false, showTimer = true,
@@ -36,7 +37,7 @@ local function alertDefaults(def, index, count)
 end
 
 local function profileDefaults()
-    local p = { enabled = true, scale = 1, sounds = true, critSound = "none", glowEveryMacroSpell = false, window = { x = 0, y = 0, scale = 1, headFont = "friz", textFont = "arial" }, alerts = {} }
+    local p = { enabled = true, scale = 1, sounds = true, critSound = "none", glowEveryMacroSpell = false, window = { x = 0, y = 0, scale = 1, headFont = "friz", textFont = "arial" }, minimap = { angle = 200, hide = false }, alerts = {} }
     local count, index = {}, {}
     for _, def in ipairs(Data.ALERTS) do count[def.group] = (count[def.group] or 0) + 1 end
     for _, def in ipairs(Data.ALERTS) do

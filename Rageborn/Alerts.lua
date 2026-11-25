@@ -57,6 +57,8 @@ local function apply(a)
     a.body, a.style, a.opacity = b.body, b.style, a.fixedStyle and 1 or opt.opacity or 1
 
     if not a.preview then
+        a.off = opt.onScreen == false           -- sound and button glow only: nothing is drawn
+        if a.info then f:SetShown(not a.off) end
         local scale = math.max(0.1, (opt.size or 1) * (ns.DB:Profile().scale or 1))
         f:SetScale(scale)
         f:ClearAllPoints()
@@ -102,7 +104,7 @@ function Alerts:Update(now, elapsed)
             if fade <= 0 then
                 a.info, a.hiddenAt = nil, nil
                 a.frame:Hide()
-            else
+            elseif not a.off then
                 draw(a, a.info, now, elapsed, fade)
             end
         end
@@ -132,7 +134,7 @@ function Alerts:OnAlert(key, shown, info)
     end
     if not a.info or a.hiddenAt then          -- it appears: pop, and the sound once
         a.since, a.hiddenAt = GetTime(), nil
-        a.frame:Show()
+        a.frame:SetShown(not a.off)
         ns.Sounds.Play(ns.DB:Alert(key).sound)
     end
     a.info = info

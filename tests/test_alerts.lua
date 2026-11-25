@@ -54,6 +54,22 @@ return {
 {"dim halves the opacity", function()
   reset(); A:OnAlert("battleShout", true, { spellID = 6673, dim = true })
   A:Update(100, 0); assert(math.abs(alpha("battleShout") - 0.45) < 0.01) end},
+{"an alert not shown on screen never shows its frame, but sounds and reaches the other subscribers", function()
+  reset(); local subs, heard = {}, {}
+  ns.Engine = { Subscribe = function(_, fn) subs[#subs + 1] = fn end }
+  A:Start(); ns.Engine:Subscribe(function(key, shown) heard[#heard + 1] = key .. tostring(shown) end)
+  local function tell(...) for _, fn in ipairs(subs) do fn(...) end end
+  local o = DB:Alert("racial"); assert(o.onScreen == false and o.opacity == 1 and DB:Alert("overpower").onScreen == true)
+  o.sound = "bell"; tell("racial", true, { spellID = 20589 }); tell("racial", true, { spellID = 20589 })
+  local f = A:Frame("racial"); A:Update(100.5, 0.02)
+  assert(f.shown == false and f.calls.SetAlpha == nil and #played == 1 and played[1] == 6594)
+  assert(heard[1] == "racialtrue" and #heard == 2)
+  o.onScreen = true; A:Apply("racial"); assert(f.shown == true)          -- switched on while it is up
+  o.onScreen = false; A:Apply("racial"); assert(f.shown == false)
+  local p = A:Preview("racial", widget()); A:Update(101, 0.02)             -- the settings preview still draws
+  assert(p.shown == true and p.calls.SetAlpha[1] > 0.8)
+  tell("racial", false); A:Update(102, 0.02); tell("racial", true, { spellID = 20589 })
+  assert(f.shown == false and #played == 2) end},
 {"position is the saved offset from the screen centre whatever the size", function()
   reset(); local o = DB:Alert("execute"); o.x, o.y, o.size = 100, -50, 2; DB:Profile().scale = 1
   A:Apply("execute"); local p = A:Frame("execute").calls.SetPoint

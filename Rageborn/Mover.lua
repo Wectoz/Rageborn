@@ -14,7 +14,7 @@ local handles, watcher = {}, nil
 
 local function movable(key)
     local opt = ns.DB:Alert(key)
-    return opt.enabled and ns.Styles.Resolve(opt.style) ~= "vignette"
+    return opt.enabled and opt.onScreen ~= false and ns.Styles.Resolve(opt.style) ~= "vignette"
 end
 
 -- Puts every handle on its alert. Alerts that share a position get their handles stacked,
