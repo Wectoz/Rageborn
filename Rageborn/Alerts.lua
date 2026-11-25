@@ -10,7 +10,7 @@ local U, Data, Styles = ns.U, ns.Data, ns.Styles
 local Alerts = {}
 ns.Alerts = Alerts
 
-local POP, FADE, BREATH = 0.15, 0.2, 1.6
+local POP, FADE, BREATH, URGENT = 0.15, 0.2, 1.6, 0.5
 local STANCE_SPELL = { 2457, 71, 2458 }     -- battle, defensive, berserker
 local NO_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 
@@ -90,7 +90,9 @@ local function draw(a, info, now, elapsed, fade)
     Styles.Call(a.style, "SetTime", info.expires and math.max(0, info.expires - now) or nil, info.duration)
     Styles.Call(a.style, "Animate", elapsed, t)
     a.body:SetScale(t < POP and 1.3 - 0.3 * t / POP or 1)
-    local alpha = a.opacity * (info.dim and 0.5 or 1) * (0.9 + 0.1 * math.sin(t * 2 * math.pi / BREATH))
+    local breath = info.urgent and 0.65 + 0.35 * math.sin(t * 2 * math.pi / URGENT)    -- about to run out
+        or 0.9 + 0.1 * math.sin(t * 2 * math.pi / BREATH)
+    local alpha = a.opacity * (info.dim and 0.5 or 1) * breath
     a.frame:SetAlpha(alpha * fade)
 end
 

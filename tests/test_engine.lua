@@ -9,21 +9,38 @@ local function reset()
   for _, d in ipairs(ns.Data.ALERTS) do DB:Alert(d.key).enabled = true; DB:Alert(d.key).combatOnly = false end
   fake = { known = true, usable = false, lacksRage = false, cd = 0, hp = {player = 100, target = 100},
            buff = nil, debuff = nil, stance = 1, casting = false, shield = true, queued = false,
-           combat = true, quiet = false, enemies = 0, wrong = {} }
+           combat = true, quiet = false, enemies = 0, wrong = {}, rage = 0, enemy = true, lost = false }
   ns.Detect = {
     IsKnown = function(id) if type(fake.known) == "table" then return fake.known[id] == true end return fake.known end,
     Usable = function() return fake.usable, fake.lacksRage end,
     CooldownLeft = function(id) if type(fake.cd) == "table" then return fake.cd[id] end return fake.cd end,
     HealthPct = function(unit) return fake.hp[unit] end,
     PlayerBuff = function() if fake.buff then return fake.buff.expires, fake.buff.duration end end,
-    TargetDebuff = function() if fake.debuff then return fake.debuff.stacks, fake.debuff.expires end end,
+    -- fake.debuff: nil = can't be read, false = read and not there
+    TargetDebuff = function() if fake.debuff then return fake.debuff.stacks, fake.debuff.expires end return fake.debuff end,
+    TargetEnemy = function() return fake.enemy end, TargetLost = function() return fake.lost end,
+    Rage = function() return fake.rage end,
     Stance = function() return fake.stance end, TargetCasting = function() return fake.casting end,
-    HasShield = function() return fake.shield end, IsQueued = function() return fake.queued end,
+    HasShield = function() return fake.shield end,
+    IsQueued = function(id) if type(fake.queued) == "table" then return fake.queued[id] == true end return fake.queued end,
     InCombat = function() return fake.combat end, Enemies = function() return fake.enemies end, Afflictions = function() return fake.wrong end, Quiet = function() return fake.quiet end,
   }
   E:Reset()
 end
 local function T(name, fn) return {name, function() reset(); fn() end} end
+
+-- The real Detect over a fake client, for the reads these alerts depend on.
+local GLOBALS = { "C_UnitAuras", "UnitExists", "UnitCanAttack", "UnitAffectingCombat", "UnitIsUnit", "UnitIsPlayer",
+                  "UnitIsFriend", "UnitIsDead", "UnitPower", "UnitPowerPercent", "CurveConstants" }
+local function D(name, fn)
+  return {name, function()
+    for _, g in ipairs(GLOBALS) do _G[g] = nil end
+    local ok, err = pcall(fn, Stub.load("Detect.lua", { U = ns.U }).Detect)
+    for _, g in ipairs(GLOBALS) do _G[g] = nil end
+    assert(ok, err)
+  end}
+end
+local function auras(list) C_UnitAuras = { GetAuraDataByIndex = function(_, i) return list[i] end } end
 
 return {
 T("usable alert shows when usable", function() fake.usable = true; assert(E:Evaluate("execute", 1) == true) end),
@@ -157,6 +174,76 @@ T("shield block: needs a shield, combat, off cooldown", function()
 T("debuff: shows stacks and time left on the target", function()
   assert(E:Evaluate("sunder", 1) == false); fake.debuff = {stacks = 3, expires = 40}
   local s, i = E:Evaluate("sunder", 10); assert(s == true and i.stacks == 3 and i.remaining == 30) end),
+T("sunder: urgent in the last seconds, by the setting; never without a readable end", function()
+  assert(DB:Alert("sunder").threshold == 5)
+  fake.debuff = {stacks = 5, expires = 40}
+  local _, i = E:Evaluate("sunder", 34); assert(i.urgent == nil)
+  _, i = E:Evaluate("sunder", 35); assert(i.urgent == true and i.stacks == 5)
+  DB:Alert("sunder").threshold = 10; _, i = E:Evaluate("sunder", 31); assert(i.urgent == true)
+  fake.debuff = {stacks = 5, expires = nil}; local s; s, i = E:Evaluate("sunder", 39); assert(s == true and i.urgent == nil)
+  fake.debuff = false; assert(E:Evaluate("sunder", 39) == false) end),
+T("sunder: subscribers hear when it turns urgent", function()
+  local got = {}; E:Subscribe(function(key, _, info) if key == "sunder" then got[#got + 1] = info.urgent or false end end)
+  fake.debuff = {stacks = 5, expires = 40}; E:Tick(30); E:Tick(34); E:Tick(36); E:Tick(37)
+  assert(#got == 2 and got[1] == false and got[2] == true, #got) end),
+T("demo shout on the target keeps showing only while it is there", function()
+  fake.debuff = false; assert(E:Evaluate("demoShout", 1) == false)
+  fake.debuff = {stacks = 0, expires = 30}; assert(E:Evaluate("demoShout", 1) == true) end),
+T("rend and thunder clap: a reminder while missing from a live enemy target in combat", function()
+  for _, key in ipairs({"rend", "thunderClap"}) do
+    fake.debuff = false
+    local s, i = E:Evaluate(key, 1); assert(s == true and i.missing == true and i.stacks == nil, key)
+    assert(i.spellID == ns.Data.BY_KEY[key].spells[#ns.Data.BY_KEY[key].spells], key)
+    fake.debuff = {stacks = 0, expires = 20}; assert(E:Evaluate(key, 1) == false, key); fake.debuff = false
+    fake.combat = false; assert(E:Evaluate(key, 1) == false, key); fake.combat = true
+    fake.enemy = false; assert(E:Evaluate(key, 1) == false, key)          -- no target, friendly or dead
+    fake.enemy = nil; assert(E:Evaluate(key, 1) == false, key); fake.enemy = true
+  end end),
+T("rend missing: unreadable debuffs show nothing, even right after it was shown", function()
+  fake.debuff = false; assert(E:Evaluate("rend", 1) == true)
+  fake.debuff = nil; assert(E:Evaluate("rend", 2) == false) end),
+T("fear break: Berserker Rage ready while feared, sapped or incapacitated", function()
+  fake.usable = true; assert(E:Evaluate("fearBreak", 1) == false)
+  for _, kind in ipairs({"FEAR", "SAP", "INCAPACITATE"}) do
+    fake.wrong = {[kind] = true}; local s, i = E:Evaluate("fearBreak", 1); assert(s == true and i.spellID == 18499, kind)
+  end
+  fake.wrong = {STUN = true, ROOT = true}; assert(E:Evaluate("fearBreak", 1) == false)
+  fake.wrong = {FEAR = true}; fake.cd = 20; assert(E:Evaluate("fearBreak", 1) == false); fake.cd = 0
+  fake.cd = {}; assert(E:Evaluate("fearBreak", 1) == false); fake.cd = 0          -- cooldown unreadable
+  fake.usable = false; assert(E:Evaluate("fearBreak", 1) == false); fake.usable = true
+  fake.wrong = nil; assert(E:Evaluate("fearBreak", 1) == false)                    -- unreadable
+  assert(DB:Alert("fearBreak").opacity == 1) end),
+T("rage dump: enough rage in combat with nothing queued names Heroic Strike", function()
+  assert(DB:Alert("rageDump").threshold == 80)
+  fake.rage = 79; assert(E:Evaluate("rageDump", 1) == false)
+  fake.rage = 80; local s, i = E:Evaluate("rageDump", 1); assert(s == true and i.spellID == 25286)
+  DB:Alert("rageDump").threshold = 95; assert(E:Evaluate("rageDump", 1) == false); DB:Alert("rageDump").threshold = 80
+  fake.combat = false; assert(E:Evaluate("rageDump", 1) == false); fake.combat = true
+  fake.queued = {[25286] = true}; assert(E:Evaluate("rageDump", 1) == false)
+  fake.queued = {[845] = true}; assert(E:Evaluate("rageDump", 1) == false); fake.queued = false
+  fake.rage = nil; assert(E:Evaluate("rageDump", 1) == false) end),                  -- unreadable, even if it was up
+T("rage dump: Cleave with two enemies or more, in the highest rank known", function()
+  fake.rage = 100; fake.enemies = 2
+  local _, i = E:Evaluate("rageDump", 1); assert(i.spellID == 20569)
+  fake.known = {[78] = true, [284] = true, [845] = true, [7369] = true}
+  _, i = E:Evaluate("rageDump", 1); assert(i.spellID == 7369)
+  fake.enemies = 1; _, i = E:Evaluate("rageDump", 1); assert(i.spellID == 284)
+  fake.enemies = nil; _, i = E:Evaluate("rageDump", 1); assert(i.spellID == 284)     -- count unreadable
+  fake.enemies = 3; fake.known = {[78] = true}; _, i = E:Evaluate("rageDump", 1); assert(i.spellID == 78)   -- no Cleave yet
+  fake.known = {[845] = true}; assert(E:Evaluate("rageDump", 1) == true)
+  fake.enemies = 1; assert(E:Evaluate("rageDump", 1) == false) end),                  -- Cleave alone, one enemy
+T("rage dump: subscribers hear when the spell to press changes", function()
+  local got = {}; E:Subscribe(function(key, _, info) if key == "rageDump" then got[#got + 1] = info.spellID end end)
+  fake.rage = 90; E:Tick(1); E:Tick(2); fake.enemies = 3; E:Tick(3)
+  assert(#got == 2 and got[1] == 25286 and got[2] == 20569, #got) end),
+T("taunt: ready, in combat, and the target is on another player", function()
+  fake.usable = true; assert(E:Evaluate("taunt", 1) == false)
+  fake.lost = true; local s, i = E:Evaluate("taunt", 1); assert(s == true and i.spellID == 355)
+  fake.cd = 6; assert(E:Evaluate("taunt", 1) == false); fake.cd = 0
+  fake.combat = false; assert(E:Evaluate("taunt", 1) == false); fake.combat = true
+  fake.usable = false; assert(E:Evaluate("taunt", 1) == false); fake.usable = true
+  assert(E:Evaluate("taunt", 1) == true)
+  fake.lost = nil; assert(E:Evaluate("taunt", 2) == false) end),                      -- unreadable, even if it was up
 T("combatOnly setting hides an alert out of combat", function()
   fake.usable = true; fake.combat = false; DB:Alert("execute").combatOnly = true
   assert(E:Evaluate("execute", 1) == false); fake.combat = true; assert(E:Evaluate("execute", 2) == true) end),
@@ -178,4 +265,52 @@ T("subscribers hear about a stack change while shown", function()
 T("a failing subscriber does not stop the others", function()
   local got; E:Subscribe(function() error("boom") end); E:Subscribe(function(key) if key == "execute" then got = true end end)
   fake.usable = true; E:Tick(1); assert(got) end),
+D("TargetDebuff: found, read and absent (false), or unreadable (nil)", function(Detect)
+  local secret = Stub.secret()
+  UnitExists = function() return true end
+  auras({ {spellId = 5}, {spellId = 772, applications = 0, expirationTime = 30} })
+  local stacks, expires = Detect.TargetDebuff({772}); assert(stacks == 0 and expires == 30)
+  auras({ {spellId = 5}, {spellId = 6} }); assert(Detect.TargetDebuff({772}) == false)
+  auras({}); assert(Detect.TargetDebuff({772}) == false)                           -- no debuffs at all
+  auras({ {spellId = 5}, {spellId = secret} }); assert(Detect.TargetDebuff({772}) == nil)
+  auras({ {spellId = secret}, {spellId = 772, applications = secret, expirationTime = secret} })
+  stacks, expires = Detect.TargetDebuff({772}); assert(stacks == 0 and expires == nil)
+  auras({ {spellId = 5}, secret }); assert(Detect.TargetDebuff({772}) == nil)        -- the entry itself is hidden
+  C_UnitAuras = { GetAuraDataByIndex = function() error("blocked") end }; assert(Detect.TargetDebuff({772}) == nil)
+  C_UnitAuras = nil; assert(Detect.TargetDebuff({772}) == nil)
+  auras({}); UnitExists = function() return false end; assert(Detect.TargetDebuff({772}) == nil)
+  UnitExists = function() return secret end; assert(Detect.TargetDebuff({772}) == nil) end),
+D("TargetEnemy: attackable and known to be alive", function(Detect)
+  assert(Detect.TargetEnemy() == false)
+  UnitCanAttack = function() return true end; assert(Detect.TargetEnemy() == false)      -- dead or not: unknown
+  UnitIsDead = function() return Stub.secret() end; assert(Detect.TargetEnemy() == false)
+  UnitIsDead = function() return false end; assert(Detect.TargetEnemy() == true)
+  UnitIsDead = function() return true end; assert(Detect.TargetEnemy() == false) end),
+D("TargetLost: only when the enemy is known to be on another friendly player", function(Detect)
+  local f = { attack = true, combat = true, exists = true, me = false, player = true, friend = true }
+  UnitCanAttack = function() return f.attack end; UnitAffectingCombat = function() return f.combat end
+  UnitExists = function() return f.exists end; UnitIsUnit = function() return f.me end
+  UnitIsPlayer = function() return f.player end; UnitIsFriend = function() return f.friend end
+  assert(Detect.TargetLost() == true)
+  for _, k in ipairs({"attack", "combat", "exists", "player", "friend"}) do
+    f[k] = false; assert(Detect.TargetLost() == false, k); f[k] = true
+  end
+  f.me = true; assert(Detect.TargetLost() == false); f.me = false                     -- it is on you
+  for _, k in ipairs({"exists", "me", "player", "friend"}) do
+    f[k] = Stub.secret(); assert(Detect.TargetLost() == nil, k)
+    f[k] = nil; assert(Detect.TargetLost() == nil, k); f[k] = (k ~= "me")
+  end
+  UnitIsUnit = nil; assert(Detect.TargetLost() == nil) end),
+D("Rage: the plain number, else the percent, else nil", function(Detect)
+  assert(Detect.Rage() == nil)
+  UnitPower = function(unit, kind) assert(unit == "player" and kind == 1); return 42 end; assert(Detect.Rage() == 42)
+  UnitPower = function() return Stub.secret() end; assert(Detect.Rage() == nil)
+  CurveConstants = { ScaleTo100 = {} }; UnitPowerPercent = function() return 85 end; assert(Detect.Rage() == 85)
+  UnitPowerPercent = function() return Stub.secret() end; assert(Detect.Rage() == nil) end),
+D("Afflictions: a ..._MECHANIC kind counts as the kind itself", function(Detect)
+  local kinds = { "FEAR_MECHANIC", "STUN_MECHANIC", "SAP", Stub.secret() }
+  C_LossOfControl = { GetActiveLossOfControlDataCount = function() return #kinds end,
+                      GetActiveLossOfControlData = function(i) return { locType = kinds[i] } end }
+  local set = Detect.Afflictions(); C_LossOfControl = nil
+  assert(set.FEAR and set.STUN and set.SAP and not set.FEAR_MECHANIC) end),
 }
