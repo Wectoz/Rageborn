@@ -146,7 +146,7 @@ local function shieldName()
     local function name(item)
         if not item then return nil end
         local _, _, _, equipLoc = U.Call(C_Item and C_Item.GetItemInfoInstant, item)
-        return equipLoc == "INVTYPE_SHIELD" and U.Call(C_Item.GetItemNameByID, item) or nil
+        return equipLoc == "INVTYPE_SHIELD" and (U.Call(C_Item.GetItemNameByID, item) or (U.Call(GetItemInfo, item))) or nil
     end
     local found = name(U.Call(GetInventoryItemID, "player", 17))
     for bag = 0, 4 do
