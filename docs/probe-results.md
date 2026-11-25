@@ -17,7 +17,7 @@ The log is read from `WTF/Account/<account>/SavedVariables/RagebornProbe.lua`.
 
 ## Results
 
-Filled in from the log. "plain" = readable, "secret" = hidden, "nil" = nothing returned.
+Filled in from the log. So far only the out-of-combat part has been run (log of 2026-11-20): the fight steps 3 to 6 are still open, so every "In combat" cell is empty. "plain" = readable, "secret" = hidden, "nil" = nothing returned.
 
 | Check | Out of combat | In combat | Decision |
 |---|---|---|---|
@@ -30,12 +30,12 @@ Filled in from the log. "plain" = readable, "secret" = hidden, "nil" = nothing r
 | Player aura Battle Shout expirationTime | | | |
 | Target debuff spellId / applications / expirationTime | | | target alerts |
 | UnitCastingInfo target | | | interrupt alert |
-| UNIT_SPELLCAST_SUCCEEDED spell ID | | | must be plain |
+| UNIT_SPELLCAST_SUCCEEDED spell ID | plain | | must be plain |
 | UNIT_COMBAT miss kind (player / target) | | | stance hint |
 | PARTY_KILL | | | Victory Rush window |
 | SPELL_ACTIVATION_OVERLAY_GLOW_SHOW | | | |
-| Glow atlases present | | — | |
-| Overlay art files that load | | — | |
+| Glow atlases present | both (proc loop, ants) | — | procLoop and ants glows stay |
+| Overlay art files that load | 82 of 82 | — | whole game-art list stays |
 
 ## Spell ID and duration corrections
 

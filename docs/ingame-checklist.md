@@ -53,3 +53,30 @@ Run `/console scriptErrors 1` first so Lua errors show. Tick a line once it is s
 - [ ] Dragged to a bar, a created macro's button glows with its proc (RB Overpower with the Overpower proc).
 - [ ] With no shield carried, the two shield macros show "Needs a shield" and Create is off.
 - [ ] Create in combat is refused with a message; with 18 character macros it says the list is full.
+
+## Task 12: every alert
+
+For each: it appears when it should, disappears when it should, and its timer (where it has one) looks right. Turn the off-by-default ones on first.
+
+- [ ] Overpower: after a target dodge and after a Rend tick (Bloodthrill); gone when used or after 5 s.
+- [ ] Revenge: after a block, dodge or parry in Defensive Stance; gone when used or after 5 s.
+- [ ] Execute: target under 20 % health, Battle or Berserker Stance.
+- [ ] Victory Rush: after a kill; gone when used or after 20 s.
+- [ ] Interrupt: while the target casts and Pummel or Shield Bash is ready.
+- [ ] Shield Block reminder: in combat, Defensive Stance, shield on, Shield Block ready.
+- [ ] Battle Shout: missing, and again 3 s before it runs out; quiet while resting, mounted or dead.
+- [ ] Queued swing: while Heroic Strike or Cleave is queued.
+- [ ] Shield Wall (10 s), Last Stand (20 s), Shield Block active (5 s), Retaliation (15 s): shown from the press, timer runs down to the real end.
+- [ ] Recklessness (15 s), Death Wish (30 s), Sweeping Strikes (20 s), Berserker Rage (10 s), Bloodrage (10 s): the same.
+- [ ] Low health: under 35 % with Shield Wall or Last Stand ready; not when both are on cooldown.
+- [ ] Sunder Armor, Rend, Demoralizing Shout, Thunder Clap on the target: shown with stacks or time left, or greyed out in the list if the client hides target debuffs.
+- [ ] Any spell ID or duration that was wrong is noted in `docs/probe-results.md` under corrections.
+
+## Task 12: designs, bars, the rest
+
+- [ ] Each shape design draws on one alert: Ring, Side arcs, Pulsing frame, Bar, Screen edges.
+- [ ] Four game arts picked from the Gallery draw, and four painted ones.
+- [ ] Glows on EllesmereUI bars; then with EllesmereUI Action Bars disabled, on the default bars. (Dominos, Bartender4 and ElvUI are not installed here: untested.)
+- [ ] On a non-warrior: no Rageborn frames, no errors, `/rb` prints "Rageborn only works on a warrior."
+- [ ] A full fight (pull, stance dance, every proc, a defensive, death or kill) with `/console scriptErrors 1`: no error popup, BugSack empty, no "action blocked".
+- [ ] The probe's fight steps are run (`docs/probe-results.md`) before `RagebornProbe` is deleted.
