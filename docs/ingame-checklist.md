@@ -63,6 +63,7 @@ fighting; do them first, because an error at load makes the rest pointless.
 
 ### Macros
 
+- [ ] Tabs All / Arms / Fury / Protection filter the list; the page opens on your own spec's tab.
 - [ ] The page lists only macros whose spells the warrior knows. Each text box fits its text exactly, and the text can be selected and copied but not edited.
 - [ ] Create adds `RB <name>` to the character macros; the button turns to Created, and to Exists after `/reload`.
 - [ ] With the page open, deleting that macro in the game's macro window turns the row back by itself.

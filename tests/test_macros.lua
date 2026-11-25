@@ -43,6 +43,13 @@ return {
   local list = Macros.Available(ns.Detect.IsKnown)
   assert(#list == #Macros.LIST - 1)
   for _, m in ipairs(list) do assert(m.key ~= "tauntMouseover") end end},
+{"a spec tab lists that spec's macros and the ones for every spec", function()
+  fresh(); local all, prot = Macros.Available(ns.Detect.IsKnown), Macros.Available(ns.Detect.IsKnown, "prot")
+  local seen = {}; for _, m in ipairs(prot) do seen[m.key] = true end
+  assert(#prot < #all and seen.revengeAny and seen.chargeIntercept and not seen.whirlwindAny)
+  for _, m in ipairs(Macros.LIST) do
+    for _, s in ipairs(m.spec or {}) do assert(s == "arms" or s == "fury" or s == "prot", m.key) end
+  end end},
 {"a lower rank is enough", function()
   fresh(); assert(#Macros.Available(function(id) return id == 6673 or id == 2687 end) == 1) end},
 {"Create refuses in combat", function() fresh(); inCombat = true; refused("rageShout", "ERR_IN_COMBAT") end},

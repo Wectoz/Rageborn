@@ -750,6 +750,18 @@ local function BuildMacros()
     local p = Page(L.OPT_LIBRARY, L.OPT_MACROS)
     local M = ns.Macros
     Label(p, 200, 103, 13, C.ink, L.MACRO_SUBTITLE)
+    -- tabs: every macro, or one spec's; opens on the spec the character has
+    local spec, tabs = ns.Detect.Spec(), {}
+    for i, key in ipairs({ "all", "arms", "fury", "prot" }) do
+        local mine = key ~= "all" and key or nil
+        local tab = p.Add(Button(p, 496 + (i - 1) * 86, 98, 80, key == "all" and L.MACRO_ALL or L["PRESET_" .. key],
+            function() spec = mine; p.Refresh() end))
+        local line = tab:CreateTexture(nil, "OVERLAY")
+        line:SetColorTexture(C.ember[1], C.ember[2], C.ember[3], 1)
+        line:SetPoint("BOTTOMLEFT", tab, "BOTTOMLEFT", 0, 0); line:SetPoint("BOTTOMRIGHT", tab, "BOTTOMRIGHT", 0, 0)
+        line:SetHeight(2)
+        tabs[key] = line
+    end
     local none = Label(p, 200, 140, 13, C.secondary, L.MACRO_NONE, 624)
     local sf, child = Scroller(p, 200, 140, 624, 403)
     local rows = {}
@@ -795,7 +807,8 @@ local function BuildMacros()
         refreshControls()
         for _, r in pairs(rows) do r:Hide() end
         local y = 0
-        for _, m in ipairs(M.Available(ns.Detect.IsKnown)) do
+        for key, line in pairs(tabs) do line:SetShown(key == (spec or "all")) end
+        for _, m in ipairs(M.Available(ns.Detect.IsKnown, spec)) do
             local r = rows[m.key] or row(m)
             rows[m.key] = r
             local body, why = M.Body(m)           -- the same text Create writes

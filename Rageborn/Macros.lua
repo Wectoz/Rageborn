@@ -7,6 +7,7 @@ local ADDON, ns = ...
 --   name      the macro is created as "RB <name>" (the game allows 16 characters)
 --   body      the macro text; <shield> becomes the name of a shield the character carries
 --   requires  SPELLS keys; the macro is offered when one rank of each is known
+--   spec      the specs it is listed under ("arms", "fury", "prot"); none = every spec
 local U, Data = ns.U, ns.Data
 
 local Macros = {}
@@ -30,7 +31,16 @@ Macros.SPELLS = {
     mockingBlow = { 694, 7400, 7402, 20559, 20560 },
     hamstring = { 1715, 7372, 7373 },
     shieldBlock = { 2565 },
+    whirlwind = { 1680 },
+    disarm = { 676 },
+    intimidatingShout = { 5246 },
     overpower = Data.BY_KEY.overpower.spells,
+    execute = Data.BY_KEY.execute.spells,
+    revenge = Data.BY_KEY.revenge.spells,
+    rend = Data.BY_KEY.rend.spells,
+    recklessness = Data.BY_KEY.recklessness.spells,
+    retaliation = Data.BY_KEY.retaliation.spells,
+    sweepingStrikes = Data.BY_KEY.sweepingStrikes.spells,
     shieldWall = Data.BY_KEY.shieldWall.spells,
     bloodrage = Data.BY_KEY.bloodrage.spells,
     battleShout = Data.BY_KEY.battleShout.spells,
@@ -38,44 +48,72 @@ Macros.SPELLS = {
 
 Macros.LIST = {
     { key = "chargeIntercept", name = "Charge",
-      body = "#showtooltip\n/cast [stance:1,nocombat] Charge; [stance:3] Intercept; [combat] Berserker Stance; Battle Stance",
+      body = "#showtooltip\n/dismount\n/startattack\n/cast [stance:1,nocombat] Charge; [stance:3] Intercept; [combat] Berserker Stance; Battle Stance",
       requires = { "charge", "intercept", "battleStance", "berserkerStance" } },
     { key = "overpowerAny", name = "Overpower",
-      body = "#showtooltip Overpower\n/cast [nostance:1] Battle Stance; Overpower",
-      requires = { "overpower", "battleStance" } },
+      body = "#showtooltip Overpower\n/startattack\n/cast [nostance:1] Battle Stance; Overpower",
+      requires = { "overpower", "battleStance" }, spec = { "arms", "fury" } },
     { key = "pummelAny", name = "Pummel",
-      body = "#showtooltip Pummel\n/cast [nostance:3] Berserker Stance; Pummel",
+      body = "#showtooltip Pummel\n/startattack\n/cast [nostance:3] Berserker Stance; Pummel",
       requires = { "pummel", "berserkerStance" } },
     { key = "shieldBash", name = "Shield Bash",
-      body = "#showtooltip Shield Bash\n/equipslot [noworn:Shields] 17 <shield>\n/cast [stance:1/2] Shield Bash; Defensive Stance",
-      requires = { "shieldBash", "defensiveStance" } },
+      body = "#showtooltip Shield Bash\n/startattack\n/equipslot [noworn:Shields] 17 <shield>\n/cast [stance:1/2] Shield Bash; Defensive Stance",
+      requires = { "shieldBash", "defensiveStance" }, spec = { "prot" } },
     { key = "shieldWall", name = "Shield Wall",
       body = "#showtooltip Shield Wall\n/equipslot [noworn:Shields] 17 <shield>\n/cast [nostance:2] Defensive Stance; Shield Wall",
-      requires = { "shieldWall", "defensiveStance" } },
+      requires = { "shieldWall", "defensiveStance" }, spec = { "prot" } },
     { key = "rageShout", name = "Rage Shout",
       body = "#showtooltip Battle Shout\n/cast Bloodrage\n/cast Battle Shout",
       requires = { "bloodrage", "battleShout" } },
     { key = "tauntMouseover", name = "Taunt",
       body = "#showtooltip Taunt\n/cast [nostance:2] Defensive Stance; [@mouseover,harm,nodead] Taunt; Taunt",
-      requires = { "taunt", "defensiveStance" } },
+      requires = { "taunt", "defensiveStance" }, spec = { "prot" } },
     { key = "chargeMouseover", name = "Charge Mouse",
-      body = "#showtooltip\n/cast [@mouseover,harm,nodead,stance:1] Charge; [@mouseover,harm,nodead,stance:3] Intercept; [stance:1] Charge; [stance:3] Intercept",
+      body = "#showtooltip\n/dismount\n/startattack\n/cast [@mouseover,harm,nodead,stance:1] Charge; [@mouseover,harm,nodead,stance:3] Intercept; [stance:1] Charge; [stance:3] Intercept",
       requires = { "charge", "intercept" } },
     { key = "burst", name = "Death Wish",
       body = "#showtooltip Death Wish\n/cast Bloodrage\n/cast Death Wish",
-      requires = { "bloodrage", "deathWish" } },
+      requires = { "bloodrage", "deathWish" }, spec = { "arms", "fury" } },
     { key = "berserkerRageAny", name = "Berserk Rage",
       body = "#showtooltip Berserker Rage\n/cast [nostance:3] Berserker Stance; Berserker Rage",
       requires = { "berserkerRage", "berserkerStance" } },
     { key = "mockingBlowAny", name = "Mocking Blow",
-      body = "#showtooltip Mocking Blow\n/cast [nostance:1] Battle Stance; Mocking Blow",
-      requires = { "mockingBlow", "battleStance" } },
+      body = "#showtooltip Mocking Blow\n/startattack\n/cast [nostance:1] Battle Stance; Mocking Blow",
+      requires = { "mockingBlow", "battleStance" }, spec = { "prot" } },
     { key = "hamstringAny", name = "Hamstring",
-      body = "#showtooltip Hamstring\n/cast [stance:2] Battle Stance; Hamstring",
-      requires = { "hamstring", "battleStance" } },
+      body = "#showtooltip Hamstring\n/startattack\n/cast [stance:2] Battle Stance; Hamstring",
+      requires = { "hamstring", "battleStance" }, spec = { "arms", "fury" } },
     { key = "shieldBlock", name = "Shield Block",
       body = "#showtooltip Shield Block\n/equipslot [noworn:Shields] 17 <shield>\n/cast [nostance:2] Defensive Stance; Shield Block",
-      requires = { "shieldBlock", "defensiveStance" } },
+      requires = { "shieldBlock", "defensiveStance" }, spec = { "prot" } },
+    -- From the owner's own set: one ability a button, attack started, the stance fixed first.
+    { key = "executeAny", name = "Execute",
+      body = "#showtooltip Execute\n/startattack\n/cast [stance:2] Battle Stance; Execute",
+      requires = { "execute", "battleStance" }, spec = { "arms", "fury" } },
+    { key = "whirlwindAny", name = "Whirlwind",
+      body = "#showtooltip Whirlwind\n/startattack\n/cast [nostance:3] Berserker Stance; Whirlwind",
+      requires = { "whirlwind", "berserkerStance" }, spec = { "arms", "fury" } },
+    { key = "rendAny", name = "Rend",
+      body = "#showtooltip Rend\n/startattack\n/cast [stance:3] Battle Stance; Rend",
+      requires = { "rend", "battleStance" }, spec = { "arms", "prot" } },
+    { key = "revengeAny", name = "Revenge",
+      body = "#showtooltip Revenge\n/startattack\n/cast [nostance:2] Defensive Stance; Revenge",
+      requires = { "revenge", "defensiveStance" }, spec = { "prot" } },
+    { key = "disarmAny", name = "Disarm",
+      body = "#showtooltip Disarm\n/startattack\n/cast [nostance:2] Defensive Stance; Disarm",
+      requires = { "disarm", "defensiveStance" }, spec = { "prot" } },
+    { key = "recklessnessAny", name = "Recklessness",
+      body = "#showtooltip Recklessness\n/startattack\n/cast [nostance:3] Berserker Stance; Recklessness",
+      requires = { "recklessness", "berserkerStance" }, spec = { "arms", "fury" } },
+    { key = "retaliationAny", name = "Retaliation",
+      body = "#showtooltip Retaliation\n/startattack\n/cast [nostance:1] Battle Stance; Retaliation",
+      requires = { "retaliation", "battleStance" }, spec = { "arms" } },
+    { key = "sweepingAny", name = "Sweeping",
+      body = "#showtooltip Sweeping Strikes\n/startattack\n/cast [nostance:1] Battle Stance; Sweeping Strikes",
+      requires = { "sweepingStrikes", "battleStance" }, spec = { "arms" } },
+    { key = "fearShout", name = "Intim. Shout",
+      body = "#showtooltip Intimidating Shout\n/stopattack\n/cast Intimidating Shout",
+      requires = { "intimidatingShout" } },
 }
 
 Macros.BY_KEY = {}
@@ -83,11 +121,15 @@ for _, m in ipairs(Macros.LIST) do Macros.BY_KEY[m.key] = m end
 
 function Macros.Name(m) return PREFIX .. m.name end
 
--- The macros whose spells the character knows, in LIST order.
-function Macros.Available(isKnown)
+-- The macros whose spells the character knows, in LIST order; with a spec, only that spec's.
+function Macros.Available(isKnown, spec)
     local list = {}
     for _, m in ipairs(Macros.LIST) do
         local all = true
+        if spec and m.spec then
+            all = false
+            for _, s in ipairs(m.spec) do all = all or s == spec end
+        end
         for _, key in ipairs(m.requires) do
             local any = false
             for _, id in ipairs(Macros.SPELLS[key]) do any = any or U.Clean(isKnown(id)) == true end
