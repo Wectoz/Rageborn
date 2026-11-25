@@ -15,6 +15,12 @@ local function each(ns, fn)
         local id = row[1] or row.spell
         assert(type(id) == "number" and not seen[id], role .. " " .. section[1] .. " " .. tostring(id)); seen[id] = true
         if row[1] then assert(type(row[2]) == "string" and type(row[3]) == "string" and not row[3]:match("^CONS_"), id) end
+        if row.prof then assert(rawget(ns.L, "PROF_" .. row.prof), row.prof) end
+        if row.spell then assert(row.prof == "enchanting" and type(row.skill) == "number" and #row.mats > 0, id) end
+        for _, m in ipairs(row.mats or {}) do
+          assert(type(m[1]) == "number" and m[2] >= 1 and type(m[3]) == "string" and m[3] ~= "?", id)
+        end
+        for _, k in ipairs({"extra", "from"}) do assert(row[k] == nil or not row[k]:match("^CONS_"), id) end
         fn(row, section[1])
       end
     end
@@ -30,6 +36,13 @@ return {
   each(ns, function(row) if row[1] then names[row[2]] = true end end)
   assert(names["Elixir of the Grizzly"] and names["Elixir of Greater Strength"] and names["Major Frenzy Potion"])
   assert(not names["Elixir of Giants"] and not names["Juju Power"]) end},
+{"crafted items say who makes them, at what skill, from what", function()
+  local F, E = load(false).Consumables.LISTS.forever.dps, load(true).Consumables.LISTS.era.dps
+  local function find(list, id) for _, s in ipairs(list) do for _, r in ipairs(s[2]) do if r[1] == id then return r end end end end
+  local grizzly, titans, roids = find(F, 250351), find(E, 13510), find(E, 8410)
+  assert(grizzly.prof == "alchemy" and grizzly.skill == 300 and #grizzly.mats == 3)
+  assert(titans.skill == 300 and titans.extra and titans.mats[1][2] == 30)         -- 30 Gromsblood
+  assert(roids.prof == nil and roids.from and find(F, 8410).from == nil) end},      -- Forever source not known
 {"every role and every text of the page exists", function()
   local ns = load(false)
   for _, role in ipairs(ns.Consumables.ROLES) do assert(rawget(ns.L, "CONS_ROLE_" .. role), role) end

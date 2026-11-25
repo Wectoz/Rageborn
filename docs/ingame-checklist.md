@@ -74,6 +74,9 @@ fighting; do them first, because an error at load makes the rest pointless.
 
 - [ ] The page lists Flask, Elixirs, Food, On the weapon, In the fight, Enchants, numbered best first; Damage and Tank tabs switch the lists; a Protection warrior opens on Tank.
 - [ ] Every row has an icon and the item's name; none shows a question mark or stays blank (a blank one doesn't exist on this client: tell me which).
+- [ ] Under each crafted item: who makes it and at what skill ("Alchemy (300)"), then "Needs:" with its materials and counts. Enchants show Enchanting and their materials.
+- [ ] With the auction house open, shift-click a material (or an item's row): its name lands in the search box. With the auction house closed, it goes into the chat line as a link.
+- [ ] With Auctionator, "materials 4g 20s" shows on the right when every material has a price.
 - [ ] Hovering a row shows the game's tooltip. Compare a few with the note beside the name: they should agree.
 - [ ] Items you carry show "x3" and so on. With Auctionator installed and scanned, prices show on the right; without it, none.
 - [ ] On Forever the lists hold Forever's items (Elixir of the Grizzly, Frenzy Potions ...); on Era the Classic ones (Elixir of Giants, Juju Power ...).

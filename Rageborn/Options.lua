@@ -850,11 +850,27 @@ local function coins(copper)
     return g > 0 and ("%dg %ds"):format(g, s) or ("%ds %dc"):format(s, copper % 100)
 end
 
+-- Shift-click on an item's name: into the auction house search box when that is open,
+-- otherwise as a link into the chat line, the way the game's own items do it.
+local function linkItem(id)
+    if not (IsShiftKeyDown and IsShiftKeyDown()) then return end
+    local name, link = U.Call(GetItemInfo, id)
+    if link and U.Call(ChatEdit_InsertLink, link) then return end
+    if name and BrowseName and BrowseName:IsVisible() then BrowseName:SetText(name) end
+end
+
+local function itemTip(owner, id, spell)
+    if not GameTooltip then return end
+    GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
+    if spell then pcall(GameTooltip.SetSpellByID, GameTooltip, spell) else pcall(GameTooltip.SetItemByID, GameTooltip, id) end
+    GameTooltip:Show()
+end
+
 local function BuildConsumables()
     local p = Page(L.OPT_LIBRARY, L.OPT_CONSUMABLES)
     local D = ns.Detect
-    Label(p, 200, 103, 13, C.ink, L.CONS_SUBTITLE)
-    Label(p, 200, 128, 12, C.secondary, L.CONS_DISCLAIMER, 636)
+    Label(p, 200, 100, 12, C.ink, L.CONS_SUBTITLE, 450)
+    Label(p, 200, 134, 12, C.secondary, L.CONS_DISCLAIMER, 636)
     -- tabs: damage or tank; opens on tank for a Protection warrior
     local role, tabs = D.Spec() == "prot" and "tank" or "dps", {}
     for i, key in ipairs(ns.Consumables.ROLES) do
@@ -865,41 +881,65 @@ local function BuildConsumables()
         line:SetHeight(2)
         tabs[key] = line
     end
-    local sf, child = Scroller(p, 200, 168, 624, 375)
+    local sf, child = Scroller(p, 200, 172, 624, 371)
     local heads, rows = {}, {}
     -- names and icons arrive from the game a moment after they are first asked for
     local watch = CreateFrame("Frame", nil, p)
     for _, event in ipairs({ "GET_ITEM_INFO_RECEIVED", "BAG_UPDATE_DELAYED" }) do pcall(watch.RegisterEvent, watch, event) end
     watch:SetScript("OnEvent", function() if p:IsVisible() then p.Refresh() end end)
 
+    -- one material of a recipe: "2x Gromsblood", with its own tooltip and shift-click
+    local function mat(r, i)
+        local m = CreateFrame("Button", nil, r)
+        m.text = Text(m, 12, C.ink); m.text:SetPoint("LEFT", m, "LEFT", 0, 0)
+        m:SetScript("OnEnter", function() m.text:SetTextColor(C.ember[1], C.ember[2], C.ember[3]); itemTip(m, m.itemID) end)
+        m:SetScript("OnLeave", function()
+            m.text:SetTextColor(C.ink[1], C.ink[2], C.ink[3])
+            if GameTooltip then GameTooltip:Hide() end
+        end)
+        m:SetScript("OnClick", function() linkItem(m.itemID) end)
+        r.mats[i] = m
+        return m
+    end
+
     local function row(i)
         local r = CreateFrame("Button", nil, child)
-        r.rank = Text(r, 12, C.secondary); r.rank:SetPoint("LEFT", r, "LEFT", 2, 0)
-        r.icon = r:CreateTexture(nil, "ARTWORK")
-        r.icon:SetSize(18, 18); r.icon:SetPoint("LEFT", r, "LEFT", 24, 0)
+        r.mats = {}
+        local top = CreateFrame("Frame", nil, r)        -- the first line; the lines under it belong to it
+        top:SetPoint("TOPLEFT", r, "TOPLEFT", 0, 0); top:SetPoint("TOPRIGHT", r, "TOPRIGHT", 0, 0); top:SetHeight(22)
+        r.rank = Text(top, 12, C.secondary); r.rank:SetPoint("LEFT", top, "LEFT", 2, 0)
+        r.icon = top:CreateTexture(nil, "ARTWORK")
+        r.icon:SetSize(18, 18); r.icon:SetPoint("LEFT", top, "LEFT", 24, 0)
         r.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-        r.name = Text(r, 13, C.ink); r.name:SetPoint("LEFT", r, "LEFT", 50, 0)
+        r.name = Text(top, 13, C.ink); r.name:SetPoint("LEFT", top, "LEFT", 50, 0)
         r.name:SetWidth(212); r.name:SetWordWrap(false)
-        r.note = Text(r, 12, C.secondary); r.note:SetPoint("LEFT", r, "LEFT", 268, 0)
+        r.note = Text(top, 12, C.secondary); r.note:SetPoint("LEFT", top, "LEFT", 268, 0)
         r.note:SetWidth(232); r.note:SetWordWrap(false)
-        r.have = Text(r, 12, C.ink); r.have:SetPoint("LEFT", r, "LEFT", 508, 0)
-        r.price = Text(r, 12, C.secondary); r.price:SetPoint("RIGHT", r, "RIGHT", -4, 0)
-        r.price:SetJustifyH("RIGHT")
+        r.have = Text(top, 12, C.ink); r.have:SetPoint("LEFT", top, "LEFT", 508, 0)
+        r.price = Text(top, 12, C.secondary); r.price:SetPoint("RIGHT", top, "RIGHT", -4, 0)
+        r.source = Label(r, 50, 23, 11, C.quiet, "")                  -- "Alchemy (300)"
+        r.needs = Label(r, 50, 40, 11, C.quiet, L.CONS_MATS)
+        r.cost = Text(r, 11, C.quiet); r.cost:SetPoint("TOPRIGHT", r, "TOPRIGHT", -4, -23)
         local fill = Fill(r, C.body)
         r:SetScript("OnEnter", function()
-            fill:SetColorTexture(C.hover[1], C.hover[2], C.hover[3], 1)
-            if not GameTooltip then return end
-            GameTooltip:SetOwner(r, "ANCHOR_RIGHT")
-            if r.spell then pcall(GameTooltip.SetSpellByID, GameTooltip, r.spell)
-            else pcall(GameTooltip.SetItemByID, GameTooltip, r.itemID) end
-            GameTooltip:Show()
+            fill:SetColorTexture(C.cap[1], C.cap[2], C.cap[3], 1)
+            itemTip(r, r.itemID, r.spell)
         end)
         r:SetScript("OnLeave", function()
             fill:SetColorTexture(C.body[1], C.body[2], C.body[3], 1)
             if GameTooltip then GameTooltip:Hide() end
         end)
+        r:SetScript("OnClick", function() if r.itemID then linkItem(r.itemID) end end)
         rows[i] = r
         return r
+    end
+
+    local function source(entry)
+        local parts = {}
+        if entry.prof then parts[1] = L["PROF_" .. entry.prof] .. (entry.skill and (" (" .. entry.skill .. ")") or "") end
+        if entry.extra then parts[#parts + 1] = entry.extra end
+        if entry.from then parts[#parts + 1] = entry.from end
+        return table.concat(parts, ", ")
     end
 
     local refreshControls = p.Refresh
@@ -931,8 +971,31 @@ local function BuildConsumables()
                     r.have:SetText((count or 0) > 0 and ("x" .. count) or "")
                     r.price:SetText(coins(D.Price(entry[1])))
                 end
-                At(r, child, 0, y, 624, 24):Show()
-                y = y + 24
+                local from = source(entry)
+                r.source:SetText(from)
+                local h = from ~= "" and 40 or 24
+                -- the materials, in a line (two when it is long), with what they cost together
+                local mats, x, line, total = entry.mats or {}, 86, 0, 0
+                for _, m in ipairs(r.mats) do m:Hide() end
+                r.needs:SetShown(#mats > 0); r.cost:SetText("")
+                for i, need in ipairs(mats) do
+                    local m = r.mats[i] or mat(r, i)
+                    m.itemID = need[1]
+                    local label = need[2] .. "x " .. (D.Item(need[1]) or need[3])
+                    m.text:SetText(label)
+                    local w = #label * 6 + 14
+                    if x + w > 600 then x, line = 86, line + 1 end
+                    At(m, r, x, 39 + line * 16, w, 16):Show()
+                    x = x + w
+                    local price = D.Price(need[1])
+                    total = total and price and total + price * need[2] or nil
+                end
+                if #mats > 0 then
+                    h = 58 + line * 16
+                    if total then r.cost:SetText(L.CONS_MATS_COST:format(coins(total))) end
+                end
+                At(r, child, 0, y, 624, h):Show()
+                y = y + h + 2
             end
         end
         child.h = y + 8
