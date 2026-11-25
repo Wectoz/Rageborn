@@ -11,7 +11,7 @@ csv.field_size_limit(10**9)
 names={d:{r['ID']:r['Display_lang'] for r in csv.DictReader(open(f'/tmp/{d}/ItemSparse.csv',encoding='utf-8'))} for d in ('wowf','wowera')}
 F={
  "dps": [
-  ("flask", [(274274,"+30 Stamina; +2% crit in Hyjal zones"),(274275,"+30 Stamina; dodged, parried 2% less in Hyjal"),(274273,"+30 Stamina; +2% hit in Hyjal zones"),(274276,"+30 Stamina; +2% haste in Hyjal zones"),(13510,"+1200 health, 2 hours")]),
+  ("flask", [(274274,"+30 Stamina; +2% crit in Hyjal zones"),(274275,"+30 Stamina; in Hyjal 2% less dodged, parried"),(274273,"+30 Stamina; +2% hit in Hyjal zones"),(274276,"+30 Stamina; +2% haste in Hyjal zones"),(13510,"+1200 health, 2 hours")]),
   ("elixir", [(250351,"+25 Strength, +2% crit, 30 min"),(13452,"+25 Agility, +2% crit, 30 min"),(250350,"+18 Strength, +18 Agility, 30 min"),(9206,"+25 Strength, 1 hour"),(8410,"+25 Strength, 1 hour"),(13453,"+18 Strength, +18 Stamina, 1 hour"),(12820,"+35 attack power, 20 min"),(246948,"+35 attack power; same buff as Winterfall"),(9187,"+25 Agility, 1 hour; not with Mongoose"),(8412,"+25 Agility, 1 hour")]),
   ("food", [(20452,"+20 Strength"),(250070,"+20 Strength"),(250071,"+20 Strength"),(13934,"+40 attack power"),(13928,"+1% crit"),(250069,"+20 Agility"),(250072,"+20 Agility"),(18045,"+15 Agility"),(13810,"+10 Strength, 10 min")]),
   ("weapon", [(18262,"+2% crit, 30 min"),(12404,"+8 damage, sharp weapons"),(12643,"+8 damage, blunt weapons"),(23122,"+100 attack power against undead")]),
@@ -19,7 +19,7 @@ F={
   ("extra", [(10310,"+17 Strength, 30 min"),(10309,"+17 Agility, 30 min"),(252488,"Attack power and armor on chest, legs, hands or feet"),(6043,"On a two-handed weapon: faster attacks"),(18641,"400 fire damage in an area"),(15993,"400 fire damage and a 3 sec stun"),(8956,"50 fire damage around you every 3 sec")]),
  ],
  "tank": [
-  ("flask", [(13510,"+1200 health, 2 hours"),(274273,"+30 Stamina; +2% hit in Hyjal zones"),(274275,"+30 Stamina; dodged, parried 2% less in Hyjal")]),
+  ("flask", [(13510,"+1200 health, 2 hours"),(274273,"+30 Stamina; +2% hit in Hyjal zones"),(274275,"+30 Stamina; in Hyjal 2% less dodged, parried")]),
   ("elixir", [(20079,"+50 Stamina, 2 hours"),(250329,"+400 health, +500 armor, 30 min"),(250335,"+400 health, 30 min"),(13445,"+450 armor, 1 hour"),(13453,"+18 Strength, +18 Stamina, 1 hour"),(21151,"+15 Stamina, 15 min"),(18269,"+10 Stamina, 15 min"),(250334,"+200 health, 30 min"),(9088,"Attackers may take a disease"),(20004,"20 health every 5 sec, 1 hour")]),
   ("food", [(21023,"+25 Stamina"),(250068,"+20 Stamina"),(20452,"+20 Strength"),(250070,"+20 Strength")]),
   ("weapon", [(18262,"+2% crit, 30 min"),(12404,"+8 damage, sharp weapons"),(12643,"+8 damage, blunt weapons")]),
