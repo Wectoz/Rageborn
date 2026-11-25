@@ -808,12 +808,24 @@ end
 local function BuildProfiles()
     local p = Page(L.OPT_LIBRARY, L.OPT_PROFILES)
     local DB = ns.DB
-    local target      -- the profile New/Copy/Rename/Delete work on; never switched to by itself
+    local target      -- the profile New/Copy/Rename/Delete/Export work on; never switched to by itself
+    local preset = "standard"
     local function names()
         local items = {}
         for _, name in ipairs(DB:List()) do items[#items + 1] = { key = name, label = name } end
         return items
     end
+    local function presets()
+        local items = {}
+        for _, key in ipairs(DB.PRESETS) do items[#items + 1] = { key = key, label = L["PRESET_" .. key] } end
+        return items
+    end
+    local function orNone()
+        local items = names()
+        table.insert(items, 1, { key = "", label = L.OPT_PROFILE_NONE })
+        return items
+    end
+    local function trimmed(name) return name:match("^%s*(.-)%s*$") end
     -- runs a profile change and reports it; nothing is changed in combat
     local function run(fn, ...)
         if inCombat() then p.Say(L.ERR_IN_COMBAT, true) return false end
@@ -823,40 +835,80 @@ local function BuildProfiles()
         return true
     end
 
-    Heading(p, 200, 110, 640, L.OPT_PROFILE_CURRENT)
-    Label(p, 200, 141, 13, C.ink, L.OPT_PROFILE_USE)
-    p.Add(Dropdown(p, 344, 136, 292, names, function() return DB:Current() end,
+    -- the status line and Reset stay in place; everything else scrolls (y from the top of f)
+    local sf, f = Scroller(p, 200, 106, 624, 330)
+    Heading(f, 0, 0, 624, L.OPT_PROFILE_CURRENT)
+    Label(f, 0, 31, 13, C.ink, L.OPT_PROFILE_USE)
+    p.Add(Dropdown(f, 144, 26, 292, names, function() return DB:Current() end,
         function(name) run(DB.Use, name) end))
-    Label(p, 200, 171, 12, C.secondary, L.OPT_PROFILE_USE_HELP, 630)
+    Label(f, 0, 58, 12, C.secondary, L.OPT_PROFILE_USE_HELP, 624)
 
-    Heading(p, 200, 219, 640, L.OPT_PROFILE_MANAGE)
-    Label(p, 200, 250, 13, C.ink, L.OPT_PROFILE_TARGET)
-    p.Add(Dropdown(p, 344, 245, 292, names, function() return target end,
+    Heading(f, 0, 88, 624, L.OPT_PROFILE_MANAGE)
+    Label(f, 0, 119, 13, C.ink, L.OPT_PROFILE_TARGET)
+    p.Add(Dropdown(f, 144, 114, 292, names, function() return target end,
         function(name) target = name; p.Refresh() end))
-    Label(p, 200, 293, 13, C.ink, L.OPT_PROFILE_NAME)
-    local input = Input(p, 344, 288, 292)
+    Label(f, 0, 153, 13, C.ink, L.OPT_PROFILE_NAME)
+    local input = Input(f, 144, 148, 292)
     local function typed() return input:GetText() or "" end
+    Label(f, 0, 187, 13, C.ink, L.OPT_PROFILE_START)
+    p.Add(Dropdown(f, 144, 182, 200, presets, function() return preset end,
+        function(key) preset = key; p.Refresh() end))
+    p.Add(Button(f, 352, 182, 190, L.OPT_PROFILE_APPLY, function()
+        local key = preset
+        Confirm(L.OPT_PROFILE_APPLY_ASK:format(DB:Current(), L["PRESET_" .. key]), L.OPT_PROFILE_APPLY,
+            function() run(DB.ApplyPreset, key) end)
+    end))
 
-    p.Add(Button(p, 200, 338, 72, L.OPT_PROFILE_NEW, function()
+    p.Add(Button(f, 0, 220, 72, L.OPT_PROFILE_NEW, function()
         local name = typed()
-        if run(DB.Create, name) then target = name:match("^%s*(.-)%s*$"); p.Refresh() end
+        if run(DB.Create, name, nil, preset) then target = trimmed(name); p.Refresh() end
     end))
-    p.Add(Button(p, 280, 338, 100, L.OPT_PROFILE_COPY, function()
+    p.Add(Button(f, 80, 220, 100, L.OPT_PROFILE_COPY, function()
         local name = typed()
-        if run(DB.Create, name, target) then target = name:match("^%s*(.-)%s*$"); p.Refresh() end
+        if run(DB.Create, name, target) then target = trimmed(name); p.Refresh() end
     end))
-    p.Add(Button(p, 388, 338, 86, L.OPT_PROFILE_RENAME, function()
+    p.Add(Button(f, 188, 220, 86, L.OPT_PROFILE_RENAME, function()
         local name = typed()
-        if run(DB.Rename, target, name) then target = name:match("^%s*(.-)%s*$"); p.Refresh() end
+        if run(DB.Rename, target, name) then target = trimmed(name); p.Refresh() end
     end))
-    p.Add(Button(p, 482, 338, 74, L.OPT_PROFILE_DELETE, function()
+    p.Add(Button(f, 282, 220, 74, L.OPT_PROFILE_DELETE, function()
         if target == DB:Current() then p.Say(L.ERR_PROFILE_IN_USE, true) return end
         local name = target
         Confirm(L.OPT_PROFILE_DELETE_ASK:format(name), L.OPT_PROFILE_DELETE, function()
             if run(DB.Delete, name) then target = DB:Current(); p.Refresh() end
         end)
     end))
-    Label(p, 200, 379, 12, C.secondary, L.OPT_PROFILE_HELP, 630)
+    Label(f, 0, 256, 12, C.secondary, L.OPT_PROFILE_MANAGE_HELP, 624)
+
+    -- a profile for each talent tree, for this character
+    Heading(f, 0, 302, 624, L.OPT_PROFILE_SPEC)
+    for i, spec in ipairs({ "arms", "fury", "prot" }) do
+        local y = 296 + i * 32
+        Label(f, 0, y + 5, 13, C.ink, L["PRESET_" .. spec])
+        p.Add(Dropdown(f, 144, y, 292, orNone, function() return DB:SpecProfile(spec) or "" end,
+            function(name) DB:SetSpecProfile(spec, name ~= "" and name or nil); p.Refresh() end))
+    end
+    Label(f, 0, 426, 12, C.secondary, L.OPT_PROFILE_SPEC_HELP, 624)
+
+    -- as text: the upper box is read-only (select and copy), the lower one takes a paste
+    Heading(f, 0, 472, 624, L.OPT_PROFILE_SHARE)
+    local out, paste, text = Input(f, 88, 498, 536), Input(f, 88, 530, 536), ""
+    out:SetMaxLetters(0); paste:SetMaxLetters(0)
+    out:SetScript("OnTextChanged", function(self, user) if user then self:SetText(text) end end)
+    out:SetScript("OnMouseUp", function(self) self:HighlightText() end)
+    p.Add(Button(f, 0, 498, 80, L.OPT_PROFILE_EXPORT, function()
+        text = DB:Export(target) or ""
+        out:SetText(text)
+        out:SetCursorPosition(0)
+        p.Say(L.OPT_PROFILE_EXPORTED)
+    end))
+    p.Add(Button(f, 0, 530, 80, L.OPT_PROFILE_IMPORT, function()
+        local name = typed()
+        if run(DB.Import, name, paste:GetText()) then target = trimmed(name); paste:SetText(""); p.Refresh() end
+    end))
+    Label(f, 0, 564, 12, C.secondary, L.OPT_PROFILE_SHARE_HELP, 624)
+    f.h = 604
+    sf.Sync()
 
     p.statusY = 445
     Rule(p, 200, 499, 640)
