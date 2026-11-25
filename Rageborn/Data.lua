@@ -70,7 +70,8 @@ Data.ALERTS = {
     { key = "goreDrinker", kind = "buff", group = "procs", defaultOn = true,
       spells = { 1323967 }, buffs = { 1323969 }, buffNames = { "gore drinker", "goredrinker" } },   -- Forever talent
     { key = "enrage", kind = "buff", group = "procs", defaultOn = true,
-      spells = { 12317 }, buffs = { 12880 } },      -- one talent with ranks on Forever; the buff lasts 12 s
+      -- one talent with ranks on Forever (buff 12880); five ranks, each with its own buff, on Era
+      spells = { 12317, 13045, 13046, 13047, 13048 }, buffs = { 12880, 14201, 14202, 14203, 14204 } },
 
     -- Reminders
     { key = "shieldBlock", kind = "usable", group = "reminders", defaultOn = false,
@@ -129,7 +130,12 @@ Data.ALERTS = {
 }
 
 Data.BY_KEY = {}
+-- Classic Era and Hardcore: the Classic durations (checked against the Era client's tables,
+-- build 1.15.9). Forever-only spells need nothing: an alert whose spell isn't known doesn't exist.
+local ERA = { battleShout = { duration = 120 }, shieldWall = { duration = 10 }, shieldBlockUp = { duration = 5 },
+              demoPull = { recast = 30 } }
 for _, def in ipairs(Data.ALERTS) do
+    for field, value in pairs(ns.ERA and ERA[def.key] or {}) do def[field] = value end
     def.defaultStyle = def.defaultStyle or DEFAULT_STYLE[def.group]
     Data.BY_KEY[def.key] = def
 end

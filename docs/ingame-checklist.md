@@ -140,3 +140,15 @@ Use a mob your level. This is also the probe's fight: do steps 3–6 of `docs/pr
 
 - [ ] `/reload` (writes the probe log), then tell Claude: it fills in `docs/probe-results.md`, fixes what failed, and removes `RagebornProbe`.
 - [ ] Wrong spell IDs or durations go into `docs/probe-results.md` under corrections.
+
+## Classic Era / Hardcore (a second, shorter session)
+
+The Era client has never run this addon either. On an Era or Hardcore warrior:
+
+- [ ] `/console scriptErrors 1`, log in: no Lua error; `/rb` opens the window; the minimap button's ring sits centred on the icon.
+- [ ] The left list shows no Forever alerts (Gore Drinker, Reckless Swings, Victory Rush unless SoD) and no question-mark icons.
+- [ ] Parts 1 and 2 of the Forever route work the same: fonts, Gallery, colour wheel (if nothing opens when you click Colour, tell me), sounds, macros, profiles.
+- [ ] Spec profiles switch by talent tab points.
+- [ ] One fight: Overpower after a dodge, Revenge after a block, Execute under 20 %, Battle Shout reminder with a 2-minute timer, Shield Wall 10 s, Shield Block 5 s.
+- [ ] Button glow works; if the Proc loop and Marching ants kinds look like the Pulsing border, the Era client lacks that art (expected fallback).
+- [ ] Enrage (if talented) shows for 12 s.

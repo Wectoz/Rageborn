@@ -39,6 +39,24 @@ return {
   assert(Data.BY_KEY.battleShout.defaultThreshold == 3); assert(Data.BY_KEY.lowHealth.defaultThreshold == 35)
   assert(Data.BY_KEY.overpower.window == 5 and Data.BY_KEY.victoryRush.window == 20)
   assert(Data.BY_KEY.overpower.procBuff[1] == 1289681) end},
+{"every client's TOC loads the same files; Era gets the Classic durations and keeps both Enrage sets", function()
+  local function files(toc)
+    local list = {}
+    for line in io.lines("Rageborn/" .. toc) do if line:match("%.lua$") then list[#list + 1] = line end end
+    return table.concat(list, " ")
+  end
+  local base = files("Rageborn.toc")
+  assert(#base > 100 and files("Rageborn_Camelot.toc") == base and files("Rageborn_Vanilla.toc") == base)
+  assert(Data.BY_KEY.battleShout.duration == 180 and Data.BY_KEY.shieldWall.duration == 12)
+  WOW_PROJECT_CLASSIC, WOW_PROJECT_ID = 2, 2
+  local era = Stub.load("Util.lua", {}); Stub.load("Locale.lua", era); Stub.load("Data.lua", era)
+  WOW_PROJECT_CLASSIC, WOW_PROJECT_ID = nil, nil
+  local E = era.Data.BY_KEY
+  assert(era.ERA == true and E.battleShout.duration == 120 and E.shieldWall.duration == 10)
+  assert(E.shieldBlockUp.duration == 5 and E.demoPull.recast == 30 and #E.enrage.buffs == 5)
+  local known = { [13048] = true, [20600] = true, [12975] = true }       -- an Era human with Enrage rank 5
+  local function has(key) return era.Data.Known(E[key], function(id) return known[id] end) ~= nil end
+  assert(has("enrage") and has("lastStand") and not has("goreDrinker") and not has("racial") and not has("victoryRush")) end},
 {"Known returns the highest known rank", function()
   local known = {[7384] = true, [7887] = true}
   assert(Data.Known(Data.BY_KEY.overpower, function(id) return known[id] end) == 7887) end},

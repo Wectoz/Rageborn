@@ -1,0 +1,25 @@
+## Interface: 11508, 11509
+## Title: |cffc69b6dRageborn|r
+## Notes: Warrior proc alerts, button glows and macros for WoW Forever and Classic Era.
+## Version: 0.1.0
+## IconTexture: Interface\AddOns\Rageborn\Media\icon
+## SavedVariables: RagebornDB
+
+Locale.lua
+Util.lua
+Data.lua
+Database.lua
+ArtList.lua
+PaintedList.lua
+Detect.lua
+Engine.lua
+Styles.lua
+Sounds.lua
+Alerts.lua
+Mover.lua
+Macros.lua
+Options.lua
+Minimap.lua
+Bars.lua
+Glow.lua
+Init.lua

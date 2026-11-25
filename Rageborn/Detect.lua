@@ -18,7 +18,7 @@ end
 
 -- usable, lacksRage. usable nil = unreadable.
 function Detect.Usable(spellID)
-    local usable, noPower = Call(C_Spell and C_Spell.IsSpellUsable, spellID)
+    local usable, noPower = Call(C_Spell and C_Spell.IsSpellUsable or IsUsableSpell, spellID)
     if type(usable) ~= "boolean" then return nil, nil end
     return usable, noPower == true
 end
@@ -26,7 +26,10 @@ end
 -- Seconds until the spell is off cooldown; 0 when ready (the global cooldown counts as ready).
 function Detect.CooldownLeft(spellID)
     local info = Call(C_Spell and C_Spell.GetSpellCooldown, spellID)
-    if type(info) ~= "table" then return nil end
+    if type(info) ~= "table" then       -- the older call answers with plain values
+        local start, duration = Call(GetSpellCooldown, spellID)
+        info = { startTime = start, duration = duration }
+    end
     local start, duration = Clean(info.startTime), Clean(info.duration)
     if type(start) ~= "number" or type(duration) ~= "number" then return nil end
     if duration <= GCD then return 0 end
@@ -193,7 +196,7 @@ function Detect.Enemies()
 end
 
 function Detect.IsQueued(spellID)
-    return Call(C_Spell and C_Spell.IsCurrentSpell, spellID) == true
+    return Call(C_Spell and C_Spell.IsCurrentSpell or IsCurrentSpell, spellID) == true
 end
 
 function Detect.InCombat()

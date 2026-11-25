@@ -70,7 +70,7 @@ function Button:Start()
     icon:SetPoint("CENTER", button, "CENTER", 0, 0)
     local ring = button:CreateTexture(nil, "OVERLAY")
     ring:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    ring:SetSize(50, 50)
+    ring:SetSize(ns.ERA and 53 or 50, ns.ERA and 53 or 50)     -- Era draws the ring a little larger
     ring:SetPoint("TOPLEFT", button, "TOPLEFT", 0, 0)
     button:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 

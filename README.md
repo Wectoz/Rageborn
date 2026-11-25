@@ -1,6 +1,6 @@
 # Rageborn
 
-A warrior-only addon for the WoW Forever client (Interface 16001). It shows procs, reminders and active cooldowns as on-screen alerts, makes the matching action buttons glow (macro buttons included), and offers a page of ready-made warrior macros.
+A warrior-only addon for WoW Forever (Interface 16001) and Classic Era, including Hardcore and Season of Discovery, which use the Era client (Interface 11508/11509). It shows procs, reminders and active cooldowns as on-screen alerts, makes the matching action buttons glow (macro buttons included), and offers a page of ready-made warrior macros.
 
 On any other class it loads nothing.
 
@@ -28,6 +28,15 @@ On any other class it loads nothing.
 ## Action bars
 
 Buttons are found on the default bars, EllesmereUI, Dominos, Bartender4 and ElvUI. Only EllesmereUI and the default bars are installed on the machine it was built on; the other three are written from their button names and are untested.
+
+## Clients
+
+| Client | Loads | Differences |
+|---|---|---|
+| Forever | `Rageborn_Camelot.toc` (or `Rageborn.toc`) | Everything, including Forever talents: Gore Drinker, Bloodthrill, Reckless Swings, Vanguard |
+| Classic Era, Hardcore, SoD | `Rageborn_Vanilla.toc` | Classic durations (Battle Shout 120 s, Shield Wall 10 s, Shield Block 5 s). Alerts for spells the character doesn't have are simply absent. No stun-break racial for humans. No addon-compartment button; the minimap button and `/rb` open the settings. |
+
+Not supported: Anniversary (TBC), Mists Classic, Retail.
 
 ## Known limits
 

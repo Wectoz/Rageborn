@@ -17,7 +17,7 @@ local NO_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 local alerts, previews = {}, {}
 
 local function spellIcon(id)
-    return id and U.Call(C_Spell and C_Spell.GetSpellTexture, id) or NO_ICON
+    return U.SpellTexture(id) or NO_ICON
 end
 
 local function highestSpell(key)
@@ -80,7 +80,7 @@ local function showInfo(a, info)
     a.shownInfo = info
     local s = a.style
     Styles.Call(s, "SetIcon", spellIcon(info.spellID))
-    Styles.Call(s, "SetName", info.spellID and U.Call(C_Spell and C_Spell.GetSpellName, info.spellID) or "")
+    Styles.Call(s, "SetName", U.SpellName(info.spellID) or "")
     Styles.Call(s, "SetStacks", info.stacks)
     Styles.Call(s, "SetHint", info.hintStance and spellIcon(STANCE_SPELL[info.hintStance]) or nil)
 end
@@ -154,7 +154,7 @@ function Alerts:Name(key)
     local own = rawget(ns.L, "ALERT_" .. key)
     if own then return own end
     local id = highestSpell(key)
-    return id and U.Call(C_Spell and C_Spell.GetSpellName, id) or key
+    return U.SpellName(id) or key
 end
 
 function Alerts:Frame(key)

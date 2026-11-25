@@ -32,6 +32,20 @@ function U.Call(fn, ...)
     return cleanAll(pcall(fn, ...))
 end
 
+-- Classic Era (and Hardcore, which is the same client) rather than Forever: the game's own
+-- project constant says so. Era lacks Forever's talents and has the Classic durations.
+ns.ERA = WOW_PROJECT_CLASSIC ~= nil and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+
+-- A spell's name and icon, with the calls each client has.
+function U.SpellName(id)
+    if not id then return nil end
+    return U.Call(C_Spell and C_Spell.GetSpellName, id) or (U.Call(GetSpellInfo, id))
+end
+function U.SpellTexture(id)
+    if not id then return nil end
+    return U.Call(C_Spell and C_Spell.GetSpellTexture, id) or U.Call(GetSpellTexture, id)
+end
+
 function U.DeepCopy(t)
     if type(t) ~= "table" then return t end
     local c = {}

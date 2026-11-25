@@ -68,7 +68,7 @@ end
 -- Reading the bars
 ----------------------------------------------------------------------
 local function spellName(id)
-    local name = id and U.Call(C_Spell and C_Spell.GetSpellName, id)
+    local name = U.SpellName(id)
     return type(name) == "string" and lower(name) or nil
 end
 
