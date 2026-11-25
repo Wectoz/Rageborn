@@ -341,7 +341,8 @@ Styles.Register({ key = "vignette", family = "shape", label = L.STYLE_VIGNETTE, 
 local TOP = { [1030393] = true, [469752] = true, [449488] = true, [457658] = true }
 
 -- "gameArt": each alert's own default overlay
-local OWN_ART = { overpower = 1030393, revenge = 449494, execute = 449493, victoryRush = 469752 }
+local OWN_ART = { overpower = 1030393, revenge = 449494, execute = 449493, victoryRush = 469752,
+                  goreDrinker = 449487, enrage = 510822 }   -- Blood Surge, Berserk
 local FALLBACK_ART = 449494
 
 local function BuildArt(file)

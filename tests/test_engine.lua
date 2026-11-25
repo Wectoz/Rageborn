@@ -74,6 +74,12 @@ T("the racial shows when it would help and is ready, and is glow-only by default
   fake.wrong = {STUN = true}; assert(E:Evaluate("racial", 3) == true)
   fake.wrong = nil; assert(E:Evaluate("racial", 4) == false)                   -- unreadable
   assert(DB:Alert("racial").onScreen == false and DB:Alert("racial").glow == true and DB:Alert("overpower").opacity == 1) end),
+T("an effect on you (Gore Drinker, Enrage) shows while it lasts, with its own time left", function()
+  assert(E:Evaluate("goreDrinker", 10) == false)
+  fake.buff = { expires = 16, duration = 8 }
+  local s, i = E:Evaluate("goreDrinker", 10); assert(s == true and i.remaining == 6 and i.duration == 8)
+  assert(E:Evaluate("enrage", 10) == true)
+  fake.known = false; assert(E:Evaluate("goreDrinker", 10) == false) end),      -- talent not taken
 T("unknown spell never shows", function()
   fake.known = false; fake.usable = true; local s, i = E:Evaluate("execute", 1); assert(s == false and i == nil) end),
 T("the highest known rank is reported", function()

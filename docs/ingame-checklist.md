@@ -129,3 +129,11 @@ For each: it appears when it should, disappears when it should, and its timer (w
 
 - [ ] A new profile is silent: "Play sounds" is off, every alert's sound is None, the crit sound is None.
 - [ ] Every sound list (each alert, and the crit sound) offers spell sounds of all nine classes after the ten game sounds; the list scrolls with the wheel. Press Play on each: note any that is silent, wrong, or too long.
+
+## Gore Drinker, Enrage, descriptions, more sounds
+
+- [ ] Every alert page has one line under its name saying what it is: "Press now", "Active effect", "Reminder", "On the target" or "Warning".
+- [ ] Gore Drinker and Enrage are listed under Procs (only if the talent is taken); their pages have no Button glow section.
+- [ ] When Gore Drinker procs, its alert appears and its timer matches the buff; same for Enrage. If Gore Drinker never shows: with the buff up, run `/dump C_UnitAuras.GetAuraDataByIndex("player", 1, "HELPFUL")` for each buff slot and note its name and spellId.
+- [ ] Sound lists now also hold later-expansion sounds (Hot Streak, Shockwave, Devastate, Lava Burst, Death Knight sounds ...): press Play on each.
+- [ ] Spec profiles: with a tree mapped to a profile, `/reload` switches to it (Forever talents are read from key talents known).

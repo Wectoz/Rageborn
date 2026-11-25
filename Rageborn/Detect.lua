@@ -47,13 +47,25 @@ function Detect.HealthPct(unit)
 end
 
 -- expirationTime, duration of the first of these buffs on the player.
-function Detect.PlayerBuff(spellIDs)
+-- names (lower case, optional) find it by name when its ID isn't one of these.
+function Detect.PlayerBuff(spellIDs, names)
     local get = C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID
+    local function times(aura)
+        local expires, duration = Clean(aura.expirationTime), Clean(aura.duration)
+        if type(expires) == "number" then return expires, duration end
+    end
     for _, id in ipairs(spellIDs) do
         local aura = Call(get, id)
-        if type(aura) == "table" then
-            local expires, duration = Clean(aura.expirationTime), Clean(aura.duration)
-            if type(expires) == "number" then return expires, duration end
+        if type(aura) == "table" and times(aura) then return times(aura) end
+    end
+    for i = 1, names and 40 or 0 do
+        local aura = Call(C_UnitAuras and C_UnitAuras.GetAuraDataByIndex, "player", i, "HELPFUL")
+        if type(aura) ~= "table" then break end
+        local name = Clean(aura.name)
+        if type(name) == "string" then
+            for _, want in ipairs(names) do
+                if name:lower() == want and times(aura) then return times(aura) end
+            end
         end
     end
     return nil
@@ -191,7 +203,7 @@ end
 -- or two trees lead together. GetTalentTabInfo has two shapes: name first with the points
 -- third, or an id first with the points fifth. Failing both, the ranks of the tree's talents.
 local SPECS = { "arms", "fury", "prot" }
-function Detect.Spec()
+local function specFromTabs()
     local best, most = nil, 0
     for tab = 1, 3 do
         local first, _, third, _, fifth = Call(GetTalentTabInfo, tab)
@@ -208,6 +220,26 @@ function Detect.Spec()
             end
         end
         if points > most then best, most = SPECS[tab], points elseif points == most then best = nil end
+    end
+    return best
+end
+
+-- Forever has no talent tabs: there the spec is the tree with the most of its key talents and
+-- abilities known (Mortal Strike, Sweeping Strikes, Bloodthrill ... / Bloodthirst, Death Wish,
+-- Gore Drinker ... / Shield Slam, Last Stand, Defiance ...).
+local SPEC_KEYS = {
+    arms = { 12294, 12292, 1310222, 1289682, 1290261, 12862, 12163, 16493 },
+    fury = { 23881, 12328, 12319, 23584, 1310315, 12317, 1323967, 20500 },
+    prot = { 23922, 12809, 12975, 16538, 1310317, 1310316, 12792, 29787 },
+}
+function Detect.Spec()
+    local spec = specFromTabs()
+    if spec then return spec end
+    local best, most = nil, 0
+    for _, name in ipairs(SPECS) do
+        local n = 0
+        for _, id in ipairs(SPEC_KEYS[name]) do if Detect.IsKnown(id) then n = n + 1 end end
+        if n > most then best, most = name, n elseif n == most then best = nil end
     end
     return best
 end

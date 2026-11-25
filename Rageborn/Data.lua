@@ -9,6 +9,8 @@ local ADDON, ns = ...
 --            "active"    the player pressed it; shown until its duration ends
 --            "lowHealth" health under the threshold with a defensive ready
 --            "debuff"    an effect on the target (only where the client lets us read it)
+--            "buff"      an effect that triggered on you: shown while it lasts, nothing to
+--                        press (spells = the talent, buffs / buffNames = the effect)
 --   group    where it is listed in the settings
 --   spells   every rank, lowest first (the highest one the character knows is used)
 --   proc     what opens it besides "usable": "targetDodge" | "avoided" (you dodged, parried
@@ -62,6 +64,13 @@ Data.ALERTS = {
       spells = { 402927 }, proc = "kill", window = 20 },
     { key = "interrupt", kind = "usable", group = "procs", defaultOn = true, defaultStyle = "arcs",
       spells = { 6552, 6554, 72, 1671, 1672 }, proc = "targetCasting" },  -- Pummel, Shield Bash
+
+    -- Procs that are effects on you: shown while they last
+    { key = "goreDrinker", kind = "buff", group = "procs", defaultOn = true,
+      spells = { 1323967 }, buffs = { 1323967 }, buffNames = { "gore drinker", "goredrinker" } },   -- Forever talent
+    { key = "enrage", kind = "buff", group = "procs", defaultOn = true,
+      spells = { 12317, 13045, 13046, 13047, 13048 }, buffs = { 12880, 14201, 14202, 14203, 14204 },
+      buffNames = { "enrage" } },
 
     -- Reminders
     { key = "shieldBlock", kind = "usable", group = "reminders", defaultOn = false,

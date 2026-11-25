@@ -25,18 +25,19 @@ Sounds.LIST = {
     { key = "bell",          label = L.SOUND_BELL,           kit = 6594 },
 }
 
--- Spell sounds of every class: { class, name, sound kit, name, sound kit, ... }. Kit IDs are
+-- Spell sounds of every class, later expansions included: { class, name, sound kit, name, sound kit, ... }. Kit IDs are
 -- from the Classic Era sound tables (build 1.15.9); a kit this client lacks is simply silent.
 local CLASS_SOUNDS = {
-    { "WARRIOR", "Battle Shout", 3113, "Execute", 3133, "Thunder Clap", 3090, "Rend", 3134, "Taunt", 3216, "Challenging Shout", 3222, "Cleave", 3112, "Shield Wall", 3094, "Recklessness", 3071, "Whirlwind", 5674 },
-    { "MAGE", "Fireball", 1507, "Frost Nova", 3076, "Arcane Explosion", 6539, "Polymorph", 1372, "Counterspell", 3227, "Teleport", 3226, "Arcane Missiles", 3333, "Cone of Cold", 5594 },
-    { "PALADIN", "Divine Shield", 15, "Lay on Hands", 1431, "Holy Light", 1430, "Seal of Might", 1455, "Exorcism", 3320, "Devotion Aura", 1505 },
-    { "PRIEST", "Flash Heal", 1434, "Renew", 3155, "Shadow Word: Pain", 3085, "Inner Fire", 3314, "Resurrection", 37, "Shadowform", 5756, "Prayer of Healing", 1508 },
+    { "WARRIOR", "Battle Shout", 3113, "Execute", 3133, "Thunder Clap", 3090, "Rend", 3134, "Taunt", 3216, "Challenging Shout", 3222, "Cleave", 3112, "Shield Wall", 3094, "Recklessness", 3071, "Whirlwind", 5674, "Shockwave", 12981, "Devastate", 14663, "Heroic Throw", 15230 },
+    { "MAGE", "Fireball", 1507, "Frost Nova", 3076, "Arcane Explosion", 6539, "Polymorph", 1372, "Counterspell", 3227, "Teleport", 3226, "Arcane Missiles", 3333, "Cone of Cold", 5594, "Hot Streak", 12977, "Deep Freeze", 12879, "Arcane Barrage", 12975, "Living Bomb", 12978 },
+    { "PALADIN", "Divine Shield", 15, "Lay on Hands", 1431, "Holy Light", 1430, "Seal of Might", 1455, "Exorcism", 3320, "Devotion Aura", 1505, "Shield of the Righteous", 15307 },
+    { "PRIEST", "Flash Heal", 1434, "Renew", 3155, "Shadow Word: Pain", 3085, "Inner Fire", 3314, "Resurrection", 37, "Shadowform", 5756, "Prayer of Healing", 1508, "Guardian Spirit", 13876, "Mind Sear", 15007 },
     { "ROGUE", "Stealth", 3325, "Vanish", 3324, "Eviscerate", 3264, "Gouge", 3313, "Kidney Shot", 3323, "Sinister Strike", 5530, "Cold Blood", 6774 },
-    { "HUNTER", "Aspect of the Hawk", 5496, "Aspect of the Cheetah", 6478, "Aspect of the Monkey", 5318, "Flare", 2549, "Call Pet", 3980, "Tame Beast", 3351 },
-    { "DRUID", "Rejuvenation", 3229, "Moonfire", 5734, "Starfire", 5895, "Entangling Roots", 2579, "Thorns", 3225, "Swipe", 3223, "Challenging Roar", 3326, "Faerie Fire", 2615 },
-    { "SHAMAN", "Lightning Bolt", 1490, "Call Lightning", 30, "Lightning Shield", 33, "Rockbiter", 3620, "Purge", 3316, "Fire Nova", 5636, "Ghost Wolf", 3089, "Astral Recall", 3315 },
-    { "WARLOCK", "Fear", 3231, "Immolate", 38, "Soulstone", 7354, "Curse", 5694, "Death Coil", 743, "Demon Armor", 1365, "Infernal", 7315 },
+    { "HUNTER", "Aspect of the Hawk", 5496, "Aspect of the Cheetah", 6478, "Aspect of the Monkey", 5318, "Flare", 2549, "Call Pet", 3980, "Tame Beast", 3351, "Chimera Shot", 13159, "Explosive Shot", 13590 },
+    { "DRUID", "Rejuvenation", 3229, "Moonfire", 5734, "Starfire", 5895, "Entangling Roots", 2579, "Thorns", 3225, "Swipe", 3223, "Challenging Roar", 3326, "Faerie Fire", 2615, "Eclipse", 12984, "Starfall", 12988, "Nourish", 12990, "Berserk", 13263, "Feral Charge", 13351, "Savage Roar", 13797 },
+    { "SHAMAN", "Lightning Bolt", 1490, "Call Lightning", 30, "Lightning Shield", 33, "Rockbiter", 3620, "Purge", 3316, "Fire Nova", 5636, "Ghost Wolf", 3089, "Astral Recall", 3315, "Thunderstorm", 13006, "Lava Burst", 13039 },
+    { "WARLOCK", "Fear", 3231, "Immolate", 38, "Soulstone", 7354, "Curse", 5694, "Death Coil", 743, "Demon Armor", 1365, "Infernal", 7315, "Metamorphosis", 13874 },
+    { "DEATHKNIGHT", "Death Strike", 13243, "Howling Blast", 13167, "Death and Decay", 13104, "Hysteria", 12998, "Anti-Magic Zone", 13004 },
 }
 for _, row in ipairs(CLASS_SOUNDS) do
     for i = 2, #row, 2 do

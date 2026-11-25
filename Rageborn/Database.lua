@@ -60,7 +60,7 @@ end
 DB.PRESETS = { "standard", "arms", "fury", "prot", "empty" }
 DB.PRESET_ALERTS = {
     arms = set("overpower", "execute", "rend", "sweepingStrikes", "recklessness", "retaliation"),
-    fury = set("execute", "deathWish", "recklessness", "berserkerRage", "bloodrage", "rageDump", "queued"),
+    fury = set("execute", "deathWish", "recklessness", "berserkerRage", "bloodrage", "rageDump", "queued", "goreDrinker", "enrage"),
     prot = set("revenge", "shieldBlock", "shieldBlockUp", "sunder", "taunt", "thunderClap", "demoPull",
                "shieldWall", "lastStand"),
     empty = {},

@@ -37,6 +37,7 @@ return {
     for key in line:gmatch("L%.([A-Z][A-Z_a-zA-Z]+)") do assert(rawget(ns.L, key), key) end
   end
   for _, g in ipairs(ns.Data.GROUPS) do assert(rawget(ns.L, "GROUP_" .. g), g) end
+  for _, d in ipairs(ns.Data.ALERTS) do assert(rawget(ns.L, "DESC_" .. d.key), d.key) end
   for _, k in ipairs({"procLoop", "ants", "pulse", "corners"}) do assert(rawget(ns.L, "GLOW_" .. k), k) end end},
 {"the window opens on General and shows every page for every alert", function()
   O:Open(); O:Toggle(); O:Toggle()

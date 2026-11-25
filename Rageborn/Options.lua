@@ -534,6 +534,7 @@ local function BuildAlert()
         changed()
     end))
     Label(p, 200, 139, 11, C.secondary, L.OPT_DESIGN:upper())
+    local about = Label(p, 200, 90, 12, C.secondary, "", 410)     -- what it is and when it shows
     local styleName = Label(p, 200, 154, 13, C.ink, "")
     p.Add(Button(p, 200, 177, 124, L.OPT_BROWSE, function() Options:Select("gallery", key()) end))
 
@@ -586,7 +587,7 @@ local function BuildAlert()
     end
 
     local glowHead = Heading(p, 200, 406, 640, L.OPT_GLOW_HEAD)
-    local hasButton = function() return def().spells ~= nil end
+    local hasButton = function() return def().spells ~= nil and def().kind ~= "buff" end
     only[glowHead] = hasButton
     when(Check(p, 200, 430, 150, L.OPT_GLOW, field("glow")), hasButton)
     local kind = when(Dropdown(p, 360, 430, 200, function()
@@ -615,6 +616,7 @@ local function BuildAlert()
         if not (d and o) then return end
         p.kicker:SetText((L["GROUP_" .. d.group] .. "  /  " .. L.OPT_ALERT):upper())
         p.title:SetText(ns.Alerts:Name(d.key))
+        about:SetText(L["DESC_" .. d.key])
         for control, test in pairs(only) do control:SetShown(test() and true or false) end
         refreshControls()
         kind.Able(o.glow); glowColour.Able(o.glow)

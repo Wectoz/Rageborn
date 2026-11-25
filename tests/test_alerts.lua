@@ -15,15 +15,15 @@ local function alpha(key) return A:Frame(key).calls.SetAlpha[1] end
 
 return {
 {"sound list: none, ten game sounds, then spell sounds of all nine classes; unique keys", function()
-  assert(#ns.Sounds.LIST == 78 and ns.Sounds.LIST[1].key == "none" and ns.Sounds.LIST[1].kit == nil)
+  assert(#ns.Sounds.LIST == 104 and ns.Sounds.LIST[1].key == "none" and ns.Sounds.LIST[1].kit == nil)
   local classes, n = {}, 0
   for _, s in ipairs(ns.Sounds.LIST) do
     if s.class then
-      assert(s.label:match("^%u%l+: .") and not s.label:match("^CLASS_"), s.label)
+      assert(s.label:match("^%u[%a ]+: .") and not s.label:match("^CLASS_"), s.label)
       if not classes[s.class] then classes[s.class] = true; n = n + 1 end
     end
   end
-  assert(n == 9 and classes.WARRIOR and classes.WARLOCK)
+  assert(n == 10 and classes.WARRIOR and classes.WARLOCK)
   local seen = {}
   for i, s in ipairs(ns.Sounds.LIST) do
     assert(not seen[s.key] and type(s.label) == "string" and not s.label:match("^SOUND_"), s.key); seen[s.key] = true

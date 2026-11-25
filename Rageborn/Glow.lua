@@ -190,7 +190,7 @@ end
 -- known, the defensive that is ready), unless the alert lists its own in `press`.
 function Glow:OnAlert(key, shown, info)
     local def = Data.BY_KEY[key]
-    up[key] = shown and def and (def.press or { info and info.spellID }) or nil
+    up[key] = shown and def and def.kind ~= "buff" and (def.press or { info and info.spellID }) or nil
     evaluate()
 end
 

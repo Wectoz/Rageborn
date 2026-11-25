@@ -190,8 +190,17 @@ local function evalDebuff(def, opt, spells, now)
     return true, info
 end
 
+-- An effect that triggered on you: up while the game shows it, with its own time left.
+local function evalBuff(def, opt, spells, now)
+    local expires, duration = ns.Detect.PlayerBuff(def.buffs, def.buffNames)
+    if not expires then return false end
+    local info = { spellID = spells[1] }
+    if expires > now then info.remaining, info.expires, info.duration = expires - now, expires, duration end
+    return true, info
+end
+
 local EVAL = { usable = evalUsable, active = evalActive, reminder = evalReminder,
-               lowHealth = evalLowHealth, debuff = evalDebuff }
+               lowHealth = evalLowHealth, debuff = evalDebuff, buff = evalBuff }
 
 function Engine:Evaluate(key, now)
     local def = Data.BY_KEY[key]

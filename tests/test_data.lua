@@ -2,7 +2,7 @@ local ns = Stub.load("Util.lua", {})
 Stub.load("Data.lua", ns)
 local Data = ns.Data
 local function set(...) local s = {}; for _, v in ipairs({...}) do s[v] = true end; return s end
-local KINDS = set("usable", "reminder", "active", "lowHealth", "debuff")
+local KINDS = set("usable", "reminder", "active", "lowHealth", "debuff", "buff")
 local GROUPS = set("procs", "reminders", "defensives", "offensives", "lowHealth", "target")
 local STYLES = set("gameArt", "arcs", "frame", "ring", "vignette", "bar")
 return {
@@ -33,7 +33,7 @@ return {
   end end},
 {"spec defaults: which alerts start on", function()
   local on = set("overpower", "revenge", "execute", "victoryRush", "interrupt", "battleShout",
-                 "shieldWall", "lastStand", "recklessness", "deathWish", "lowHealth", "demoPull", "racial", "fearBreak")
+                 "shieldWall", "lastStand", "recklessness", "deathWish", "lowHealth", "goreDrinker", "enrage", "demoPull", "racial", "fearBreak")
   for _, d in ipairs(Data.ALERTS) do assert(d.defaultOn == (on[d.key] or false), d.key) end end},
 {"spec values", function()
   assert(Data.BY_KEY.battleShout.defaultThreshold == 3); assert(Data.BY_KEY.lowHealth.defaultThreshold == 35)
