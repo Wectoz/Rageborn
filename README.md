@@ -6,18 +6,27 @@ When Overpower lights up, or Revenge, or your target drops into Execute range, a
 
 It only loads on warriors. On any other class it does nothing at all.
 
-This is an early version and it hasn't seen much play yet. Things will be off. If something breaks or looks wrong, open an issue and tell me what you were doing.
+This is a beta and it hasn't seen much play yet. Things will be off, and the addon says so itself when you log in. If something breaks or looks wrong, open an issue here and tell me what you were doing.
 
 ## Installing
 
-1. Click the green **Code** button on this page and pick **Download ZIP**.
-2. Unzip it. Inside is a folder called `Rageborn`. That folder is the addon; the rest is art sources and tests you don't need.
-3. Copy `Rageborn` into your AddOns folder:
+Get it from CurseForge: https://www.curseforge.com/wow/addons/rageborn
+
+With the CurseForge app, search for Rageborn, pick your game version and click Install. It's marked as a beta, so if it doesn't show up, allow beta releases in the app's settings for that game.
+
+Type `/rb` in game to open the settings. There's also a minimap button.
+
+<details>
+<summary>Installing by hand</summary>
+
+1. Download the latest file from the CurseForge page, or click the green **Code** button here and pick **Download ZIP**.
+2. Unzip it and find the folder called `Rageborn`. That folder is the addon.
+3. Copy it into your AddOns folder:
    - Forever: `World of Warcraft\_forever_\Interface\AddOns`
    - Classic Era, Hardcore, Season of Discovery: `World of Warcraft\_classic_era_\Interface\AddOns`
 4. Start the game, or type `/reload` if it's already running.
 
-Type `/rb` to open the settings. There's also a minimap button.
+</details>
 
 ## What you get
 
