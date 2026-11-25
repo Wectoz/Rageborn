@@ -222,13 +222,14 @@ function Engine:Evaluate(key, now)
     local def = Data.BY_KEY[key]
     local opt = def and ns.DB:Alert(key)
     if not opt or not opt.enabled or not ns.DB:Profile().enabled then last[key] = false; return false end
-    if testing then
-        local left = 10 - (now % 10)
-        return true, { spellID = def.spells and def.spells[#def.spells], remaining = left, expires = now + left,
-                       duration = 10, test = true }
-    end
+    -- An alert whose spell this character doesn't have doesn't exist, in test mode too: on
+    -- Classic Era that hides Victory Rush and the Forever talents.
     local spells = knownSpells(def)
     if def.kind ~= "lowHealth" and #spells == 0 then last[key] = false; return false end
+    if testing then
+        local left = 10 - (now % 10)
+        return true, { spellID = spells[1], remaining = left, expires = now + left, duration = 10, test = true }
+    end
     if opt.combatOnly and ns.Detect.InCombat() ~= true then last[key] = false; return false end
     local shown, info = EVAL[def.kind](def, opt, spells, now)
     last[key] = shown

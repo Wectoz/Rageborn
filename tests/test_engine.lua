@@ -91,6 +91,10 @@ T("a hidden buff or debuff keeps what was showing, until its time is up or the t
   local s, i = E:Evaluate("enrage", 12); assert(s == true and i.expires == 16)
   assert(E:Evaluate("enrage", 17) == false)
   assert(E:Evaluate("goreDrinker", 12) == false) end),                     -- never seen: stays hidden
+T("test mode shows only alerts this character has (no Victory Rush or Forever talents on Era)", function()
+  fake.known = {[7384] = true, [6673] = true}; E:Test(true)
+  assert(E:Evaluate("overpower", 1) == true and E:Evaluate("lowHealth", 1) == true)
+  for _, key in ipairs({"victoryRush", "goreDrinker", "recklessSwings", "racial"}) do assert(E:Evaluate(key, 1) == false, key) end end),
 T("unknown spell never shows", function()
   fake.known = false; fake.usable = true; local s, i = E:Evaluate("execute", 1); assert(s == false and i == nil) end),
 T("the highest known rank is reported", function()
@@ -264,8 +268,8 @@ T("taunt: ready, in combat, and the target is on another player", function()
 T("combatOnly setting hides an alert out of combat", function()
   fake.usable = true; fake.combat = false; DB:Alert("execute").combatOnly = true
   assert(E:Evaluate("execute", 1) == false); fake.combat = true; assert(E:Evaluate("execute", 2) == true) end),
-T("Test mode shows every enabled alert and nothing disabled", function()
-  fake.known = false; DB:Alert("rend").enabled = false; E:Test(true)
+T("Test mode shows every enabled alert the character has, and nothing disabled", function()
+  DB:Alert("rend").enabled = false; E:Test(true)
   for _, d in ipairs(ns.Data.ALERTS) do
     local s, i = E:Evaluate(d.key, 3); assert(s == (d.key ~= "rend"), d.key)
     if s then assert(i.duration == 10 and i.remaining > 0 and i.remaining <= 10, d.key) end
