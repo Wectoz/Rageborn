@@ -16,6 +16,10 @@ local ADDON, ns = ...
 --   window   seconds a proc stays open
 --   stances  where it can be pressed (1 battle, 2 defensive, 3 berserker); nil = any
 --   duration seconds an "active" lasts / Battle Shout lasts (estimate until read from the buff)
+--   ready    shown only while it is off cooldown
+--   enemies  shown only in a fight with at least `threshold` enemies (counted from nameplates)
+--   recast   seconds it stays hidden after you cast it (its effect is then on the enemies)
+--   defaultOpacity  0 = nothing on screen, button glow only
 --   probe    the docs/probe-results.md line a "debuff" alert depends on
 --
 -- IDs and durations are Classic values, to be confirmed on Forever (docs/probe-results.md).
@@ -60,6 +64,9 @@ Data.ALERTS = {
       spells = { 6673, 5242, 6192, 11549, 11550, 11551, 25289 }, duration = 120, defaultThreshold = 3 },
     { key = "queued", kind = "active", group = "reminders", defaultOn = false,
       spells = join(HEROIC_STRIKE, CLEAVE), proc = "queued" },
+    -- Demoralizing Shout when several enemies are in the fight
+    { key = "demoPull", kind = "usable", group = "reminders", defaultOn = true,
+      spells = { 1160, 6190, 11554, 11555, 11556 }, enemies = true, ready = true, recast = 30, defaultThreshold = 2 },
 
     -- Defensives
     { key = "shieldWall", kind = "active", group = "defensives", defaultOn = true, spells = { 871 }, duration = 10 },
@@ -73,6 +80,10 @@ Data.ALERTS = {
     { key = "sweepingStrikes", kind = "active", group = "offensives", defaultOn = false, spells = { 12292 }, duration = 20 },
     { key = "berserkerRage", kind = "active", group = "offensives", defaultOn = false, spells = { 18499 }, duration = 10 },
     { key = "bloodrage", kind = "active", group = "offensives", defaultOn = false, spells = { 2687 }, duration = 10 },
+    -- The race's combat ability, ready to press: Blood Fury, Berserking, War Stomp, Stoneform,
+    -- Will of the Forsaken. Button glow only.
+    { key = "racial", kind = "usable", group = "offensives", defaultOn = true, combatOnly = true, ready = true,
+      spells = { 20572, 26296, 20549, 20594, 7744 }, defaultOpacity = 0 },
 
     -- Low health: warns while one of these defensives is ready
     { key = "lowHealth", kind = "lowHealth", group = "lowHealth", defaultOn = true,

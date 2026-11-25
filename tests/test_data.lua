@@ -33,7 +33,7 @@ return {
   end end},
 {"spec defaults: which alerts start on", function()
   local on = set("overpower", "revenge", "execute", "victoryRush", "interrupt", "battleShout",
-                 "shieldWall", "lastStand", "recklessness", "deathWish", "lowHealth")
+                 "shieldWall", "lastStand", "recklessness", "deathWish", "lowHealth", "demoPull", "racial")
   for _, d in ipairs(Data.ALERTS) do assert(d.defaultOn == (on[d.key] or false), d.key) end end},
 {"spec values", function()
   assert(Data.BY_KEY.battleShout.defaultThreshold == 3); assert(Data.BY_KEY.lowHealth.defaultThreshold == 35)

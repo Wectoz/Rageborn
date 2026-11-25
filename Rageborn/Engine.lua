@@ -12,7 +12,7 @@ local Engine = {}
 ns.Engine = Engine
 
 local subscribers = {}
-local windows, actives, last, told
+local windows, actives, last, told, recast
 local shoutExpiry      -- nil = missing
 local testing = false
 
@@ -20,7 +20,7 @@ local EXECUTE_HEALTH = 20
 local AVOID = { DODGE = true, PARRY = true, BLOCK = true }
 
 function Engine:Reset()
-    windows, actives, last, told = {}, {}, {}, {}
+    windows, actives, last, told, recast = {}, {}, {}, {}, {}
     shoutExpiry = nil
     testing = false
 end
@@ -85,7 +85,11 @@ local function evalUsable(def, opt, spells, now)
 
     if def.proc == "targetCasting" and D.TargetCasting() ~= true then return false end
     if def.needsShield and not (D.HasShield() == true and D.InCombat() == true) then return false end
-    local needReady = def.proc == "targetCasting" or def.needsShield
+    if def.enemies then     -- worth pressing only on a pull, and not again while it is on them
+        if D.InCombat() ~= true or (D.Enemies() or 0) < (opt.threshold or 2) then return false end
+        if (recast[def.key] or 0) > now or D.TargetDebuff(def.spells) then return false end
+    end
+    local needReady = def.proc == "targetCasting" or def.needsShield or def.ready
 
     local usable, id = gameUsable(spells, procOpen, needReady)
     local info = { spellID = id or spells[1] }
@@ -199,6 +203,7 @@ function Engine:OnCast(spellID, now)
     for _, def in ipairs(Data.ALERTS) do
         if has(def.spells, spellID) then
             if def.window then windows[def.key] = nil end
+            if def.recast then recast[def.key] = now + def.recast end
             if def.kind == "active" and def.duration then actives[def.key] = { start = now, duration = def.duration } end
             if def.kind == "reminder" then shoutExpiry = now + def.duration end
         end

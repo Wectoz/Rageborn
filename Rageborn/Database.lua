@@ -25,7 +25,7 @@ local function alertDefaults(def, index, count)
     local x = centred and 0 or (index - (count + 1) / 2) * 70
     return {
         enabled = def.defaultOn, style = style,
-        color = { r = c[1], g = c[2], b = c[3] }, size = 1, opacity = 1,
+        color = { r = c[1], g = c[2], b = c[3] }, size = 1, opacity = def.defaultOpacity or 1,
         x = x, y = centred and 0 or GROUP_Y[def.group] or 0, spread = 1,
         side = "both", recolor = false,   -- two-sided art: which side; painted art: tint it
         showIcon = not painted, showName = false, showTimer = true,

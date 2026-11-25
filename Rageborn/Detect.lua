@@ -93,6 +93,22 @@ function Detect.HasShield()
     return equipLoc == "INVTYPE_SHIELD"
 end
 
+-- Enemies in combat near you, counted from their nameplates; nil when that can't be read.
+-- Counts only what has a nameplate on screen, whoever it is fighting.
+function Detect.Enemies()
+    local plates = Call(C_NamePlate and C_NamePlate.GetNamePlates)
+    if type(plates) ~= "table" then return nil end
+    local n = 0
+    for _, plate in ipairs(plates) do
+        local unit = type(plate) == "table" and Clean(plate.namePlateUnitToken)
+        if unit and Call(UnitCanAttack, "player", unit) == true and Call(UnitAffectingCombat, unit) == true
+            and Call(UnitIsDead, unit) ~= true then
+            n = n + 1
+        end
+    end
+    return n
+end
+
 function Detect.IsQueued(spellID)
     return Call(C_Spell and C_Spell.IsCurrentSpell, spellID) == true
 end

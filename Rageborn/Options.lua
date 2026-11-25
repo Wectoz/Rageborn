@@ -26,7 +26,7 @@ local FONTS = { { "friz", "Fonts\\FRIZQT__.TTF" }, { "morpheus", "Fonts\\MORPHEU
 local WINDOW_SCALES = { 70, 80, 90, 100, 110, 120, 130 }
 local GLOW_KINDS = { "procLoop", "ants", "pulse", "corners" }
 local SIDES = { "both", "left", "right" }
-local THRESHOLD = { battleShout = { 1, 15, "%d s" }, lowHealth = { 10, 60, "%d%%" } }
+local THRESHOLD = { battleShout = { 1, 15, "%d s" }, lowHealth = { 10, 60, "%d%%" }, demoPull = { 2, 6, "%d" } }
 
 local win, pages, railRows = nil, {}, {}
 local applyWindow

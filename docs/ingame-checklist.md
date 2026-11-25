@@ -94,3 +94,11 @@ For each: it appears when it should, disappears when it should, and its timer (w
 - [ ] Headings and Text each offer Friz Quadrata, Morpheus, Skurri, Arial Narrow; every page changes at once, nothing is cut off or overlaps in any of them. The three lists open upwards.
 - [ ] The alert page shows the design's menu after its name, e.g. "Overpower: sides 1 (Legacy)".
 - [ ] Macros page: each text box fits its text exactly; with the page open, creating or deleting a macro in the game's macro window, or moving a shield in or out of the bags, updates the rows by itself.
+
+## Racial glow and Demo Shout on a pull
+
+- [ ] In combat, the racial's button (Blood Fury, Berserking, War Stomp, Stoneform or Will of the Forsaken) glows while it is ready and stops when pressed; nothing is drawn on screen for it. Out of combat it doesn't glow.
+- [ ] The racial's spell ID is right on this client (the alert "Racial ability" is listed under Offensives).
+- [ ] With enemy nameplates on, pulling two or more mobs shows "Demo Shout: pull" and glows its button; one mob doesn't. After shouting it stays away for 30 s.
+- [ ] Its "Enemies in the fight, at least" slider (2–6) changes when it appears.
+- [ ] With enemy nameplates off it never appears (known limit).

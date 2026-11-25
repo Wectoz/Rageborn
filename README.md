@@ -35,6 +35,8 @@ Buttons are found on the default bars, EllesmereUI, Dominos, Bartender4 and ElvU
 - The critical-hit sound plays for any crit on your target, including other players': the game doesn't say who dealt it.
 - Buttons are re-read after combat, not during it: a bar page that changes in a fight (stance bars) may glow late.
 - Macros and profiles can't be created or switched in combat.
+- The Demoralizing Shout pull alert counts enemies by their nameplates: enemy nameplates must be on, and it counts every enemy in combat on screen, whoever it is fighting.
+- The racial glow covers Blood Fury, Berserking, War Stomp, Stoneform and Will of the Forsaken.
 
 ## Development
 
