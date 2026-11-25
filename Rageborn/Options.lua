@@ -870,7 +870,8 @@ local function BuildConsumables()
     local p = Page(L.OPT_LIBRARY, L.OPT_CONSUMABLES)
     local D = ns.Detect
     Label(p, 200, 100, 12, C.ink, L.CONS_SUBTITLE, 450)
-    Label(p, 200, 134, 12, C.secondary, L.CONS_DISCLAIMER, 636)
+    Label(p, 200, 132, 12, C.secondary, L.CONS_DISCLAIMER, 636)
+    Label(p, 200, 164, 12, C.secondary, L["CONS_STACK_" .. (ns.ERA and "era" or "forever")], 636)
     -- tabs: damage or tank; opens on tank for a Protection warrior
     local role, tabs = D.Spec() == "prot" and "tank" or "dps", {}
     for i, key in ipairs(ns.Consumables.ROLES) do
@@ -881,7 +882,7 @@ local function BuildConsumables()
         line:SetHeight(2)
         tabs[key] = line
     end
-    local sf, child = Scroller(p, 200, 172, 624, 371)
+    local sf, child = Scroller(p, 200, 202, 624, 341)
     local heads, rows = {}, {}
     -- names and icons arrive from the game a moment after they are first asked for
     local watch = CreateFrame("Frame", nil, p)

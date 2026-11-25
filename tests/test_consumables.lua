@@ -42,9 +42,10 @@ return {
   local grizzly, titans, roids = find(F, 250351), find(E, 13510), find(E, 8410)
   assert(grizzly.prof == "alchemy" and grizzly.skill == 300 and #grizzly.mats == 3)
   assert(titans.skill == 300 and titans.extra and titans.mats[1][2] == 30)         -- 30 Gromsblood
-  assert(roids.prof == nil and roids.from and find(F, 8410).from == nil) end},      -- Forever source not known
+  assert(roids.prof == nil and roids.from and find(F, 8410).from:find("unconfirmed"))    -- Forever: Classic source, not confirmed
+  assert(grizzly.from:find("240") and find(F, 13510).extra == nil) end},
 {"every role and every text of the page exists", function()
   local ns = load(false)
   for _, role in ipairs(ns.Consumables.ROLES) do assert(rawget(ns.L, "CONS_ROLE_" .. role), role) end
-  for _, k in ipairs({"OPT_CONSUMABLES", "CONS_SUBTITLE", "CONS_DISCLAIMER"}) do assert(rawget(ns.L, k), k) end end},
+  for _, k in ipairs({"OPT_CONSUMABLES", "CONS_SUBTITLE", "CONS_DISCLAIMER", "CONS_STACK_forever", "CONS_STACK_era"}) do assert(rawget(ns.L, k), k) end end},
 }

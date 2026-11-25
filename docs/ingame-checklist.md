@@ -79,6 +79,8 @@ fighting; do them first, because an error at load makes the rest pointless.
 - [ ] With Auctionator, "materials 4g 20s" shows on the right when every material has a price.
 - [ ] Hovering a row shows the game's tooltip. Compare a few with the note beside the name: they should agree.
 - [ ] Items you carry show "x3" and so on. With Auctionator installed and scanned, prices show on the right; without it, none.
+- [ ] Forever, if you have them: drink Elixir of the Grizzly and Elixir of the Mongoose together. Do both buffs stay, and does crit go up by 4%? Same question for Grizzly with Elixir of Greater Strength. Nobody has published this; your answer fixes the order.
+- [ ] Items marked "unconfirmed on Forever" (R.O.I.D.S., Ground Scorpok Assay, Gordok Green Grog, Rumsey Rum): tell me if you know they can or can't be had.
 - [ ] On Forever the lists hold Forever's items (Elixir of the Grizzly, Frenzy Potions ...); on Era the Classic ones (Elixir of Giants, Juju Power ...).
 
 ### Profiles
