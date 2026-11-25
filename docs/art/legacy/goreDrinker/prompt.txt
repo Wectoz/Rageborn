@@ -1,0 +1,31 @@
+You are the art director and the artist. Design three pieces of game UI art, paint them with your image generation tool, and save the files in the current directory.
+
+Context: "Rageborn" is an addon for World of Warcraft Classic, for the warrior class. When something important happens in a fight it shows glowing art AROUND the player's character in the middle of the screen: one piece to the left of the character and its mirror image to the right, or one piece arching above the character's head. The art never covers the character. I need three pieces for one alert: GORE DRINKER (after a rage ability such as Bloodthirst or Enrage, the Fury warrior's next melee attacks drink health back from the enemy)
+
+THE LOOK: LEGACY. The player must believe these shipped with the game around 2004-2010. Take your inspiration from two sources, and design original art in their spirit (do not reproduce any existing texture):
+1. The game's own "spell activation overlay" proc textures (the Cataclysm-era art that addons such as SpellActivationOverlay bring to Classic): Sudden Death, Sword and Board, Art of War, Blood Surge, Hot Streak, Maelstrom Weapon, Nature's Grace, Killing Machine. What they have in common: ONE simple iconic motif per texture (a blade, a claw swipe, a shield rim, a skull, a wing, a lightning fork); painted with broad, soft, streaky brush strokes that smear and fade out to nothing at the edges; a single hue with a lighter core, no second colour; a little blurry and low-resolution, as if painted at 256x512 and enlarged; plenty of empty black inside the shape; loose, slightly crude, visibly hand-made.
+2. Classic World of Warcraft art from 2004: chunky exaggerated proportions (oversized blades, thick hafts), bold readable silhouettes, hand-painted texture work with visible strokes and a limited palette, the feeling of vanilla spell icons and old spell effects.
+
+What makes art look MODERN, and is therefore forbidden: crisp vector-clean edges; smooth airbrushed gradients and a uniform neon outer glow; realistic fire or fluid simulation; clouds of fine sparks, embers and particles; thin wispy flame tendrils; lens flares and bloom; glossy 3D rendering; intricate filigree or ornament; perfectly symmetrical machine-made curves; high-frequency detail of any kind.
+
+Colour: one hue family only: blood red to dark orange, with a pale core.
+
+Rules for every image:
+- Background pure flat black (#000000) with nothing in it: the art is drawn in game with additive blending, so black becomes transparent. No vignette, no haze filling the frame, no ground, no scenery.
+- Keep the whole design at least 5% away from every edge of the image: nothing may be cut off.
+- Readable when shrunk to one eighth of its size.
+- No text, letters, numbers, borders, frames, UI chrome, logos, faction crests, characters or faces.
+
+SIDE pieces (two different designs, built on two different motifs). Tall portrait image, 1024 wide x 1536 high. This is the piece that stands to the LEFT of the character. The art is a tall vertical shape curved like an opening parenthesis "(" : it bulges toward the LEFT edge of the image and its top and bottom ends curl toward the RIGHT. Keep the RIGHT 35% of the image completely black and empty: that is where the character stands.
+1. goreDrinker_side1.png
+2. goreDrinker_side2.png
+
+TOP piece (one design). Wide landscape image, 1536 wide x 1024 high. This piece floats ABOVE the character's head. The art is a wide shape arched like a rainbow or a crown: highest in the middle, both ends curving DOWN. Keep the BOTTOM-CENTRE 35% of the image completely black and empty: the character's head is there.
+3. goreDrinker_top1.png
+
+How to work:
+1. First decide the motif of each piece: what would a Blizzard artist in 2005-2010 have painted for this ability? Pick motifs that say what the alert means at a glance.
+2. Paint each piece. Then LOOK at the result and judge it honestly against the forbidden list. If it reads as modern, clean or glossy, paint it again, rougher, simpler and blurrier. Up to three attempts per piece; keep the most legacy-looking one.
+3. Save exactly the three PNG files named above in the current directory and delete any other files you made.
+
+Then reply with one line per file: the file name, its pixel size, the motif, and one sentence on why it looks legacy.
