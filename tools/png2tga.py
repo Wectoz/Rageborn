@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""png2tga.py IN.png OUT.tga : 8-bit RGB/RGBA PNG -> uncompressed 32-bit top-left TGA.
+"""png2tga.py IN.png OUT.tga [LIFT] : 8-bit RGB/RGBA PNG -> uncompressed 32-bit top-left TGA.
+LIFT (a brightness 1-254) brightens art painted dim on black: see lift().
 Standard library only (WoW reads this TGA flavour)."""
+import math
 import struct, sys, zlib
 
 
@@ -52,5 +54,31 @@ def write_tga(path, w, h, bpp, rows):
     open(path, "wb").write(out)
 
 
+FLOOR = 12      # darker than this is background and stays black
+
+
+def lift(rows, bpp, target):
+    """Brightens the mid-tones so the median lit pixel reaches `target`; black stays black,
+    the brightest stays brightest and every pixel keeps its hue. The art is then at full
+    strength in game and the player dims it with the opacity setting."""
+    lit = sorted(v for line in rows for v in (max(line[x:x + 3]) for x in range(0, len(line), bpp)) if v > FLOOR)
+    if not lit:
+        return
+    span = 255.0 - FLOOR
+    median = (lit[len(lit) // 2] - FLOOR) / span
+    gamma = max(0.45, min(1.0, math.log((target - FLOOR) / span) / math.log(median))) if 0 < median < 1 else 1.0
+    gain = [0.0] * 256
+    for v in range(FLOOR + 1, 256):
+        gain[v] = 255.0 * ((v - FLOOR) / span) ** gamma / v
+    for line in rows:
+        for x in range(0, len(line), bpp):
+            g = gain[max(line[x:x + 3])]
+            for i in range(x, x + 3):
+                line[i] = min(255, int(line[i] * g + 0.5))
+
+
 if __name__ == "__main__":
-    write_tga(sys.argv[2], *read_png(sys.argv[1]))
+    w, h, bpp, rows = read_png(sys.argv[1])
+    if len(sys.argv) > 3:
+        lift(rows, bpp, int(sys.argv[3]))
+    write_tga(sys.argv[2], w, h, bpp, rows)
