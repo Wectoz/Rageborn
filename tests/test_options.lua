@@ -6,6 +6,9 @@ StaticPopupDialogs = {}
 local asked
 StaticPopup_Show = function(_, text, _, fn) asked = { text = text, fn = fn } end
 ACCEPT, CANCEL = "Accept", "Cancel"
+local wheel
+ColorPickerFrame = { SetupColorPickerAndShow = function(_, info) wheel = info end,
+                     GetColorRGB = function() return 0.2, 0.4, 0.6 end }
 
 local ns = Stub.load("Util.lua", {})
 for _, f in ipairs({"Locale.lua", "Data.lua", "Database.lua", "ArtList.lua", "PaintedList.lua", "Styles.lua",
@@ -66,6 +69,16 @@ return {
   for _, w in ipairs(made) do if w.scripts.OnValueChanged then w.scripts.OnValueChanged(w, 150) end end
   assert(DB:Alert("overpower").size == 1.5 and DB:Alert("overpower").opacity == 1.5, DB:Alert("overpower").size)
   assert(DB:Profile().scale == 1.5) end},
+{"picking a colour on the wheel tints painted art; cancelling puts it back", function()
+  RagebornDB = nil; DB:Init("Bob-Realm"); O:Select("alert", "overpower")
+  local o = DB:Alert("overpower")
+  assert(ns.Styles.Get(o.style).family == "painted" and o.recolor == false)
+  for _, w in ipairs(made) do                   -- the first colour swatch made is the alert's colour
+    local size = w.calls.SetSize
+    if w.kind == "Button" and size and size[1] == 80 and size[2] == 26 then w.scripts.OnClick(w); break end
+  end
+  wheel.swatchFunc(); assert(o.recolor == true and o.color.r == 0.2 and o.color.b == 0.6)
+  wheel.cancelFunc(); assert(o.recolor == false and o.color.r == 1) end},
 {"profiles: nothing changes in combat", function()
   RagebornDB = nil; DB:Init("Bob-Realm"); O:Select("profiles")
   combat = true; assert(press(ns.L.OPT_PROFILE_NEW) == 1); combat = false

@@ -274,7 +274,8 @@ local function Dropdown(parent, x, y, w, items, get, set)
     return b
 end
 
--- get() -> {r, g, b}; set(r, g, b). Opens the game's colour picker; cancel restores.
+-- get() -> {r, g, b}; set(r, g, b, cancelled). Opens the game's colour wheel; cancel restores.
+-- b.onOpen, when set, runs as the wheel opens.
 local function Swatch(parent, x, y, label, get, set)
     local b = CreateFrame("Button", nil, parent)
     At(b, parent, x, y, 80, 26)
@@ -289,12 +290,13 @@ local function Swatch(parent, x, y, label, get, set)
     b:SetScript("OnLeave", function() edge(C.quiet) end)
     b:SetScript("OnClick", function()
         if not (b.on and ColorPickerFrame and ColorPickerFrame.SetupColorPickerAndShow) then return end
+        if b.onOpen then b.onOpen() end
         local c = get()
         local r0, g0, b0 = c.r, c.g, c.b
         ColorPickerFrame:SetupColorPickerAndShow({
             r = r0, g = g0, b = b0, hasOpacity = false,
             swatchFunc = function() set(ColorPickerFrame:GetColorRGB()) end,
-            cancelFunc = function() set(r0, g0, b0) end,
+            cancelFunc = function() set(r0, g0, b0, true) end,
         })
     end)
     function b.Refresh() local c = get(); colour:SetColorTexture(c.r, c.g, c.b, 1) end
@@ -497,7 +499,16 @@ local function BuildAlert()
     stage:SetClipsChildren(true)
 
     Heading(p, 200, 212, 640, L.OPT_APPEARANCE)
-    p.Add(Swatch(p, 200, 239, L.OPT_COLOUR, colour("color")))
+    -- Painted art keeps its own colours until one is picked on the wheel: picking turns Tint
+    -- on, cancelling the wheel puts Tint back as it was.
+    local getColour, setColour = colour("color")
+    local tintBefore
+    local swatch = p.Add(Swatch(p, 200, 239, L.OPT_COLOUR, getColour, function(r, g, b, cancelled)
+        if cancelled then opt().recolor = tintBefore
+        elseif style().family == "painted" then opt().recolor = true end
+        setColour(r, g, b)
+    end))
+    function swatch.onOpen() tintBefore = opt().recolor end
     when(Check(p, 290, 239, 64, L.OPT_TINT, field("recolor")), function() return style().family == "painted" end)
     when(Slider(p, 360, 236, 200, L.OPT_SIZE, 50, 200, 5, "%d%%", percent("size")),
         function() return style().key ~= "vignette" end)

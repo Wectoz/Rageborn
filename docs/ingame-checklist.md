@@ -80,3 +80,9 @@ For each: it appears when it should, disappears when it should, and its timer (w
 - [ ] On a non-warrior: no Rageborn frames, no errors, `/rb` prints "Rageborn only works on a warrior."
 - [ ] A full fight (pull, stance dance, every proc, a defensive, death or kill) with `/console scriptErrors 1`: no error popup, BugSack empty, no "action blocked".
 - [ ] The probe's fight steps are run (`docs/probe-results.md`) before `RagebornProbe` is deleted.
+
+## Legacy menu and colours
+
+- [ ] Gallery: the Modern and Legacy buttons switch the list; the menu in use is underlined; an alert opens on the menu its design is in.
+- [ ] Legacy painted art (Overpower, Revenge, Victory Rush, Battle Shout) is bright at 100 % opacity and dims with the Opacity slider.
+- [ ] On a painted design, Colour opens the game's colour wheel; picking a colour recolours the art live and ticks Tint; Cancel puts the art back; unticking Tint returns its own colours.
