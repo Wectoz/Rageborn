@@ -1,3 +1,4 @@
 *.pyc
 docs/icons/agents/
 .superpowers/
+codex.log
