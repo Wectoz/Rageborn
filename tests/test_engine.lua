@@ -85,6 +85,12 @@ T("overpower: the Bloodthrill buff opens it like a dodge does, for as long as th
   fake.buff = { expires = 14, duration = 5 }
   local s, i = E:Evaluate("overpower", 10); assert(s == true and i.remaining == 4)
   assert(E:Evaluate("overpower", 15) == false) end),
+T("a hidden buff or debuff keeps what was showing, until its time is up or the target is gone", function()
+  fake.buff = { expires = 16, duration = 8 }; assert(E:Evaluate("enrage", 10) == true)
+  ns.Detect.PlayerBuff = function() return false end                       -- hidden by the client
+  local s, i = E:Evaluate("enrage", 12); assert(s == true and i.expires == 16)
+  assert(E:Evaluate("enrage", 17) == false)
+  assert(E:Evaluate("goreDrinker", 12) == false) end),                     -- never seen: stays hidden
 T("unknown spell never shows", function()
   fake.known = false; fake.usable = true; local s, i = E:Evaluate("execute", 1); assert(s == false and i == nil) end),
 T("the highest known rank is reported", function()

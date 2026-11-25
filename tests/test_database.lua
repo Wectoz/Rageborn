@@ -204,6 +204,24 @@ return {
 {"List is sorted", function()
   fresh(nil); DB:Create("Zed"); DB:Create("Alpha"); local l = DB:List()
   assert(l[1] == "Alpha" and l[2] == "Bob-Realm" and l[3] == "Zed") end},
+{"the talent switch happens when the spec changes, and leaves a profile picked by hand alone", function()
+  fresh(nil); DB:Create("A"); DB:Create("B"); DB:SetSpecProfile("fury", "A")
+  spec, combat = "fury", false; assert(DB:SpecSwitch() == true and DB:Current() == "A")
+  DB:Use("B"); assert(DB:SpecSwitch() == false and DB:Current() == "B")          -- same spec: stays
+  DB:Init("Bob-Realm"); assert(DB:SpecSwitch() == false and DB:Current() == "B") -- also at the next login
+  spec = "prot"; DB:SpecSwitch(); spec = "fury"; assert(DB:SpecSwitch() == true and DB:Current() == "A")
+  DB:Use("B"); DB:SetSpecProfile("fury", "A"); assert(DB:SpecSwitch() == true) end},    -- a new choice applies
+{"an older save: a visible glow-only alert stays visible, and a new threshold gets its default", function()
+  fresh({ profiles = { ["Bob-Realm"] = { alerts = { racial = { opacity = 0.8 }, fearBreak = { opacity = 0 },
+          sunder = { threshold = 0 }, lowHealth = { threshold = 20 } } } }, chars = {} })
+  assert(DB:Alert("racial").onScreen == true and DB:Alert("fearBreak").onScreen == false)
+  assert(DB:Alert("sunder").threshold == 5 and DB:Alert("lowHealth").threshold == 20)
+  DB:Alert("racial").onScreen = false; DB:Init("Bob-Realm"); assert(DB:Alert("racial").onScreen == false) end},
+{"a shared profile doesn't carry the window or the minimap button", function()
+  fresh(nil); DB:Profile().minimap.hide = true; DB:Profile().window.x = 99
+  assert(not DB:Export("Bob-Realm"):find("minimap") and not DB:Export("Bob-Realm"):find("window"))
+  assert(DB:Import("In", DB:Export("Bob-Realm")) == true)
+  assert(RagebornDB.profiles.In.minimap.hide == false and RagebornDB.profiles.In.window.x == 0) end},
 {"every alert a preset names exists", function()
   for name, set in pairs(DB.PRESET_ALERTS) do
     for key in pairs(set) do assert(ns.Data.BY_KEY[key], name .. " " .. key) end

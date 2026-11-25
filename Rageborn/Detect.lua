@@ -48,11 +48,14 @@ end
 
 -- expirationTime, duration of the first of these buffs on the player.
 -- names (lower case, optional) find it by name when its ID isn't one of these.
+-- nil = you don't have it; false = the client hid the answer (can't tell).
 function Detect.PlayerBuff(spellIDs, names)
     local get = C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID
+    local hidden = false
     local function times(aura)
         local expires, duration = Clean(aura.expirationTime), Clean(aura.duration)
         if type(expires) == "number" then return expires, duration end
+        hidden = true
     end
     for _, id in ipairs(spellIDs) do
         local aura = Call(get, id)
@@ -66,8 +69,11 @@ function Detect.PlayerBuff(spellIDs, names)
             for _, want in ipairs(names) do
                 if name:lower() == want and times(aura) then return times(aura) end
             end
+        else
+            hidden = true
         end
     end
+    if hidden then return false end
     return nil
 end
 
@@ -177,7 +183,7 @@ function Detect.Enemies()
     if type(plates) ~= "table" then return nil end
     local n = 0
     for _, plate in ipairs(plates) do
-        local unit = type(plate) == "table" and Clean(plate.namePlateUnitToken)
+        local unit = Call(function() return plate.namePlateUnitToken end)     -- a restricted plate may refuse the read
         if unit and Call(UnitCanAttack, "player", unit) == true and Call(UnitAffectingCombat, unit) == true
             and Call(UnitIsDead, unit) ~= true then
             n = n + 1

@@ -129,6 +129,7 @@ Use a mob your level. This is also the probe's fight: do steps 3–6 of `docs/pr
 | Slowed gnome never glows | While slowed: `/dump GetUnitSpeed("player")`. |
 | Rend / Thunder Clap missing, or Sunder, never appears | In the fight: `/dump C_UnitAuras.GetAuraDataByIndex("target", 1, "HARMFUL")`. |
 | Demo Shout: pull never appears | `/dump #C_NamePlate.GetNamePlates()` with the mobs on you. |
+| Berserker Rage alert doesn't show when sapped or gouged | With the effect on you: `/dump C_LossOfControl.GetActiveLossOfControlData(1)`. I need its `locType`. |
 | Spec profile doesn't switch | `/dump GetTalentTabInfo(1)` and `/dump IsPlayerSpell(23881)` (Bloodthirst), `12294` (Mortal Strike), `23922` (Shield Slam). |
 | A sound is silent | Its name in the list. |
 | A button doesn't glow | Which bar addon, and whether it is a spell or a macro on the button. |

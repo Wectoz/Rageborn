@@ -259,12 +259,15 @@ local function OpenPopup(owner, items, current, onPick)
     if popup:IsShown() and popup.owner == owner then popup:Hide() return end
     popup.owner, popup.items, popup.current, popup.onPick, popup.offset = owner, items, current, onPick, 0
     popup:ClearAllPoints()
-    if owner.up then        -- a dropdown at the foot of the window opens upwards
+    local height = math.min(#items, 8) * 24 + 8
+    local bottom, floor = owner:GetBottom(), win:GetBottom()
+    -- a dropdown at the foot of the window opens upwards
+    if owner.up or (bottom and floor and bottom - floor < height) then
         popup:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 2)
     else
         popup:SetPoint("TOPLEFT", owner, "BOTTOMLEFT", 0, -2)
     end
-    popup:SetSize(owner.w, math.min(#items, 8) * 24 + 8)
+    popup:SetSize(owner.w, height)
     popup.Draw()
     popup:Show()
 end
@@ -370,7 +373,10 @@ local function Scroller(parent, x, y, w, h)
         end
     end
     sf:EnableMouseWheel(true)
-    sf:SetScript("OnMouseWheel", function(_, d) sf.pos = sf.pos - d * 48; sf.Sync() end)
+    sf:SetScript("OnMouseWheel", function(_, d)
+        if popup then popup:Hide() end      -- its dropdown is about to move away under it
+        sf.pos = sf.pos - d * 48; sf.Sync()
+    end)
     return sf, child
 end
 
@@ -540,6 +546,7 @@ local function BuildAlert()
     end))
     Label(p, 200, 139, 11, C.secondary, L.OPT_DESIGN:upper())
     local about = Label(p, 200, 90, 12, C.secondary, "", 410)     -- what it is and when it shows
+    about:SetWordWrap(false)        -- one line: a second would land on the tick boxes
     local styleName = Label(p, 200, 154, 13, C.ink, "")
     p.Add(Button(p, 200, 177, 124, L.OPT_BROWSE, function() Options:Select("gallery", key()) end))
 
@@ -814,7 +821,7 @@ local function BuildMacros()
             local body, why = M.Body(m)           -- the same text Create writes
             local exists = M.Exists(m)
             r.body = body
-            r.box:SetText(body)
+            if r.box:GetText() ~= body then r.box:SetText(body) end     -- keeps a selection being copied
             measure:SetText(body)
             local textH = measure:GetStringHeight()
             local boxH = type(textH) == "number" and textH > 0 and math.ceil(textH) + 16 or 17 + 15 * visualLines(body)

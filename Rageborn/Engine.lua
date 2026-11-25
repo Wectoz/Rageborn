@@ -12,7 +12,7 @@ local Engine = {}
 ns.Engine = Engine
 
 local subscribers = {}
-local windows, actives, last, told, recast
+local windows, actives, last, told, recast, held
 local shoutExpiry      -- nil = missing
 local testing = false
 
@@ -20,7 +20,7 @@ local EXECUTE_HEALTH = 20
 local AVOID = { DODGE = true, PARRY = true, BLOCK = true }
 
 function Engine:Reset()
-    windows, actives, last, told, recast = {}, {}, {}, {}, {}
+    windows, actives, last, told, recast, held = {}, {}, {}, {}, {}, {}
     shoutExpiry = nil
     testing = false
 end
@@ -79,7 +79,7 @@ local function evalUsable(def, opt, spells, now)
     local left, closes = windowLeft(def.key, now)
     if not left and def.procBuff then       -- a buff that opens it (Bloodthrill for Overpower)
         local expires = D.PlayerBuff({ def.procBuff })
-        if expires and expires > now then left, closes = expires - now, expires end
+        if type(expires) == "number" and expires > now then left, closes = expires - now, expires end
     end
     local procOpen = left ~= nil
     if def.key == "execute" then
@@ -185,8 +185,14 @@ local function evalDebuff(def, opt, spells, now)
         if stacks ~= false or D.InCombat() ~= true or D.TargetEnemy() ~= true then return false end
         return true, { spellID = spells[1], missing = true }
     end
+    if stacks == nil then   -- can't read it right now: keep what was showing while the target stands
+        local was = last[def.key] and held[def.key]
+        if was and D.TargetEnemy() == true and (not was.expires or was.expires > now) then return true, was end
+        return false
+    end
     if not stacks and not expires then return false end
     local info = { spellID = spells[1], stacks = stacks }
+    held[def.key] = info
     if expires and expires > now then
         info.remaining, info.expires = expires - now, expires
         if def.defaultThreshold and info.remaining <= (opt.threshold or 0) then info.urgent = true end
@@ -197,8 +203,14 @@ end
 -- An effect that triggered on you: up while the game shows it, with its own time left.
 local function evalBuff(def, opt, spells, now)
     local expires, duration = ns.Detect.PlayerBuff(def.buffs, def.buffNames)
+    if expires == false then    -- hidden right now: keep what was showing until its time is up
+        local was = last[def.key] and held[def.key]
+        if was and (not was.expires or was.expires > now) then return true, was end
+        return false
+    end
     if not expires then return false end
     local info = { spellID = spells[1] }
+    held[def.key] = info
     if expires > now then info.remaining, info.expires, info.duration = expires - now, expires, duration end
     return true, info
 end

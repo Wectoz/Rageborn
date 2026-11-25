@@ -90,6 +90,17 @@ end
 local function repair(name)
     local db = RagebornDB
     if type(db.profiles[name]) ~= "table" then db.profiles[name] = {} end
+    -- settings saved by an older version, before the defaults fill the gaps
+    local saved = db.profiles[name].alerts
+    for key, a in pairs(type(saved) == "table" and saved or {}) do
+        local def = Data.BY_KEY[key]
+        if type(a) == "table" and def then
+            -- "Show on screen" used to be opacity 0: what the player set decides, not the default
+            if a.onScreen == nil and type(a.opacity) == "number" then a.onScreen = a.opacity ~= 0 end
+            -- an alert that gained a threshold was saved with 0: take the new default
+            if def.defaultThreshold and a.threshold == 0 then a.threshold = nil end
+        end
+    end
     U.DeepMerge(db.profiles[name], profileDefaults())
 end
 
@@ -107,6 +118,7 @@ function DB:Init(key)
     repair(name)
     -- which profile each talent tree uses, per character
     if type(db.specs) ~= "table" then db.specs = {} end
+    if type(db.lastSpec) ~= "table" then db.lastSpec = {} end
     if type(db.specs[key]) ~= "table" then db.specs[key] = {} end
     if not watcher and CreateFrame then
         watcher = CreateFrame("Frame")
@@ -225,6 +237,7 @@ end
 
 function DB:SetSpecProfile(spec, name)
     RagebornDB.specs[charKey][spec] = name
+    RagebornDB.lastSpec[charKey] = nil      -- a new choice applies at the next login or talent change
 end
 
 -- Switches to the profile chosen for the character's talents; in combat it waits for the
@@ -232,10 +245,16 @@ end
 function DB:SpecSwitch()
     local D = ns.Detect
     local spec = D and D.Spec()
-    local name = spec and self:SpecProfile(spec)
+    local retry = waiting
     waiting = false
+    if not spec then return false end
+    -- Only when the spec changes: a profile the player picked by hand stays until then.
+    local seen = RagebornDB.lastSpec
+    if seen[charKey] == spec and not retry then return false end
+    local name = self:SpecProfile(spec)
+    if name and name ~= current and D.InCombat() == true then waiting = true return false end
+    seen[charKey] = spec
     if not name or name == current then return false end
-    if D.InCombat() == true then waiting = true return false end
     self:Use(name)
     if ns.Say then ns.Say(ns.L.SPEC_SWITCHED:format(name)) end
     return true
@@ -335,7 +354,7 @@ function DB:Export(name)
     local profile = RagebornDB.profiles[name or current]
     if type(profile) ~= "table" then return nil, "ERR_NO_PROFILE" end
     local shared = {}
-    for k, v in pairs(profile) do if k ~= "window" then shared[k] = v end end
+    for k, v in pairs(profile) do if k ~= "window" and k ~= "minimap" then shared[k] = v end end
     return "RB1:" .. pack(shared)
 end
 
@@ -352,7 +371,7 @@ function DB:Import(name, text)
     if version ~= "1" then return false, "ERR_IMPORT_VERSION" end
     local t, stop = parse(body, 1, 1)
     if type(t) ~= "table" or stop ~= #body + 1 then return false, "ERR_IMPORT" end
-    t.window = nil
+    t.window, t.minimap = nil, nil       -- where the window and minimap button are is the reader's own
     local profile = fit(t, profileDefaults())
     if not profile then return false, "ERR_IMPORT" end
     profiles[name] = profile
