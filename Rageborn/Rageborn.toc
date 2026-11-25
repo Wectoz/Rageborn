@@ -2,7 +2,7 @@
 ## AllowLoadGameType: camelot
 ## Title: |cffc69b6dRageborn|r
 ## Notes: Warrior proc alerts, button glows and macros for WoW Forever.
-## Version: 0.1.0-beta1
+## Version: 0.1.0-beta2
 ## IconTexture: Interface\AddOns\Rageborn\Media\icon
 ## SavedVariables: RagebornDB
 ## AddonCompartmentFunc: Rageborn_OnCompartmentClick
