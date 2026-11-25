@@ -575,6 +575,7 @@ end
 ---------------------------------------------------------------- Gallery
 local TILE_SCALE = 0.26
 local FAMILIES = { "painted", "shape", "game" }
+local ERAS = { "modern", "legacy" }
 
 local function BuildGallery()
     local p = Page(L.OPT_LIBRARY, L.OPT_GALLERY)
@@ -583,6 +584,16 @@ local function BuildGallery()
 
     Label(p, 200, 106, 13, C.ink, L.OPT_DESIGNS_FOR)
     p.Add(Dropdown(p, 290, 101, 222, alertItems, key, function(k) Options:Select("gallery", k) end))
+    -- two menus: Modern and Legacy; the one in use is underlined
+    local era, eraFor, tabs = "modern", nil, {}
+    for i, e in ipairs(ERAS) do
+        local tab = p.Add(Button(p, 532 + (i - 1) * 96, 101, 90, L["OPT_ERA_" .. e], function() era = e; p.Refresh() end))
+        local line = tab:CreateTexture(nil, "OVERLAY")
+        line:SetColorTexture(C.ember[1], C.ember[2], C.ember[3], 1)
+        line:SetPoint("BOTTOMLEFT", tab, "BOTTOMLEFT", 0, 0); line:SetPoint("BOTTOMRIGHT", tab, "BOTTOMRIGHT", 0, 0)
+        line:SetHeight(2)
+        tabs[e] = line
+    end
     local sf, child = Scroller(p, 200, 148, 626, 395)
     for _, family in ipairs(FAMILIES) do heads[family] = Heading(child, 0, 0, 626, L["OPT_FAMILY_" .. family]) end
 
@@ -628,12 +639,17 @@ local function BuildGallery()
     function p.Refresh()
         refreshControls()
         if not ns.DB:Alert(key()) then return end
-        if shownFor ~= key() then            -- lay the tiles out for this alert
-            shownFor = key()
+        if eraFor ~= key() then              -- a newly chosen alert opens on the menu its design is in
+            eraFor = key()
+            era = Styles.Get(Styles.Resolve(ns.DB:Alert(key()).style)).era
+        end
+        for e, line in pairs(tabs) do line:SetShown(e == era) end
+        if shownFor ~= key() .. era then     -- lay the tiles out for this alert and menu
+            shownFor = key() .. era
             for _, t in pairs(tiles) do t:Hide() end
             for _, h in pairs(heads) do h:Hide() end
             local y, n, family = 0, 0, nil
-            for _, style in ipairs(Styles.List(key())) do
+            for _, style in ipairs(Styles.List(key(), era)) do
                 if style.family ~= family then
                     if family then y = y + 24 + 156 * math.ceil(n / 4) end
                     family, n = style.family, 0

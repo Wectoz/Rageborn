@@ -140,6 +140,16 @@ return {
   local seen = {}
   for _, d in ipairs(Styles.List()) do assert(not seen[d.key], d.key); seen[d.key] = true end
   assert(seen["paint:overpower_side1"] and seen.ring and seen.gameArt) end},
+{"every design is in one menu: shapes modern, game art legacy, painted by its list entry", function()
+  local n = {modern = 0, legacy = 0}
+  for _, d in ipairs(Styles.List()) do
+    n[d.era] = n[d.era] + 1
+    if d.family == "shape" then assert(d.era == "modern", d.key) end
+    if d.family == "game" then assert(d.era == "legacy", d.key) end
+  end
+  for _, p in ipairs(ns.PAINTED) do assert(Styles.Get("paint:" .. p.file).era == (p.legacy and "legacy" or "modern"), p.file) end
+  assert(#Styles.List("overpower", "modern") == n.modern and #Styles.List("overpower", "legacy") == n.legacy)
+  for _, d in ipairs(Styles.List("overpower", "legacy")) do assert(d.era == "legacy", d.key) end end},
 {"DefaultFor: the alert's first side design when it has one, else the definition's style", function()
   assert(Styles.DefaultFor({key = "overpower", defaultStyle = "gameArt"}) == "paint:overpower_side1")
   assert(Styles.DefaultFor({key = "shieldWall", defaultStyle = "ring"}) == "ring") end},

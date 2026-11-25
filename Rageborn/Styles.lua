@@ -9,6 +9,8 @@ local ADDON, ns = ...
 --   family "shape"  drawn from our own white textures (Media\Textures), tinted in game
 --   family "game"   the game's own proc overlay art, by file ID, offered only when this
 --                   client has the file
+-- Each style also has an era, the gallery menu it is listed in: "legacy" (the game's own
+-- art and our painted art in the old-game look) or "modern" (everything else).
 --
 -- A style is one builder: build(frame, ctx) -> style. frame is BASE_W x BASE_H, centred on
 -- the alert. ctx = { key = alert key, icon = texture }. The style object may have:
@@ -46,6 +48,7 @@ function Styles.Register(def)
     assert(type(def) == "table" and type(def.key) == "string", "style needs a key")
     assert(type(def.build) == "function", "style " .. def.key .. " needs a builder")
     assert(not byKey[def.key], "style " .. def.key .. " registered twice")
+    def.era = def.era or (def.family == "game" and "legacy" or "modern")
     catalog[#catalog + 1] = def
     byKey[def.key] = def
 end
@@ -77,11 +80,12 @@ end
 
 -- For the gallery: the alert's own painted art, the other painted art, the shape styles,
 -- then the game art this client has. Without an alert the painted art is simply first.
-function Styles.List(alertKey)
+-- era ("modern" | "legacy") keeps only that gallery menu's designs.
+function Styles.List(alertKey, era)
     local list = {}
     local function take(test)
         for _, def in ipairs(catalog) do
-            if usable(def) and test(def) then list[#list + 1] = def end
+            if usable(def) and (era == nil or def.era == era) and test(def) then list[#list + 1] = def end
         end
     end
     take(function(d) return d.family == "painted" and alertKey ~= nil and d.alert == alertKey end)
@@ -433,6 +437,7 @@ end
 
 for _, entry in ipairs(ns.PAINTED or {}) do
     Styles.Register({ key = "paint:" .. entry.file, family = "painted", label = entry.label,
+        era = entry.legacy and "legacy" or nil,
         alert = entry.alert, layout = entry.layout, file = ART .. entry.file,
         sides = entry.layout == "sides", build = BuildPainted(entry) })
 end
