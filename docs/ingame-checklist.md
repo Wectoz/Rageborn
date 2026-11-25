@@ -86,3 +86,11 @@ For each: it appears when it should, disappears when it should, and its timer (w
 - [ ] Gallery: the Modern and Legacy buttons switch the list; the menu in use is underlined; an alert opens on the menu its design is in.
 - [ ] Legacy painted art (Overpower, Revenge, Victory Rush, Battle Shout) is bright at 100 % opacity and dims with the Opacity slider.
 - [ ] On a painted design, Colour opens the game's colour wheel; picking a colour recolours the art live and ticks Tint; Cancel puts the art back; unticking Tint returns its own colours.
+
+## Settings window: red look, fonts, size
+
+- [ ] The window is oxblood and bone: red title bar (darker at the foot), solid red selected row, red ticks; no orange left anywhere.
+- [ ] General, bottom row: Window size 70–130 % resizes the window and it stays where it was; `/reload` keeps size and place.
+- [ ] Headings and Text each offer Friz Quadrata, Morpheus, Skurri, Arial Narrow; every page changes at once, nothing is cut off or overlaps in any of them. The three lists open upwards.
+- [ ] The alert page shows the design's menu after its name, e.g. "Overpower: sides 1 (Legacy)".
+- [ ] Macros page: each text box fits its text exactly; with the page open, creating or deleting a macro in the game's macro window, or moving a shield in or out of the bags, updates the rows by itself.

@@ -79,6 +79,23 @@ return {
   end
   wheel.swatchFunc(); assert(o.recolor == true and o.color.r == 0.2 and o.color.b == 0.6)
   wheel.cancelFunc(); assert(o.recolor == false and o.color.r == 1) end},
+{"the window keeps its place on screen at any size, and takes its fonts from the profile", function()
+  RagebornDB = nil; DB:Init("Bob-Realm"); O:Open()
+  local win, bar
+  for _, w in ipairs(made) do
+    if not win and w.calls.SetSize and w.calls.SetSize[1] == 860 then win = w end
+    if win and not bar and w.scripts.OnDragStop then bar = w end     -- the title bar is made right after the window
+  end
+  local window = DB:Profile().window
+  window.scale, window.textFont = 0.5, "morpheus"
+  win.GetCenter = function() return 500, 300 end; UIParent.GetCenter = function() return 400, 300 end
+  bar.scripts.OnDragStop(); assert(window.x == -150 and window.y == -150, window.x)
+  O:Open()
+  assert(win.calls.SetScale[1] == 0.5 and win.calls.SetPoint[4] == -300 and win.calls.SetPoint[5] == -300)
+  local fonts = {}
+  for _, w in ipairs(made) do if w.calls.SetFont then fonts[w.calls.SetFont[1]] = true end end
+  assert(fonts["Fonts\\MORPHEUS.TTF"] and not fonts["Fonts\\ARIALN.TTF"])   -- text boxes already made were re-lettered
+  win.GetCenter, UIParent.GetCenter = nil, nil; RagebornDB = nil; DB:Init("Bob-Realm") end},
 {"profiles: nothing changes in combat", function()
   RagebornDB = nil; DB:Init("Bob-Realm"); O:Select("profiles")
   combat = true; assert(press(ns.L.OPT_PROFILE_NEW) == 1); combat = false

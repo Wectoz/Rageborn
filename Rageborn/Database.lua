@@ -36,7 +36,7 @@ local function alertDefaults(def, index, count)
 end
 
 local function profileDefaults()
-    local p = { enabled = true, scale = 1, sounds = true, critSound = "none", glowEveryMacroSpell = false, window = { x = 0, y = 0 }, alerts = {} }
+    local p = { enabled = true, scale = 1, sounds = true, critSound = "none", glowEveryMacroSpell = false, window = { x = 0, y = 0, scale = 1, headFont = "friz", textFont = "arial" }, alerts = {} }
     local count, index = {}, {}
     for _, def in ipairs(Data.ALERTS) do count[def.group] = (count[def.group] or 0) + 1 end
     for _, def in ipairs(Data.ALERTS) do

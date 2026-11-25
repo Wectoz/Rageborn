@@ -16,15 +16,31 @@ local function hex(s)
     return { tonumber(s:sub(1, 2), 16) / 255, tonumber(s:sub(3, 4), 16) / 255, tonumber(s:sub(5, 6), 16) / 255 }
 end
 local C = {
-    body = hex("17191B"), well = hex("121416"), cap = hex("202325"), control = hex("292C2E"),
-    hover = hex("34383A"), rule = hex("474A4A"), quiet = hex("858784"), secondary = hex("B8B6AE"),
-    ink = hex("F3EEE4"), ember = hex("F47750"), emberGround = hex("352924"),
+    body = hex("161112"), well = hex("0C090A"), cap = hex("211A1B"), control = hex("2A2021"),
+    hover = hex("3A2E30"), rule = hex("4A3536"), quiet = hex("8C7B78"), secondary = hex("C9B9AD"),
+    ink = hex("EFE6D6"), ember = hex("D8372B"), emberGround = hex("3A1614"), bar = hex("5C1512"),
 }
+-- The game's own fonts; the player picks one for headings and one for text.
+local FONTS = { { "friz", "Fonts\\FRIZQT__.TTF" }, { "morpheus", "Fonts\\MORPHEUS.TTF" },
+                { "skurri", "Fonts\\SKURRI.TTF" }, { "arial", "Fonts\\ARIALN.TTF" } }
+local WINDOW_SCALES = { 70, 80, 90, 100, 110, 120, 130 }
 local GLOW_KINDS = { "procLoop", "ants", "pulse", "corners" }
 local SIDES = { "both", "left", "right" }
 local THRESHOLD = { battleShout = { 1, 15, "%d s" }, lowHealth = { 10, 60, "%d%%" } }
 
 local win, pages, railRows = nil, {}, {}
+local applyWindow
+
+local FONT_FILE, lettered = {}, {}      -- lettered: everything with a font, { object, size, title }
+for _, f in ipairs(FONTS) do FONT_FILE[f[1]] = f[2] end
+local function fontFile(title)
+    local w = ns.DB:Profile().window
+    return FONT_FILE[title and w.headFont or w.textFont] or FONT_FILE[title and "friz" or "arial"]
+end
+local function SetFont(obj, size, title)
+    lettered[#lettered + 1] = { obj, size, title }
+    obj:SetFont(fontFile(title), size, "")
+end
 local selected = { page = "general" }
 
 ----------------------------------------------------------------------
@@ -61,7 +77,7 @@ end
 
 local function Text(parent, size, c, title)
     local fs = parent:CreateFontString(nil, "OVERLAY")
-    fs:SetFont((title and GameFontNormal or ChatFontNormal):GetFont(), size, "")
+    SetFont(fs, size, title)
     fs:SetTextColor(c[1], c[2], c[3])
     fs:SetJustifyH("LEFT")
     return fs
@@ -237,7 +253,11 @@ local function OpenPopup(owner, items, current, onPick)
     if popup:IsShown() and popup.owner == owner then popup:Hide() return end
     popup.owner, popup.items, popup.current, popup.onPick, popup.offset = owner, items, current, onPick, 0
     popup:ClearAllPoints()
-    popup:SetPoint("TOPLEFT", owner, "BOTTOMLEFT", 0, -2)
+    if owner.up then        -- a dropdown at the foot of the window opens upwards
+        popup:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 2)
+    else
+        popup:SetPoint("TOPLEFT", owner, "BOTTOMLEFT", 0, -2)
+    end
     popup:SetSize(owner.w, math.min(#items, 8) * 24 + 8)
     popup.Draw()
     popup:Show()
@@ -309,7 +329,7 @@ local function Input(parent, x, y, w)
     At(e, parent, x, y, w, 26)
     Fill(e, C.well)
     local edge = Border(e, C.rule)
-    e:SetFont(ChatFontNormal:GetFont(), 13, "")
+    SetFont(e, 13)
     e:SetTextColor(C.ink[1], C.ink[2], C.ink[3])
     e:SetTextInsets(8, 8, 0, 0)
     e:SetAutoFocus(false)
@@ -457,6 +477,24 @@ local function BuildGeneral()
     p.Add(Button(p, 200, 511, 140, L.OPT_RESET_ALL, function()
         Confirm(L.OPT_RESET_ASK:format(ns.DB:Current()), L.OPT_RESET, function() ns.DB:Reset() end)
     end))
+    -- this window: its size and its two fonts
+    local function windowSetting(x, w, labelX, label, name, items)
+        Label(p, labelX, 517, 12, C.secondary, label)
+        p.Add(Dropdown(p, x, 511, w, items, function() return prof().window[name] end,
+            function(v) prof().window[name] = v; applyWindow(); p.Refresh() end)).up = true
+    end
+    local function fontItems()
+        local items = {}
+        for _, f in ipairs(FONTS) do items[#items + 1] = { key = f[1], label = L["FONT_" .. f[1]] } end
+        return items
+    end
+    windowSetting(406, 66, 356, L.OPT_WIN_SCALE, "scale", function()
+        local items = {}
+        for _, v in ipairs(WINDOW_SCALES) do items[#items + 1] = { key = v / 100, label = v .. "%" } end
+        return items
+    end)
+    windowSetting(544, 116, 486, L.OPT_FONT_HEAD, "headFont", fontItems)
+    windowSetting(704, 136, 674, L.OPT_FONT_TEXT, "textFont", fontItems)
     return p
 end
 
@@ -571,7 +609,7 @@ local function BuildAlert()
         kind.Able(o.glow); glowColour.Able(o.glow)
 
         local st = style()
-        styleName:SetText(st.label or st.key)
+        styleName:SetText((st.label or st.key) .. "  (" .. L["OPT_ERA_" .. st.era] .. ")")
         p.Say(st.key ~= o.style and L.OPT_DESIGN_GONE:format(st.label or st.key) or nil)
         if not previews[d.key] then
             previews[d.key] = ns.Alerts:Preview(d.key, stage)
@@ -682,7 +720,7 @@ local function BuildGallery()
 end
 
 ---------------------------------------------------------------- Macros
--- shortcut: visual lines are guessed at 80 characters each; measure the box if a body is ever cut off
+-- Used only where the client can't measure the text: a guess at 80 characters a line.
 local function visualLines(body)
     local n = 0
     for line in body:gmatch("[^\n]+") do n = n + math.ceil(#line / 80) end
@@ -696,6 +734,15 @@ local function BuildMacros()
     local none = Label(p, 200, 140, 13, C.secondary, L.MACRO_NONE, 624)
     local sf, child = Scroller(p, 200, 140, 624, 403)
     local rows = {}
+    local measure = Text(p, 12, C.ink)              -- the macro text, wrapped as the box wraps it
+    measure:SetWidth(588); measure:SetWordWrap(true); measure:Hide()
+    -- the page follows the bags, the macro list and the end of a fight while it is open
+    local watch = CreateFrame("Frame", nil, p)
+    for _, event in ipairs({ "BAG_UPDATE_DELAYED", "PLAYER_EQUIPMENT_CHANGED", "UPDATE_MACROS", "PLAYER_REGEN_ENABLED" }) do
+        pcall(watch.RegisterEvent, watch, event)
+    end
+    watch:SetScript("OnEvent", function() if p:IsVisible() then p.Refresh() end end)
+    p:SetScript("OnHide", function() for _, r in pairs(rows) do r.said = nil end end)
 
     local function row(m)
         local r = CreateFrame("Frame", nil, child)
@@ -706,7 +753,7 @@ local function BuildMacros()
         Fill(box, C.well); Border(box, C.rule)
         box:SetMultiLine(true)
         box:SetAutoFocus(false)
-        box:SetFont(ChatFontNormal:GetFont(), 12, "")
+        SetFont(box, 12)
         box:SetTextColor(C.ink[1], C.ink[2], C.ink[3])
         box:SetTextInsets(10, 10, 7, 7)
         -- read-only: typing puts the text back; it can still be selected and copied
@@ -736,13 +783,14 @@ local function BuildMacros()
             local exists = M.Exists(m)
             r.body = body
             r.box:SetText(body)
-            local boxH = 17 + 15 * visualLines(body)
+            measure:SetText(body)
+            local textH = measure:GetStringHeight()
+            local boxH = type(textH) == "number" and textH > 0 and math.ceil(textH) + 16 or 17 + 15 * visualLines(body)
             At(r.box, r, 8, 58, 608, boxH)
             r.create.text:SetText(not exists and L.MACRO_CREATE or r.created and L.MACRO_CREATED or L.MACRO_EXISTS)
             r.create.Able(not exists and not why)
             -- one line under the text: what the last click did, else why Create is off
             local said = r.said or why and L[why] or exists and not r.created and L.ERR_MACRO_EXISTS or ""
-            r.said = nil
             r.note:SetText(said)
             At(r.note, r, 8, 62 + boxH)
             local h = 79 + boxH + (said ~= "" and 21 or 0)
@@ -838,7 +886,7 @@ local function RailRow(parent, x, y, w, label, inset, page, key)
     b.fill = b:CreateTexture(nil, "BACKGROUND")
     b.fill:SetAllPoints(b)
     b.strip = b:CreateTexture(nil, "ARTWORK")
-    b.strip:SetColorTexture(C.ember[1], C.ember[2], C.ember[3], 1)
+    b.strip:SetColorTexture(C.ink[1], C.ink[2], C.ink[3], 1)
     b.strip:SetPoint("TOPLEFT", b, "TOPLEFT", 0, 0); b.strip:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 0, 0)
     b.strip:SetWidth(3)
     local text = Text(b, 13, C.ink)
@@ -849,7 +897,7 @@ local function RailRow(parent, x, y, w, label, inset, page, key)
         -- an alert row is lit on its own page only; Gallery keeps its own row lit
         local on = selected.page == page and (page ~= "alert" or selected.key == key)
         b.strip:SetShown(on)
-        local c = on and C.emberGround or hot and C.hover or C.well
+        local c = on and C.ember or hot and C.hover or C.well
         b.fill:SetColorTexture(c[1], c[2], c[3], 1)
     end
     b:SetScript("OnEnter", function() b.Paint(true) end)
@@ -892,13 +940,22 @@ local function savePosition()
     local cx, cy = UIParent:GetCenter()
     if not (x and cx) then return end
     local w = ns.DB:Profile().window
-    w.x, w.y = math.floor(x - cx + 0.5), math.floor(y - cy + 0.5)
+    local s = w.scale or 1          -- stored in screen units, so it holds at any window size
+    w.x, w.y = math.floor(x * s - cx + 0.5), math.floor(y * s - cy + 0.5)
 end
 
 local function restorePosition()
     local w = ns.DB:Profile().window
+    local s = w.scale or 1
     win:ClearAllPoints()
-    win:SetPoint("CENTER", UIParent, "CENTER", w.x or 0, w.y or 0)
+    win:SetPoint("CENTER", UIParent, "CENTER", (w.x or 0) / s, (w.y or 0) / s)
+end
+
+-- The window's size, fonts and place, from the profile.
+function applyWindow()
+    win:SetScale(ns.DB:Profile().window.scale or 1)
+    for _, f in ipairs(lettered) do f[1]:SetFont(fontFile(f[3]), f[2], "") end
+    restorePosition()
 end
 
 local function BuildWindow()
@@ -915,7 +972,10 @@ local function BuildWindow()
 
     local bar = CreateFrame("Frame", nil, win)
     At(bar, win, 1, 1, W - 2, 39)
-    Fill(bar, C.cap)
+    local red = Fill(bar, C.bar)
+    if CreateColor then     -- darker at the foot, where the client can shade a texture
+        pcall(red.SetGradient, red, "VERTICAL", CreateColor(0.29, 0.06, 0.055, 1), CreateColor(0.48, 0.11, 0.09, 1))
+    end
     Rule(win, 1, 40, W - 2)
     bar:EnableMouse(true)
     bar:RegisterForDrag("LeftButton")
@@ -954,7 +1014,7 @@ local function BuildWindow()
     RailRow(win, 8, 499, 159, L.OPT_MACROS, 8, "macros")
     RailRow(win, 8, 525, 159, L.OPT_PROFILES, 8, "profiles")
 
-    ns.DB:OnChange(function() if win:IsShown() then restorePosition(); Options:Refresh() end end)
+    ns.DB:OnChange(function() if win:IsShown() then applyWindow(); Options:Refresh() end end)
 end
 
 -- Shows a page; key is the alert it is about (alert page and gallery).
@@ -981,7 +1041,7 @@ end
 
 function Options:Open()
     if not win then BuildWindow() end
-    restorePosition()
+    applyWindow()
     win:Show()
     self:Select(selected.page, selected.key)
 end
