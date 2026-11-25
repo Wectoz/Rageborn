@@ -142,6 +142,13 @@ function Alerts:OnAlert(key, shown, info)
     a.info = info
 end
 
+-- The alert's icon for lists: its spell or talent as this character knows it.
+local OWN_ICON = { lowHealth = "Interface\\Icons\\INV_Misc_Bone_HumanSkull_01" }
+function Alerts:Icon(key)
+    local def = Data.BY_KEY[key]
+    return OWN_ICON[key] or spellIcon(def and Data.Known(def, ns.Detect.IsKnown) or highestSpell(key))
+end
+
 -- What the player calls the alert: its own text when it has one, else its spell's name.
 function Alerts:Name(key)
     local own = rawget(ns.L, "ALERT_" .. key)

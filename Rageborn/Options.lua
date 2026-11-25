@@ -960,8 +960,17 @@ local function RailRow(parent, x, y, w, label, inset, page, key)
     b.strip:SetColorTexture(C.ink[1], C.ink[2], C.ink[3], 1)
     b.strip:SetPoint("TOPLEFT", b, "TOPLEFT", 0, 0); b.strip:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 0, 0)
     b.strip:SetWidth(3)
+    if page == "alert" then     -- its spell or talent icon, set when the list is laid out
+        b.icon = b:CreateTexture(nil, "ARTWORK")
+        b.icon:SetSize(16, 16)
+        b.icon:SetPoint("LEFT", b, "LEFT", 9, 0)
+        b.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)      -- without the icon's own border
+        inset = 31
+    end
     local text = Text(b, 13, C.ink)
     text:SetPoint("LEFT", b, "LEFT", inset, 0)
+    text:SetPoint("RIGHT", b, "RIGHT", -2, 0)
+    text:SetWordWrap(false)
     text:SetText(label)
     b.page, b.key = page, key
     function b.Paint(hot)
@@ -992,6 +1001,7 @@ local function layoutRail()
                 local show = known(def)
                 row:SetShown(show)
                 if show then
+                    row.icon:SetTexture(ns.Alerts:Icon(def.key))
                     if not any then any = true; At(head, railChild, 8, y + 5); y = y + 22 end
                     At(row, railChild, 0, y, 159, 24)
                     y = y + 24

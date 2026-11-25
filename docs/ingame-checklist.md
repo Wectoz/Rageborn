@@ -33,6 +33,7 @@ fighting; do them first, because an error at load makes the rest pointless.
 
 ### An alert page (use Overpower)
 
+- [ ] Each alert in the left list has its spell or talent icon (your racial's own icon, a skull for Low health); no question marks, and no name runs into the edge.
 - [ ] The left list shows only alerts the warrior knows, grouped. Every page has one line under its name starting "Press now", "Active effect", "Reminder", "On the target" or "Warning".
 - [ ] With `/rb test` on, change every control: enabled, show on screen, colour, tint, size, opacity, spread, side, icon, name, timer, sound + Play, combat only, stance hint, glow, glow kind, glow colour. The preview follows, and so does the real alert.
 - [ ] **Colour** opens the game's colour wheel; picking recolours the art live and ticks Tint; Cancel puts it back; unticking Tint returns the art's own colours.
