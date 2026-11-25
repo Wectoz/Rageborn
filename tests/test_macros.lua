@@ -55,6 +55,10 @@ return {
   unknown = 1310317
   local body = Macros.Body(Macros.BY_KEY.chargeMouseover)
   assert(body:find("stance:1] Charge", 1, true) and not body:find("<", 1, true) and not body:find("1/2", 1, true)) end},
+{"a macro's icon is its main spell, at the rank the character knows", function()
+  fresh(); assert(Macros.IconSpell(Macros.BY_KEY.overpowerAny, ns.Detect.IsKnown) == 11585)
+  assert(Macros.IconSpell(Macros.BY_KEY.burst, ns.Detect.IsKnown) == 12328 and Macros.IconSpell(Macros.BY_KEY.rageShout, ns.Detect.IsKnown) == 25289)
+  assert(Macros.IconSpell(Macros.BY_KEY.overpowerAny, function(id) return id == 7384 end) == 7384) end},
 {"a lower rank is enough", function()
   fresh(); assert(#Macros.Available(function(id) return id == 6673 or id == 2687 end) == 1) end},
 {"Create refuses in combat", function() fresh(); inCombat = true; refused("rageShout", "ERR_IN_COMBAT") end},

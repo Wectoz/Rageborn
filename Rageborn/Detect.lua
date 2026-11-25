@@ -260,10 +260,3 @@ function Detect.Item(id)
     local count = Call(C_Item and C_Item.GetItemCount or GetItemCount, id)
     return type(name) == "string" and name or nil, icon, type(count) == "number" and count or 0
 end
-
--- What one costs at auction, in copper, from the Auctionator addon's last scan; nil without it.
-function Detect.Price(id)
-    local api = Auctionator and Auctionator.API and Auctionator.API.v1
-    local price = Call(api and api.GetAuctionPriceByItemID, "Rageborn", id)
-    return type(price) == "number" and price > 0 and price or nil
-end

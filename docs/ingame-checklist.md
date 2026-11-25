@@ -64,6 +64,7 @@ fighting; do them first, because an error at load makes the rest pointless.
 ### Macros
 
 - [ ] Tabs All / Arms / Fury / Protection filter the list; the page opens on your own spec's tab.
+- [ ] Each macro row shows its main spell's icon (Death Wish for RB Death Wish, Battle Shout for RB Rage Shout).
 - [ ] The page lists only macros whose spells the warrior knows. Each text box fits its text exactly, and the text can be selected and copied but not edited.
 - [ ] Create adds `RB <name>` to the character macros; the button turns to Created, and to Exists after `/reload`.
 - [ ] With the page open, deleting that macro in the game's macro window turns the row back by itself.
@@ -76,9 +77,9 @@ fighting; do them first, because an error at load makes the rest pointless.
 - [ ] Every row has an icon and the item's name; none shows a question mark or stays blank (a blank one doesn't exist on this client: tell me which).
 - [ ] Under each crafted item: who makes it and at what skill ("Alchemy (300)"), then "Needs:" with its materials and counts. Enchants show Enchanting and their materials.
 - [ ] With the auction house open, shift-click a material (or an item's row): its name lands in the search box. With the auction house closed, it goes into the chat line as a link.
-- [ ] With Auctionator, "materials 4g 20s" shows on the right when every material has a price.
 - [ ] Hovering a row shows the game's tooltip. Compare a few with the note beside the name: they should agree.
-- [ ] Items you carry show "x3" and so on. With Auctionator installed and scanned, prices show on the right; without it, none.
+- [ ] Items you carry show "x3" and so on. No prices anywhere; a red line under Flask says flasks are expensive.
+- [ ] Every material has its own small icon; the Damage tab shows the Berserker Stance icon and Tank the Defensive Stance icon; "Small extras" lists scrolls, armor kits, the shield spike and so on.
 - [ ] Forever, if you have them: drink Elixir of the Grizzly and Elixir of the Mongoose together. Do both buffs stay, and does crit go up by 4%? Same question for Grizzly with Elixir of Greater Strength. Nobody has published this; your answer fixes the order.
 - [ ] Items marked "unconfirmed on Forever" (R.O.I.D.S., Ground Scorpok Assay, Gordok Green Grog, Rumsey Rum): tell me if you know they can or can't be had.
 - [ ] On Forever the lists hold Forever's items (Elixir of the Grizzly, Frenzy Potions ...); on Era the Classic ones (Elixir of Giants, Juju Power ...).

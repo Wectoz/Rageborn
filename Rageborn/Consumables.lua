@@ -69,6 +69,15 @@ local LISTS = {
                 { 10646, "Goblin Sapper Charge", L.CONS_F_10646, prof = "engineering", skill = 205, mats = { { 4338, 1, "Mageweave Cloth" }, { 10505, 3, "Solid Blasting Powder" }, { 10560, 1, "Unstable Trigger" } } },
                 { 14530, "Heavy Runecloth Bandage", L.CONS_F_14530, prof = "firstaid", skill = 260, mats = { { 14047, 2, "Runecloth" } } },
             } },
+            { "extra", {
+                { 10310, "Scroll of Strength IV", L.CONS_F_10310 },
+                { 10309, "Scroll of Agility IV", L.CONS_F_10309 },
+                { 252488, "Forceful Rugged Armor Kit", L.CONS_F_252488 },
+                { 6043, "Iron Counterweight", L.CONS_F_6043, prof = "blacksmithing", skill = 140, mats = { { 3575, 4, "Iron Bar" }, { 3478, 2, "Coarse Grinding Stone" }, { 1705, 1, "Lesser Moonstone" } } },
+                { 18641, "Dense Dynamite", L.CONS_F_18641, prof = "engineering", mats = { { 15992, 2, "Dense Blasting Powder" }, { 14047, 3, "Runecloth" } } },
+                { 15993, "Thorium Grenade", L.CONS_F_15993, prof = "engineering", skill = 260, mats = { { 15994, 1, "Thorium Widget" }, { 12359, 3, "Thorium Bar" }, { 15992, 3, "Dense Blasting Powder" }, { 14047, 3, "Runecloth" } } },
+                { 8956, "Oil of Immolation", L.CONS_F_8956, prof = "alchemy", mats = { { 4625, 1, "Firebloom" }, { 3821, 1, "Goldthorn" }, { 8925, 1, "Crystal Vial" } } },
+            } },
             { "enchant", {
                 { spell = 20034, prof = "enchanting", skill = 300, mats = { { 14344, 4, "Large Brilliant Shard" }, { 12811, 2, "Righteous Orb" } } },
                 { spell = 1248668, prof = "enchanting", skill = 290, mats = { { 14344, 8, "Large Brilliant Shard" }, { 16203, 10, "Greater Eternal Essence" }, { 16204, 8, "Illusion Dust" }, { 12363, 4, "Arcane Crystal" } } },
@@ -120,6 +129,15 @@ local LISTS = {
                 { 20008, "Living Action Potion", L.CONS_F_20008, prof = "alchemy", skill = 285, mats = { { 13467, 2, "Icecap" }, { 13465, 2, "Mountain Silversage" }, { 10286, 2, "Heart of the Wild" }, { 8925, 1, "Crystal Vial" } } },
                 { 13442, "Mighty Rage Potion", L.CONS_F_13442, prof = "alchemy", skill = 255, mats = { { 8846, 3, "Gromsblood" }, { 8925, 1, "Crystal Vial" } } },
                 { 14530, "Heavy Runecloth Bandage", L.CONS_F_14530, prof = "firstaid", skill = 260, mats = { { 14047, 2, "Runecloth" } } },
+            } },
+            { "extra", {
+                { 10305, "Scroll of Protection IV", L.CONS_F_10305 },
+                { 10307, "Scroll of Stamina IV", L.CONS_F_10307 },
+                { 279258, "Wild Leather Armor Kit", L.CONS_F_279258 },
+                { 15564, "Rugged Armor Kit", L.CONS_F_15564 },
+                { 12645, "Thorium Shield Spike", L.CONS_F_12645, prof = "blacksmithing", skill = 250, mats = { { 12359, 4, "Thorium Bar" }, { 12644, 4, "Dense Grinding Stone" }, { 7076, 2, "Essence of Earth" } } },
+                { 8956, "Oil of Immolation", L.CONS_F_8956, prof = "alchemy", mats = { { 4625, 1, "Firebloom" }, { 3821, 1, "Goldthorn" }, { 8925, 1, "Crystal Vial" } } },
+                { 15993, "Thorium Grenade", L.CONS_F_15993, prof = "engineering", skill = 260, mats = { { 15994, 1, "Thorium Widget" }, { 12359, 3, "Thorium Bar" }, { 15992, 3, "Dense Blasting Powder" }, { 14047, 3, "Runecloth" } } },
             } },
             { "enchant", {
                 { spell = 20034, prof = "enchanting", skill = 300, mats = { { 14344, 4, "Large Brilliant Shard" }, { 12811, 2, "Righteous Orb" } } },
@@ -174,6 +192,15 @@ local LISTS = {
                 { 9030, "Restorative Potion", L.CONS_E_9030, prof = "alchemy", skill = 210, mats = { { 7067, 1, "Elemental Earth" }, { 3821, 1, "Goldthorn" }, { 8925, 1, "Crystal Vial" } } },
                 { 14530, "Heavy Runecloth Bandage", L.CONS_E_14530, prof = "firstaid", skill = 260, mats = { { 14047, 2, "Runecloth" } } },
             } },
+            { "extra", {
+                { 10310, "Scroll of Strength IV", L.CONS_E_10310 },
+                { 10309, "Scroll of Agility IV", L.CONS_E_10309 },
+                { 12450, "Juju Flurry", L.CONS_E_12450, from = L.CONS_FROM_eko },
+                { 6043, "Iron Counterweight", L.CONS_E_6043, prof = "blacksmithing", skill = 165, mats = { { 3575, 4, "Iron Bar" }, { 3478, 2, "Coarse Grinding Stone" }, { 1705, 1, "Lesser Moonstone" } } },
+                { 18641, "Dense Dynamite", L.CONS_E_18641, prof = "engineering", mats = { { 15992, 2, "Dense Blasting Powder" }, { 14047, 3, "Runecloth" } } },
+                { 15993, "Thorium Grenade", L.CONS_E_15993, prof = "engineering", skill = 260, mats = { { 15994, 1, "Thorium Widget" }, { 12359, 3, "Thorium Bar" }, { 15992, 3, "Dense Blasting Powder" }, { 14047, 3, "Runecloth" } } },
+                { 8956, "Oil of Immolation", L.CONS_E_8956, prof = "alchemy", mats = { { 4625, 1, "Firebloom" }, { 3821, 1, "Goldthorn" }, { 8925, 1, "Crystal Vial" } } },
+            } },
             { "enchant", {
                 { spell = 20034, prof = "enchanting", skill = 300, mats = { { 14344, 4, "Large Brilliant Shard" }, { 12811, 2, "Righteous Orb" } } },
                 { spell = 23799, prof = "enchanting", skill = 290, mats = { { 14344, 6, "Large Brilliant Shard" }, { 16203, 6, "Greater Eternal Essence" }, { 16204, 4, "Illusion Dust" }, { 7076, 2, "Essence of Earth" } } },
@@ -220,6 +247,15 @@ local LISTS = {
                 { 13442, "Mighty Rage Potion", L.CONS_E_13442, prof = "alchemy", skill = 255, mats = { { 8846, 3, "Gromsblood" }, { 8925, 1, "Crystal Vial" } } },
                 { 9030, "Restorative Potion", L.CONS_E_9030, prof = "alchemy", skill = 210, mats = { { 7067, 1, "Elemental Earth" }, { 3821, 1, "Goldthorn" }, { 8925, 1, "Crystal Vial" } } },
                 { 14530, "Heavy Runecloth Bandage", L.CONS_E_14530, prof = "firstaid", skill = 260, mats = { { 14047, 2, "Runecloth" } } },
+            } },
+            { "extra", {
+                { 10305, "Scroll of Protection IV", L.CONS_E_10305 },
+                { 10307, "Scroll of Stamina IV", L.CONS_E_10307 },
+                { 12645, "Thorium Shield Spike", L.CONS_E_12645, prof = "blacksmithing", skill = 275, mats = { { 12359, 4, "Thorium Bar" }, { 12644, 4, "Dense Grinding Stone" }, { 7076, 2, "Essence of Earth" } } },
+                { 15564, "Rugged Armor Kit", L.CONS_E_15564 },
+                { 18251, "Core Armor Kit", L.CONS_E_18251, from = L.CONS_FROM_mc_e },
+                { 8956, "Oil of Immolation", L.CONS_E_8956, prof = "alchemy", mats = { { 4625, 1, "Firebloom" }, { 3821, 1, "Goldthorn" }, { 8925, 1, "Crystal Vial" } } },
+                { 15993, "Thorium Grenade", L.CONS_E_15993, prof = "engineering", skill = 260, mats = { { 15994, 1, "Thorium Widget" }, { 12359, 3, "Thorium Bar" }, { 15992, 3, "Dense Blasting Powder" }, { 14047, 3, "Runecloth" } } },
             } },
             { "enchant", {
                 { spell = 20034, prof = "enchanting", skill = 300, mats = { { 14344, 4, "Large Brilliant Shard" }, { 12811, 2, "Righteous Orb" } } },

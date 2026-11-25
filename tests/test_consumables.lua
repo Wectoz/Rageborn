@@ -7,7 +7,7 @@ local function load(era)
 end
 local function each(ns, fn)
   for _, role in ipairs(ns.Consumables.ROLES) do
-    local sections = ns.Consumables.List(role); assert(#sections == 6, role)
+    local sections = ns.Consumables.List(role); assert(#sections == 7, role)
     for _, section in ipairs(sections) do
       assert(rawget(ns.L, "CONS_SEC_" .. section[1]), section[1]); assert(#section[2] > 0, role .. " " .. section[1])
       local seen = {}

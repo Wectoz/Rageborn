@@ -8,6 +8,7 @@ local ADDON, ns = ...
 --   body      the macro text; <shield> becomes the name of a shield the character carries
 --             <charge> the stances Charge works in: 1, or 1/2 with the Vanguard talent
 --   requires  SPELLS keys; the macro is offered when one rank of each is known
+--   icon      SPELLS key of the spell whose icon stands for the macro; none = the first required
 --   spec      the specs it is listed under ("arms", "fury", "prot"); none = every spec
 local U, Data = ns.U, ns.Data
 
@@ -65,7 +66,7 @@ Macros.LIST = {
       requires = { "shieldWall", "defensiveStance" }, spec = { "prot" } },
     { key = "rageShout", name = "Rage Shout",
       body = "#showtooltip Battle Shout\n/cast Bloodrage\n/cast Battle Shout",
-      requires = { "bloodrage", "battleShout" } },
+      requires = { "bloodrage", "battleShout" }, icon = "battleShout" },
     { key = "tauntMouseover", name = "Taunt",
       body = "#showtooltip Taunt\n/cast [nostance:2] Defensive Stance; [@mouseover,harm,nodead] Taunt; Taunt",
       requires = { "taunt", "defensiveStance" }, spec = { "prot" } },
@@ -74,7 +75,7 @@ Macros.LIST = {
       requires = { "charge", "intercept" } },
     { key = "burst", name = "Death Wish",
       body = "#showtooltip Death Wish\n/cast Bloodrage\n/cast Death Wish",
-      requires = { "bloodrage", "deathWish" }, spec = { "arms", "fury" } },
+      requires = { "bloodrage", "deathWish" }, icon = "deathWish", spec = { "arms", "fury" } },
     { key = "berserkerRageAny", name = "Berserk Rage",
       body = "#showtooltip Berserker Rage\n/cast [nostance:3] Berserker Stance; Berserker Rage",
       requires = { "berserkerRage", "berserkerStance" } },
@@ -121,6 +122,15 @@ Macros.BY_KEY = {}
 for _, m in ipairs(Macros.LIST) do Macros.BY_KEY[m.key] = m end
 
 function Macros.Name(m) return PREFIX .. m.name end
+
+-- The spell whose icon stands for the macro: the highest rank the character knows.
+function Macros.IconSpell(m, isKnown)
+    local ranks = Macros.SPELLS[m.icon or m.requires[1]]
+    for i = #ranks, 1, -1 do
+        if U.Clean(isKnown(ranks[i])) == true then return ranks[i] end
+    end
+    return ranks[#ranks]
+end
 
 -- The macros whose spells the character knows, in LIST order; with a spec, only that spec's.
 function Macros.Available(isKnown, spec)
