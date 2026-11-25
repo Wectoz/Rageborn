@@ -102,3 +102,29 @@ For each: it appears when it should, disappears when it should, and its timer (w
 - [ ] With enemy nameplates on, pulling two or more mobs shows "Demo Shout: pull" and glows its button; one mob doesn't. After shouting it stays away for 30 s.
 - [ ] Its "Enemies in the fight, at least" slider (2–6) changes when it appears.
 - [ ] With enemy nameplates off it never appears (known limit).
+
+## Show on screen, new macros, minimap button
+
+- [ ] Minimap button appears on the warrior with the ring centred on the icon; left click opens and closes the settings, right click toggles test mode, the tooltip shows.
+- [ ] Drag it around the minimap; `/reload` keeps its place; General > "Minimap button" hides and shows it.
+- [ ] Racial alert page: "Show on screen" is off and the appearance controls are greyed; in test mode nothing is drawn for it but its button glows. Ticking it makes the alert visible.
+- [ ] Macros page lists the six new macros when their spells are known; each works from each stance as described (mouseover Charge/Intercept, Bloodrage + Death Wish, Berserker Rage, Mocking Blow, Hamstring, Shield Block with shield swap).
+
+## New combat alerts
+
+- [ ] Sunder: stacks show; at 5 s left the alert pulses fast; its slider (1-15 s) moves that point.
+- [ ] "Rend missing" and "Thunder Clap missing" (turn them on): shown on a mob without the debuff, hidden once applied, back when it falls off; nothing with no target, a friendly or dead target, or out of combat.
+- [ ] Feared in Berserker Stance with Berserker Rage ready: its alert shows and its button glows.
+- [ ] Rage dump (turn it on): at 80 rage Heroic Strike glows, and goes out when queued; with two or more mobs Cleave glows instead; its slider (30-100) moves the point.
+- [ ] Taunt (turn it on), in a group: when your target turns to a party member the alert shows; gone when the mob is back on you.
+
+## Presets, sharing, spec profiles
+
+- [ ] Profiles page scrolls; "Start from" = Protection + New gives a profile with Revenge, Sunder and Taunt on and Overpower off; Empty gives one with every alert off.
+- [ ] "Apply to current profile" asks first and changes only which alerts are on; designs and positions stay.
+- [ ] Export shows text that selects and copies; pasting it under a new name with Import creates an identical profile; pasting junk says it isn't a Rageborn profile.
+- [ ] Map a talent tree to a profile, `/reload`: the character switches to it with a chat line; a respec switches again (after combat if in a fight). If nothing happens: `/dump GetTalentTabInfo(1)`.
+
+## Sounds
+
+- [ ] A new profile is silent: "Play sounds" is off, every alert's sound is None, the crit sound is None.

@@ -15,7 +15,9 @@ local tested, toggled = nil, 0
 ns.Engine = { Test = function(_, on) tested = on end }
 ns.Options = { Toggle = function() toggled = toggled + 1 end }
 local function near(a, b) return math.abs(a - b) < 0.001 end
-RagebornDB = nil; DB:Init("Bob-Realm"); M:Start(); M:Start()
+RagebornDB = nil; DB:Init("Bob-Realm")
+made = {}          -- the database made its own event frame; from here on only the button counts
+M:Start(); M:Start()
 local b = made[1]
 
 return {

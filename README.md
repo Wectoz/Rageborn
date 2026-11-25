@@ -10,7 +10,9 @@ On any other class it loads nothing.
 - **Designs**: painted art, drawn shapes (ring, side arcs, pulsing frame, bar, screen edges) and the game's own proc art, browsed in the Gallery.
 - **Button glow** in four kinds (proc loop, marching ants, pulsing border, rotating corners), also on macros that cast the spell.
 - **Macros**: seven ready-made macros (stance swaps, shield swaps, mouseover Taunt) created as character macros named `RB <name>`.
-- **Profiles**: per character by default; create, copy, rename, delete, share between characters.
+- **Profiles**: per character by default; create, copy, rename, delete. Start one from a preset (Arms, Fury, Protection, or Empty with every alert off), share one as text, and switch by talent tree.
+- **Minimap button**: left click opens the settings, right click toggles test mode.
+- **Sounds** are off until you turn them on.
 
 ## Commands
 

@@ -9,7 +9,8 @@ local ns = Stub.load("Util.lua", {})
 for _, f in ipairs({"Locale.lua", "Data.lua", "Database.lua", "ArtList.lua", "PaintedList.lua", "Styles.lua",
                     "Sounds.lua", "Alerts.lua"}) do Stub.load(f, ns) end
 local A, DB = ns.Alerts, ns.DB
-local function reset() RagebornDB = nil; DB:Init("Bob-Realm"); played = {}; Stub.now = 100 end
+-- sounds are off in a new profile; these tests turn them on
+local function reset() RagebornDB = nil; DB:Init("Bob-Realm"); DB:Profile().sounds = true; played = {}; Stub.now = 100 end
 local function alpha(key) return A:Frame(key).calls.SetAlpha[1] end
 
 return {
@@ -30,9 +31,10 @@ return {
   S.OnCombat("target", "WOUND", nil, 11); S.OnCombat("player", "WOUND", "CRITICAL", 11)
   S.OnCombat("target", "DODGE", "CRITICAL", 11); S.OnCombat(nil, nil, nil, 11); assert(#played == 1)
   S.OnCombat("target", "WOUND", "CRITICAL", 11); assert(#played == 2) end},
-{"the crit sound is off by default, and the sounds switch silences everything but a try-out", function()
+{"every sound is off in a new profile; the sounds switch silences everything but a try-out", function()
+  RagebornDB = nil; DB:Init("Bob-Realm")
+  assert(DB:Profile().critSound == "none" and DB:Profile().sounds == false and DB:Alert("overpower").sound == "none")
   reset(); local S = ns.Sounds
-  assert(DB:Profile().critSound == "none" and DB:Profile().sounds == true)
   S.OnCombat("target", "WOUND", "CRITICAL", 20); assert(#played == 0)
   DB:Profile().sounds = false; S.Play("bell"); assert(#played == 0); S.Play("bell", true); assert(#played == 1) end},
 {"Find matches a key or a label whatever the capitals", function()

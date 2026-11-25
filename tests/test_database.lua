@@ -204,6 +204,10 @@ return {
 {"List is sorted", function()
   fresh(nil); DB:Create("Zed"); DB:Create("Alpha"); local l = DB:List()
   assert(l[1] == "Alpha" and l[2] == "Bob-Realm" and l[3] == "Zed") end},
+{"every alert a preset names exists", function()
+  for name, set in pairs(DB.PRESET_ALERTS) do
+    for key in pairs(set) do assert(ns.Data.BY_KEY[key], name .. " " .. key) end
+  end end},
 {"OnChange fires after Use, Create, Rename, Delete and Reset", function()
   fresh(nil); local n = 0; DB:OnChange(function() n = n + 1 end)
   DB:Create("A"); DB:Use("A"); DB:Rename("A", "B"); DB:Reset(); DB:Use("Bob-Realm"); DB:Delete("B"); assert(n == 6, n)
