@@ -99,6 +99,20 @@ local function evalUsable(def, opt, spells, now)
         if D.InCombat() ~= true or (D.Enemies() or 0) < (opt.threshold or 2) then return false end
         if (recast[def.key] or 0) > now or D.TargetDebuff(def.spells) then return false end
     end
+    if def.rage then        -- rage to spare and no swing ability queued yet
+        if D.InCombat() ~= true or (D.Rage() or 0) < (opt.threshold or 0) then return false end
+        local aoe, pick = (D.Enemies() or 0) >= 2, nil
+        for _, id in ipairs(spells) do              -- highest rank first within each spell
+            if D.IsQueued(id) == true then return false end
+            if not has(def.aoe, id) then
+                pick = pick or id
+            elseif aoe and not has(def.aoe, pick) then
+                pick = id
+            end
+        end
+        return pick ~= nil, { spellID = pick }
+    end
+    if def.lost and not (D.InCombat() == true and D.TargetLost() == true) then return false end
     local needReady = def.proc == "targetCasting" or def.needsShield or def.ready
 
     local usable, id = gameUsable(spells, procOpen, needReady)
@@ -161,10 +175,18 @@ local function evalLowHealth(def, opt)
 end
 
 local function evalDebuff(def, opt, spells, now)
-    local stacks, expires = ns.Detect.TargetDebuff(def.spells)
+    local D = ns.Detect
+    local stacks, expires = D.TargetDebuff(def.spells)
+    if def.missing then     -- a reminder: only when the debuffs were read and it is not there
+        if stacks ~= false or D.InCombat() ~= true or D.TargetEnemy() ~= true then return false end
+        return true, { spellID = spells[1], missing = true }
+    end
     if not stacks and not expires then return false end
     local info = { spellID = spells[1], stacks = stacks }
-    if expires and expires > now then info.remaining, info.expires = expires - now, expires end
+    if expires and expires > now then
+        info.remaining, info.expires = expires - now, expires
+        if def.defaultThreshold and info.remaining <= (opt.threshold or 0) then info.urgent = true end
+    end
     return true, info
 end
 
@@ -229,7 +251,7 @@ function Engine:Tick(now)
         local key = def.key
         local shown, info = self:Evaluate(key, now)
         local sig = shown and ((info.hintStance or 0) .. ":" .. (info.stacks or 0) .. ":" .. (info.dim and 1 or 0)
-            .. ":" .. (info.expires and math.floor(info.expires * 2) or 0)) or false
+            .. ":" .. (info.urgent and 1 or 0) .. ":" .. (info.spellID or 0) .. ":" .. (info.expires and math.floor(info.expires * 2) or 0)) or false
         if told[key] ~= sig then
             told[key] = sig
             for _, fn in ipairs(subscribers) do pcall(fn, key, shown, info) end

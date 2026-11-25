@@ -60,18 +60,60 @@ function Detect.PlayerBuff(spellIDs)
 end
 
 -- stacks, expirationTime of the first of these debuffs on the target.
+-- false = the target's debuffs were all read and none of these is there; nil = can't tell
+-- (no target, the call failed, or a debuff whose spell is hidden could be the one).
 function Detect.TargetDebuff(spellIDs)
     local get = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
+    if Call(UnitExists, "target") ~= true then return nil end
     local want = {}
     for _, id in ipairs(spellIDs) do want[id] = true end
+    local hidden = false
     for i = 1, 40 do
-        local aura = Call(get, "target", i, "HARMFUL")
-        if type(aura) ~= "table" then return nil end
+        local ok, aura = pcall(get, "target", i, "HARMFUL")    -- not Call: a failure is not the list's end
+        if not ok or U.IsSecret(aura) then return nil end
+        if type(aura) ~= "table" then
+            if hidden then return nil end
+            return false
+        end
         local id = Clean(aura.spellId)
-        if id and want[id] then
+        if type(id) ~= "number" then
+            hidden = true
+        elseif want[id] then
             local stacks, expires = Clean(aura.applications), Clean(aura.expirationTime)
             return type(stacks) == "number" and stacks or 0, type(expires) == "number" and expires or nil
         end
+    end
+    if hidden then return nil end
+    return false
+end
+
+-- Your target is something alive you can attack.
+function Detect.TargetEnemy()
+    return Call(UnitCanAttack, "player", "target") == true and Call(UnitIsDead, "target") == false
+end
+
+-- true when your target is an enemy in combat that is on another friendly player: you lost
+-- it. false when it is on you, on nobody or on a pet; nil when that can't be read.
+function Detect.TargetLost()
+    if Call(UnitCanAttack, "player", "target") ~= true or Call(UnitAffectingCombat, "target") ~= true then return false end
+    local on = "targettarget"
+    local exists, me = Call(UnitExists, on), Call(UnitIsUnit, on, "player")
+    if type(exists) ~= "boolean" or (exists and type(me) ~= "boolean") then return nil end
+    if not exists or me then return false end
+    local player, friend = Call(UnitIsPlayer, on), Call(UnitIsFriend, "player", on)
+    if type(player) ~= "boolean" or type(friend) ~= "boolean" then return nil end
+    return player and friend
+end
+
+-- Rage, 0-100; nil when it can't be read.
+function Detect.Rage()
+    local RAGE = 1
+    local rage = Call(UnitPower, "player", RAGE)
+    if type(rage) == "number" then return rage end
+    local scale = CurveConstants and CurveConstants.ScaleTo100
+    if UnitPowerPercent and scale then
+        local pct = Call(UnitPowerPercent, "player", RAGE, false, scale)
+        if type(pct) == "number" then return pct end
     end
     return nil
 end
@@ -94,7 +136,7 @@ function Detect.HasShield()
 end
 
 -- What is wrong with the player now, as a set: the game's loss-of-control kinds (STUN, ROOT,
--- FEAR, CHARM, SILENCE ...), SNARE when you run slower than normal, POISON and DISEASE from
+-- FEAR, SAP, INCAPACITATE, CHARM, SILENCE ...), SNARE when you run slower than normal, POISON and DISEASE from
 -- your debuffs. Whatever can't be read is simply absent.
 function Detect.Afflictions()
     local set = {}
@@ -102,7 +144,7 @@ function Detect.Afflictions()
     for i = 1, Call(LoC and LoC.GetActiveLossOfControlDataCount) or 0 do
         local data = Call(LoC.GetActiveLossOfControlData, i)
         local kind = type(data) == "table" and Clean(data.locType)
-        if type(kind) == "string" then set[kind == "STUN_MECHANIC" and "STUN" or kind] = true end
+        if type(kind) == "string" then set[kind:match("^(.+)_MECHANIC$") or kind] = true end
     end
     local _, run = Call(GetUnitSpeed, "player")
     if type(run) == "number" and run > 0 and run < (BASE_MOVEMENT_SPEED or 7) then set.SNARE = true end

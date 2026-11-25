@@ -20,6 +20,10 @@ local ADDON, ns = ...
 --   needs    spell -> what must be wrong with you for it to be worth pressing
 --            (Detect.Afflictions: STUN, ROOT, SNARE, FEAR, CHARM, POISON, DISEASE ...)
 --   enemies  shown only in a fight with at least `threshold` enemies (counted from nameplates)
+--   rage     shown in combat with at least `threshold` rage and no swing ability queued;
+--            with two enemies or more it names a spell of `aoe` instead (Cleave)
+--   lost     shown when your target is on another player (Detect.TargetLost)
+--   missing  a "debuff" shown while it is NOT on your target (and that could be read)
 --   recast   seconds it stays hidden after you cast it (its effect is then on the enemies)
 --   defaultOpacity  0 = nothing on screen, button glow only
 --   probe    the docs/probe-results.md line a "debuff" alert depends on
@@ -74,6 +78,11 @@ Data.ALERTS = {
     { key = "shieldWall", kind = "active", group = "defensives", defaultOn = true, spells = { 871 }, duration = 10 },
     { key = "lastStand", kind = "active", group = "defensives", defaultOn = true, spells = { 12975 }, duration = 20 },
     { key = "shieldBlockUp", kind = "active", group = "defensives", defaultOn = false, spells = { 2565 }, duration = 5 },
+    -- Berserker Rage while it would free you: feared, sapped or incapacitated
+    { key = "fearBreak", kind = "usable", group = "defensives", defaultOn = true, ready = true,
+      spells = { 18499 }, stances = { 3 }, needs = { [18499] = { "FEAR", "SAP", "INCAPACITATE" } } },
+    { key = "taunt", kind = "usable", group = "defensives", defaultOn = false, ready = true,
+      spells = { 355 }, stances = { 2 }, lost = true },
     { key = "retaliation", kind = "active", group = "defensives", defaultOn = false, spells = { 20230 }, duration = 15 },
 
     -- Offensives
@@ -82,6 +91,9 @@ Data.ALERTS = {
     { key = "sweepingStrikes", kind = "active", group = "offensives", defaultOn = false, spells = { 12292 }, duration = 20 },
     { key = "berserkerRage", kind = "active", group = "offensives", defaultOn = false, spells = { 18499 }, duration = 10 },
     { key = "bloodrage", kind = "active", group = "offensives", defaultOn = false, spells = { 2687 }, duration = 10 },
+    -- Rage about to overflow: Heroic Strike, or Cleave when there are two enemies or more
+    { key = "rageDump", kind = "usable", group = "offensives", defaultOn = false,
+      spells = join(HEROIC_STRIKE, CLEAVE), aoe = CLEAVE, rage = true, defaultThreshold = 80 },
     -- The race's escape, when it would help: human (stunned), gnome (rooted or slowed),
     -- undead (feared or charmed), dwarf (poisoned or diseased). Button glow only.
     { key = "racial", kind = "usable", group = "defensives", defaultOn = true, ready = true,
@@ -94,14 +106,15 @@ Data.ALERTS = {
       defaultThreshold = 35, defensives = { "shieldWall", "lastStand" } },
 
     -- On the target
+    -- Sunder Armor: its stacks, urgent in the last `threshold` seconds
     { key = "sunder", kind = "debuff", group = "target", defaultOn = false,
-      spells = { 7386, 7405, 8380, 11596, 11597 }, probe = "Target debuff" },
+      spells = { 7386, 7405, 8380, 11596, 11597 }, probe = "Target debuff", defaultThreshold = 5 },
     { key = "rend", kind = "debuff", group = "target", defaultOn = false,
-      spells = { 772, 6546, 6547, 6548, 11572, 11573, 11574 }, probe = "Target debuff" },
+      spells = { 772, 6546, 6547, 6548, 11572, 11573, 11574 }, probe = "Target debuff", missing = true },
     { key = "demoShout", kind = "debuff", group = "target", defaultOn = false,
       spells = { 1160, 6190, 11554, 11555, 11556 }, probe = "Target debuff" },
     { key = "thunderClap", kind = "debuff", group = "target", defaultOn = false,
-      spells = { 6343, 8198, 8204, 8205, 11580, 11581 }, probe = "Target debuff" },
+      spells = { 6343, 8198, 8204, 8205, 11580, 11581 }, probe = "Target debuff", missing = true },
 }
 
 Data.BY_KEY = {}
