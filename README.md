@@ -87,3 +87,7 @@ lua5.1 tests/run.lua
 ```
 
 `docs/ingame-checklist.md` is the list of things that still need checking in a real client.
+
+## Licence
+
+MIT. See `LICENSE`.
