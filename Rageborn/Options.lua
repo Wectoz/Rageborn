@@ -455,6 +455,7 @@ local function BuildGeneral()
                function(v) prof()[name] = v; if after then after() end; applyAll(); p.Refresh() end
     end
 
+    if ns.BETA then Label(p, 200, 90, 12, C.ember, L.BETA_NOTE, 640):SetWordWrap(false) end
     Heading(p, 200, 106, 640, L.OPT_TRACKING)
     p.Add(Check(p, 200, 130, 300, L.OPT_ENABLE_ADDON, flag("enabled")))
     p.Add(Slider(p, 520, 127, 300, L.OPT_GLOBAL_SCALE, 50, 200, 5, "%d%%",
@@ -1249,7 +1250,12 @@ local function BuildWindow()
     local icon = bar:CreateTexture(nil, "ARTWORK")
     icon:SetTexture("Interface\\AddOns\\Rageborn\\Media\\icon")
     At(icon, win, 12, 8, 24, 24)
-    Label(win, 46, 10, 18, C.ink, L.ADDON_NAME, nil, true)
+    local name = Label(win, 46, 10, 18, C.ink, L.ADDON_NAME, nil, true)
+    if ns.BETA then         -- a test version says so beside its name
+        local tag = Text(win, 11, C.ink)
+        tag:SetPoint("LEFT", name, "RIGHT", 10, -1)
+        tag:SetText(L.BETA_TAG .. "  " .. ns.VERSION)
+    end
     local close = CreateFrame("Button", nil, win)
     At(close, win, 817, 4, 36, 32)
     local x = Text(close, 16, C.ink)

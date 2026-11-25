@@ -6,6 +6,9 @@ ns.L = L
 
 L.ADDON_NAME = "Rageborn"
 L.NOT_A_WARRIOR = "Rageborn only works on a warrior."
+L.BETA_TAG = "BETA"
+L.BETA_NOTE = "Rageborn is still being tested. Something may be wrong or missing; please report what breaks at github.com/Wectoz/Rageborn."
+L.BETA_LOGIN = "test version %s. Things may be wrong or missing. Type /rb for the settings."
 L.ERR_IN_COMBAT = "Not possible in combat."
 L.ERR_NAME_EMPTY = "Enter a name."
 L.ERR_NAME_TAKEN = "That name is already used."

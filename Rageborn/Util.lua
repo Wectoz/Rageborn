@@ -36,6 +36,11 @@ end
 -- project constant says so. Era lacks Forever's talents and has the Classic durations.
 ns.ERA = WOW_PROJECT_CLASSIC ~= nil and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
+-- The version from the TOC. A version with "beta" in it is a test version: the addon then says
+-- so in its window and once at login, and stops by itself when the version no longer does.
+ns.VERSION = U.Call(C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata, ADDON, "Version") or ""
+ns.BETA = ns.VERSION:lower():find("beta", 1, true) ~= nil
+
 -- A spell's name and icon, with the calls each client has.
 function U.SpellName(id)
     if not id then return nil end

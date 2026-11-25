@@ -15,6 +15,7 @@ fighting; do them first, because an error at load makes the rest pointless.
 ## Part 1: it loads (2 minutes)
 
 - [ ] No Lua error at login.
+- [ ] At login one chat line says this is a test version; the window's title bar shows "BETA 0.1.0-beta1" beside the name, and the General page has a red line saying it is still being tested.
 - [ ] `/rb` opens the settings window; `/rb` again closes it.
 - [ ] `/rb test` shows every enabled alert with a running timer; again hides them.
 - [ ] The minimap button is there, with the ring centred on the icon. Left click opens the settings, right click toggles test mode, the tooltip shows.

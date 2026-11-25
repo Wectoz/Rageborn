@@ -54,6 +54,7 @@ frame:SetScript("OnEvent", function(_, event, name)
         if name ~= ADDON then return end
         if ns.DB then ns.DB:Init(UnitName("player") .. "-" .. GetRealmName()) end
     else
+        if ns.BETA then say(L.BETA_LOGIN:format(ns.VERSION)) end
         for _, key in ipairs({ "Engine", "Alerts", "Sounds", "Bars", "Glow", "Options", "Minimap" }) do
             if ns[key] and ns[key].Start then ns[key]:Start() end
         end

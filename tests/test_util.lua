@@ -24,4 +24,10 @@ return {
   local def = {t = {y = 2}}; local d = U.DeepMerge({}, def); d.t.y = 7; assert(def.t.y == 2) end},
 {"DeepCopy copies nested tables", function()
   local a = {t = {1}}; local b = U.DeepCopy(a); b.t[1] = 2; assert(a.t[1] == 1) end},
+{"a version with beta in it is a test version; without one, or released, it is not", function()
+  assert(ns.BETA == false and ns.VERSION == "")
+  GetAddOnMetadata = function(_, field) return field == "Version" and "0.1.0-beta1" or nil end
+  local b = Stub.load("Util.lua", {}); assert(b.BETA == true and b.VERSION == "0.1.0-beta1")
+  GetAddOnMetadata = function() return "1.0.0" end
+  assert(Stub.load("Util.lua", {}).BETA == false); GetAddOnMetadata = nil end},
 }
