@@ -97,8 +97,8 @@ For each: it appears when it should, disappears when it should, and its timer (w
 
 ## Racial glow and Demo Shout on a pull
 
-- [ ] In combat, the racial's button (Blood Fury, Berserking, War Stomp, Stoneform or Will of the Forsaken) glows while it is ready and stops when pressed; nothing is drawn on screen for it. Out of combat it doesn't glow.
-- [ ] The racial's spell ID is right on this client (the alert "Racial ability" is listed under Offensives).
+- [ ] The racial's button glows only when it would help and is ready: human stunned, gnome rooted or slowed, undead feared or charmed, dwarf poisoned or diseased. It stops when pressed or when the effect ends; nothing is drawn on screen for it.
+- [ ] The racial's spell ID is right on this client (the alert "Racial ability" is listed under Defensives), and a stun, root, slow or fear is actually noticed in combat.
 - [ ] With enemy nameplates on, pulling two or more mobs shows "Demo Shout: pull" and glows its button; one mob doesn't. After shouting it stays away for 30 s.
 - [ ] Its "Enemies in the fight, at least" slider (2–6) changes when it appears.
 - [ ] With enemy nameplates off it never appears (known limit).

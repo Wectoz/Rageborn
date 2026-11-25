@@ -36,7 +36,7 @@ Buttons are found on the default bars, EllesmereUI, Dominos, Bartender4 and ElvU
 - Buttons are re-read after combat, not during it: a bar page that changes in a fight (stance bars) may glow late.
 - Macros and profiles can't be created or switched in combat.
 - The Demoralizing Shout pull alert counts enemies by their nameplates: enemy nameplates must be on, and it counts every enemy in combat on screen, whoever it is fighting.
-- The racial glow covers Blood Fury, Berserking, War Stomp, Stoneform and Will of the Forsaken.
+- The racial glow lights the race's escape when it would help: human when stunned, gnome when rooted or slowed, undead when feared or charmed, dwarf when poisoned or diseased. Orc, troll, tauren and night elf racials are not covered.
 
 ## Development
 

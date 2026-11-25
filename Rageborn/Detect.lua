@@ -93,6 +93,29 @@ function Detect.HasShield()
     return equipLoc == "INVTYPE_SHIELD"
 end
 
+-- What is wrong with the player now, as a set: the game's loss-of-control kinds (STUN, ROOT,
+-- FEAR, CHARM, SILENCE ...), SNARE when you run slower than normal, POISON and DISEASE from
+-- your debuffs. Whatever can't be read is simply absent.
+function Detect.Afflictions()
+    local set = {}
+    local LoC = C_LossOfControl
+    for i = 1, Call(LoC and LoC.GetActiveLossOfControlDataCount) or 0 do
+        local data = Call(LoC.GetActiveLossOfControlData, i)
+        local kind = type(data) == "table" and Clean(data.locType)
+        if type(kind) == "string" then set[kind == "STUN_MECHANIC" and "STUN" or kind] = true end
+    end
+    local _, run = Call(GetUnitSpeed, "player")
+    if type(run) == "number" and run > 0 and run < (BASE_MOVEMENT_SPEED or 7) then set.SNARE = true end
+    local get = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex
+    for i = 1, 40 do
+        local aura = Call(get, "player", i, "HARMFUL")
+        if type(aura) ~= "table" then break end
+        local kind = Clean(aura.dispelName)
+        if kind == "Poison" or kind == "Disease" then set[kind:upper()] = true end
+    end
+    return set
+end
+
 -- Enemies in combat near you, counted from their nameplates; nil when that can't be read.
 -- Counts only what has a nameplate on screen, whoever it is fighting.
 function Detect.Enemies()

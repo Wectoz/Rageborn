@@ -9,7 +9,7 @@ local function reset()
   for _, d in ipairs(ns.Data.ALERTS) do DB:Alert(d.key).enabled = true; DB:Alert(d.key).combatOnly = false end
   fake = { known = true, usable = false, lacksRage = false, cd = 0, hp = {player = 100, target = 100},
            buff = nil, debuff = nil, stance = 1, casting = false, shield = true, queued = false,
-           combat = true, quiet = false, enemies = 0 }
+           combat = true, quiet = false, enemies = 0, wrong = {} }
   ns.Detect = {
     IsKnown = function(id) if type(fake.known) == "table" then return fake.known[id] == true end return fake.known end,
     Usable = function() return fake.usable, fake.lacksRage end,
@@ -19,7 +19,7 @@ local function reset()
     TargetDebuff = function() if fake.debuff then return fake.debuff.stacks, fake.debuff.expires end end,
     Stance = function() return fake.stance end, TargetCasting = function() return fake.casting end,
     HasShield = function() return fake.shield end, IsQueued = function() return fake.queued end,
-    InCombat = function() return fake.combat end, Enemies = function() return fake.enemies end, Quiet = function() return fake.quiet end,
+    InCombat = function() return fake.combat end, Enemies = function() return fake.enemies end, Afflictions = function() return fake.wrong end, Quiet = function() return fake.quiet end,
   }
   E:Reset()
 end
@@ -46,10 +46,16 @@ T("Demo Shout on a pull: enough enemies, in combat, ready, and not just cast", f
   fake.cd = 5; assert(E:Evaluate("demoPull", 1) == false); fake.cd = 0
   fake.debuff = { stacks = 0, expires = 20 }; assert(E:Evaluate("demoPull", 1) == false); fake.debuff = nil
   E:OnCast(11556, 10); assert(E:Evaluate("demoPull", 11) == false); assert(E:Evaluate("demoPull", 41) == true) end),
-T("the racial shows only while it is off cooldown, and is glow-only by default", function()
-  fake.usable = true; fake.known = {[20572] = true}
-  local s, i = E:Evaluate("racial", 1); assert(s == true and i.spellID == 20572)
-  fake.cd = 90; assert(E:Evaluate("racial", 2) == false)
+T("the racial shows when it would help and is ready, and is glow-only by default", function()
+  fake.usable = true; fake.known = {[20589] = true}                -- a gnome
+  assert(E:Evaluate("racial", 1) == false)                          -- nothing wrong
+  fake.wrong = {STUN = true}; assert(E:Evaluate("racial", 1) == false)   -- Escape Artist doesn't break a stun
+  fake.wrong = {SNARE = true}
+  local s, i = E:Evaluate("racial", 1); assert(s == true and i.spellID == 20589)
+  fake.cd = 90; assert(E:Evaluate("racial", 2) == false); fake.cd = 0
+  fake.known = {[59752] = true}; assert(E:Evaluate("racial", 3) == false)      -- a human, slowed
+  fake.wrong = {STUN = true}; assert(E:Evaluate("racial", 3) == true)
+  fake.wrong = nil; assert(E:Evaluate("racial", 4) == false)                   -- unreadable
   assert(DB:Alert("racial").opacity == 0 and DB:Alert("racial").glow == true and DB:Alert("overpower").opacity == 1) end),
 T("unknown spell never shows", function()
   fake.known = false; fake.usable = true; local s, i = E:Evaluate("execute", 1); assert(s == false and i == nil) end),

@@ -85,6 +85,16 @@ local function evalUsable(def, opt, spells, now)
 
     if def.proc == "targetCasting" and D.TargetCasting() ~= true then return false end
     if def.needsShield and not (D.HasShield() == true and D.InCombat() == true) then return false end
+    if def.needs then       -- only the spells that would help with what is wrong now
+        local wrong, helps = D.Afflictions() or {}, {}
+        for _, id in ipairs(spells) do
+            for _, kind in ipairs(def.needs[id] or {}) do
+                if wrong[kind] then helps[#helps + 1] = id; break end
+            end
+        end
+        if #helps == 0 then return false end
+        spells = helps
+    end
     if def.enemies then     -- worth pressing only on a pull, and not again while it is on them
         if D.InCombat() ~= true or (D.Enemies() or 0) < (opt.threshold or 2) then return false end
         if (recast[def.key] or 0) > now or D.TargetDebuff(def.spells) then return false end

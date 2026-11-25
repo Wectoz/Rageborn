@@ -17,6 +17,8 @@ local ADDON, ns = ...
 --   stances  where it can be pressed (1 battle, 2 defensive, 3 berserker); nil = any
 --   duration seconds an "active" lasts / Battle Shout lasts (estimate until read from the buff)
 --   ready    shown only while it is off cooldown
+--   needs    spell -> what must be wrong with you for it to be worth pressing
+--            (Detect.Afflictions: STUN, ROOT, SNARE, FEAR, CHARM, POISON, DISEASE ...)
 --   enemies  shown only in a fight with at least `threshold` enemies (counted from nameplates)
 --   recast   seconds it stays hidden after you cast it (its effect is then on the enemies)
 --   defaultOpacity  0 = nothing on screen, button glow only
@@ -80,10 +82,12 @@ Data.ALERTS = {
     { key = "sweepingStrikes", kind = "active", group = "offensives", defaultOn = false, spells = { 12292 }, duration = 20 },
     { key = "berserkerRage", kind = "active", group = "offensives", defaultOn = false, spells = { 18499 }, duration = 10 },
     { key = "bloodrage", kind = "active", group = "offensives", defaultOn = false, spells = { 2687 }, duration = 10 },
-    -- The race's combat ability, ready to press: Blood Fury, Berserking, War Stomp, Stoneform,
-    -- Will of the Forsaken. Button glow only.
-    { key = "racial", kind = "usable", group = "offensives", defaultOn = true, combatOnly = true, ready = true,
-      spells = { 20572, 26296, 20549, 20594, 7744 }, defaultOpacity = 0 },
+    -- The race's escape, when it would help: human (stunned), gnome (rooted or slowed),
+    -- undead (feared or charmed), dwarf (poisoned or diseased). Button glow only.
+    { key = "racial", kind = "usable", group = "defensives", defaultOn = true, ready = true,
+      spells = { 59752, 20589, 7744, 20594 }, defaultOpacity = 0,
+      needs = { [59752] = { "STUN" }, [20589] = { "ROOT", "SNARE" }, [7744] = { "FEAR", "CHARM" },
+                [20594] = { "POISON", "DISEASE" } } },
 
     -- Low health: warns while one of these defensives is ready
     { key = "lowHealth", kind = "lowHealth", group = "lowHealth", defaultOn = true,
