@@ -100,4 +100,39 @@ return {
   RagebornDB = nil; DB:Init("Bob-Realm"); O:Select("profiles")
   combat = true; assert(press(ns.L.OPT_PROFILE_NEW) == 1); combat = false
   assert(#DB:List() == 1) end},
+{"profiles: New starts from the preset, Apply asks first, Export and Import pass the text on", function()
+  RagebornDB = nil; DB:Init("Bob-Realm"); O:Select("profiles")
+  -- the page's three text boxes, told apart by how they were set up; a test types by answering GetText
+  local name, out, paste
+  for _, w in ipairs(made) do
+    if w.kind == "EditBox" and w.calls.SetMaxLetters and not w.calls.SetMultiLine then
+      if w.calls.SetMaxLetters[1] == 40 then name = w elseif w.scripts.OnTextChanged then out = w else paste = w end
+    end
+  end
+  assert(name and out and paste)
+  local function pick(label)            -- opens dropdowns until one offers this row, and picks it
+    for _, d in ipairs(made) do
+      if d.kind == "Button" and rawget(d, "w") and d.scripts.OnClick then
+        d.scripts.OnClick(d)
+        for _, r in ipairs(made) do
+          if rawget(r, "item") and r.shown and r.item.label == label then r.scripts.OnClick(r); return true end
+        end
+      end
+    end
+  end
+  name.GetText = function() return "Prot" end; assert(pick(ns.L.PRESET_prot) and press(ns.L.OPT_PROFILE_NEW) == 1)
+  local alerts = RagebornDB.profiles.Prot.alerts; assert(alerts.revenge.enabled == true and alerts.overpower.enabled == false)
+  assert(pick(ns.L.PRESET_standard))
+  name.GetText = function() return "Tank" end
+  assert(press(ns.L.OPT_PROFILE_NEW) == 1 and RagebornDB.profiles.Tank.alerts.overpower.enabled == true)   -- Standard
+  DB:Profile().alerts.overpower.size = 1.5; asked = nil
+  assert(press(ns.L.OPT_PROFILE_APPLY) == 1 and asked and asked.text:find("Standard", 1, true)); asked = nil
+  assert(press(ns.L.OPT_PROFILE_EXPORT) == 1); local text = out.calls.SetText[1]
+  assert(text == DB:Export("Tank")); out.scripts.OnTextChanged(out, true); out.scripts.OnMouseUp(out)
+  name.GetText = function() return "Pasted" end; paste.GetText = function() return "nonsense" end
+  assert(press(ns.L.OPT_PROFILE_IMPORT) == 1 and RagebornDB.profiles.Pasted == nil)
+  paste.GetText = function() return text end; combat = true; press(ns.L.OPT_PROFILE_IMPORT); combat = false
+  assert(RagebornDB.profiles.Pasted == nil)
+  assert(press(ns.L.OPT_PROFILE_IMPORT) == 1 and RagebornDB.profiles.Pasted.alerts.overpower.enabled == true)
+  assert(DB:Current() == "Bob-Realm"); name.GetText, paste.GetText = nil, nil end},
 }

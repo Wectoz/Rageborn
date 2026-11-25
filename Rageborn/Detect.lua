@@ -186,3 +186,28 @@ end
 function Detect.Quiet()
     return Call(IsResting) == true or Call(IsMounted) == true or Call(UnitIsDeadOrGhost, "player") == true
 end
+
+-- The talent tree with the most points: "arms" | "fury" | "prot"; nil when it can't be read
+-- or two trees lead together. GetTalentTabInfo has two shapes: name first with the points
+-- third, or an id first with the points fifth. Failing both, the ranks of the tree's talents.
+local SPECS = { "arms", "fury", "prot" }
+function Detect.Spec()
+    local best, most = nil, 0
+    for tab = 1, 3 do
+        local first, _, third, _, fifth = Call(GetTalentTabInfo, tab)
+        local points
+        if type(first) == "number" then points = fifth else points = third end
+        if type(points) ~= "number" then
+            local count = Call(GetNumTalents, tab)
+            if type(count) ~= "number" or count < 1 then return nil end
+            points = 0
+            for i = 1, count do
+                local _, _, _, _, rank = Call(GetTalentInfo, tab, i)
+                if type(rank) ~= "number" then return nil end
+                points = points + rank
+            end
+        end
+        if points > most then best, most = SPECS[tab], points elseif points == most then best = nil end
+    end
+    return best
+end
