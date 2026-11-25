@@ -11,6 +11,7 @@ On any other class it loads nothing.
 - **Button glow** in four kinds (proc loop, marching ants, pulsing border, rotating corners), also on macros that cast the spell.
 - **Macros**: seven ready-made macros (stance swaps, shield swaps, mouseover Taunt) created as character macros named `RB <name>`.
 - **Profiles**: per character by default; create, copy, rename, delete. Start one from a preset (Arms, Fury, Protection, or Empty with every alert off), share one as text, and switch by talent tree.
+- **Consumables**: warrior flasks, elixirs, food, weapon stones, potions and enchants, best first, for damage and for tanking, with how many you carry and Auctionator's price if you have it. The list is the right one for the client: Forever's reworked items, or Classic's.
 - **Minimap button**: left click opens the settings, right click toggles test mode.
 - **Sounds** are off until you turn them on.
 

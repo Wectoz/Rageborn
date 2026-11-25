@@ -843,6 +843,104 @@ local function BuildMacros()
     return p
 end
 
+---------------------------------------------------------------- Consumables
+local function coins(copper)
+    if not copper then return "" end
+    local g, s = math.floor(copper / 10000), math.floor(copper % 10000 / 100)
+    return g > 0 and ("%dg %ds"):format(g, s) or ("%ds %dc"):format(s, copper % 100)
+end
+
+local function BuildConsumables()
+    local p = Page(L.OPT_LIBRARY, L.OPT_CONSUMABLES)
+    local D = ns.Detect
+    Label(p, 200, 103, 13, C.ink, L.CONS_SUBTITLE)
+    Label(p, 200, 128, 12, C.secondary, L.CONS_DISCLAIMER, 636)
+    -- tabs: damage or tank; opens on tank for a Protection warrior
+    local role, tabs = D.Spec() == "prot" and "tank" or "dps", {}
+    for i, key in ipairs(ns.Consumables.ROLES) do
+        local tab = p.Add(Button(p, 668 + (i - 1) * 88, 98, 82, L["CONS_ROLE_" .. key], function() role = key; p.Refresh() end))
+        local line = tab:CreateTexture(nil, "OVERLAY")
+        line:SetColorTexture(C.ember[1], C.ember[2], C.ember[3], 1)
+        line:SetPoint("BOTTOMLEFT", tab, "BOTTOMLEFT", 0, 0); line:SetPoint("BOTTOMRIGHT", tab, "BOTTOMRIGHT", 0, 0)
+        line:SetHeight(2)
+        tabs[key] = line
+    end
+    local sf, child = Scroller(p, 200, 168, 624, 375)
+    local heads, rows = {}, {}
+    -- names and icons arrive from the game a moment after they are first asked for
+    local watch = CreateFrame("Frame", nil, p)
+    for _, event in ipairs({ "GET_ITEM_INFO_RECEIVED", "BAG_UPDATE_DELAYED" }) do pcall(watch.RegisterEvent, watch, event) end
+    watch:SetScript("OnEvent", function() if p:IsVisible() then p.Refresh() end end)
+
+    local function row(i)
+        local r = CreateFrame("Button", nil, child)
+        r.rank = Text(r, 12, C.secondary); r.rank:SetPoint("LEFT", r, "LEFT", 2, 0)
+        r.icon = r:CreateTexture(nil, "ARTWORK")
+        r.icon:SetSize(18, 18); r.icon:SetPoint("LEFT", r, "LEFT", 24, 0)
+        r.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+        r.name = Text(r, 13, C.ink); r.name:SetPoint("LEFT", r, "LEFT", 50, 0)
+        r.name:SetWidth(212); r.name:SetWordWrap(false)
+        r.note = Text(r, 12, C.secondary); r.note:SetPoint("LEFT", r, "LEFT", 268, 0)
+        r.note:SetWidth(232); r.note:SetWordWrap(false)
+        r.have = Text(r, 12, C.ink); r.have:SetPoint("LEFT", r, "LEFT", 508, 0)
+        r.price = Text(r, 12, C.secondary); r.price:SetPoint("RIGHT", r, "RIGHT", -4, 0)
+        r.price:SetJustifyH("RIGHT")
+        local fill = Fill(r, C.body)
+        r:SetScript("OnEnter", function()
+            fill:SetColorTexture(C.hover[1], C.hover[2], C.hover[3], 1)
+            if not GameTooltip then return end
+            GameTooltip:SetOwner(r, "ANCHOR_RIGHT")
+            if r.spell then pcall(GameTooltip.SetSpellByID, GameTooltip, r.spell)
+            else pcall(GameTooltip.SetItemByID, GameTooltip, r.item) end
+            GameTooltip:Show()
+        end)
+        r:SetScript("OnLeave", function()
+            fill:SetColorTexture(C.body[1], C.body[2], C.body[3], 1)
+            if GameTooltip then GameTooltip:Hide() end
+        end)
+        rows[i] = r
+        return r
+    end
+
+    local refreshControls = p.Refresh
+    function p.Refresh()
+        refreshControls()
+        for key, line in pairs(tabs) do line:SetShown(key == role) end
+        for _, h in pairs(heads) do h:Hide() end
+        for _, r in ipairs(rows) do r:Hide() end
+        local y, n = 0, 0
+        for _, section in ipairs(ns.Consumables.List(role)) do
+            local key = role .. section[1]
+            heads[key] = heads[key] or Heading(child, 0, 0, 624, L["CONS_SEC_" .. section[1]])
+            At(heads[key], child, 0, y + 6, 624, 18):Show()
+            y = y + 30
+            for rank, entry in ipairs(section[2]) do
+                n = n + 1
+                local r = rows[n] or row(n)
+                r.item, r.spell = entry[1], entry.spell
+                r.rank:SetText(rank .. ".")
+                if entry.spell then
+                    r.name:SetText(U.SpellName(entry.spell) or "")
+                    r.icon:SetTexture(U.SpellTexture(entry.spell))
+                    r.note:SetText(""); r.have:SetText(""); r.price:SetText("")
+                else
+                    local name, icon, count = D.Item(entry[1])
+                    r.name:SetText(name or entry[2])
+                    r.icon:SetTexture(icon)
+                    r.note:SetText(entry[3])
+                    r.have:SetText((count or 0) > 0 and ("x" .. count) or "")
+                    r.price:SetText(coins(D.Price(entry[1])))
+                end
+                At(r, child, 0, y, 624, 24):Show()
+                y = y + 24
+            end
+        end
+        child.h = y + 8
+        sf.Sync()
+    end
+    return p
+end
+
 ---------------------------------------------------------------- Profiles
 local function BuildProfiles()
     local p = Page(L.OPT_LIBRARY, L.OPT_PROFILES)
@@ -965,7 +1063,7 @@ local function BuildProfiles()
     return p
 end
 
-local BUILD = { general = BuildGeneral, alert = BuildAlert, gallery = BuildGallery, macros = BuildMacros,
+local BUILD = { general = BuildGeneral, alert = BuildAlert, gallery = BuildGallery, macros = BuildMacros, consumables = BuildConsumables,
                 profiles = BuildProfiles }
 
 ----------------------------------------------------------------------
@@ -1102,17 +1200,18 @@ local function BuildWindow()
 
     RailRow(win, 8, 48, 159, L.OPT_GENERAL, 8, "general")
     Rule(win, 12, 79, 152)
-    railScroll, railChild = Scroller(win, 8, 84, 159, 356)
+    railScroll, railChild = Scroller(win, 8, 84, 159, 330)
     for _, group in ipairs(Data.GROUPS) do
         railItems[group] = Label(railChild, 8, 0, 11, C.secondary, L["GROUP_" .. group]:upper())
     end
     for _, def in ipairs(Data.ALERTS) do
         railItems[def.key] = RailRow(railChild, 0, 0, 159, ns.Alerts:Name(def.key), 17, "alert", def.key)
     end
-    Rule(win, 12, 443, 152)
-    Label(win, 16, 452, 11, C.secondary, L.OPT_LIBRARY:upper())
-    RailRow(win, 8, 473, 159, L.OPT_GALLERY, 8, "gallery")
-    RailRow(win, 8, 499, 159, L.OPT_MACROS, 8, "macros")
+    Rule(win, 12, 417, 152)
+    Label(win, 16, 426, 11, C.secondary, L.OPT_LIBRARY:upper())
+    RailRow(win, 8, 447, 159, L.OPT_GALLERY, 8, "gallery")
+    RailRow(win, 8, 473, 159, L.OPT_MACROS, 8, "macros")
+    RailRow(win, 8, 499, 159, L.OPT_CONSUMABLES, 8, "consumables")
     RailRow(win, 8, 525, 159, L.OPT_PROFILES, 8, "profiles")
 
     ns.DB:OnChange(function() if win:IsShown() then applyWindow(); Options:Refresh() end end)

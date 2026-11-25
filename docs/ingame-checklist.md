@@ -70,6 +70,14 @@ fighting; do them first, because an error at load makes the rest pointless.
 - [ ] With no shield carried, the shield macros say "Needs a shield" and Create is off; putting a shield in the bags turns them on by itself.
 - [ ] Press each created macro from each stance (see Part 3 for the ones that need a fight).
 
+### Consumables
+
+- [ ] The page lists Flask, Elixirs, Food, On the weapon, In the fight, Enchants, numbered best first; Damage and Tank tabs switch the lists; a Protection warrior opens on Tank.
+- [ ] Every row has an icon and the item's name; none shows a question mark or stays blank (a blank one doesn't exist on this client: tell me which).
+- [ ] Hovering a row shows the game's tooltip. Compare a few with the note beside the name: they should agree.
+- [ ] Items you carry show "x3" and so on. With Auctionator installed and scanned, prices show on the right; without it, none.
+- [ ] On Forever the lists hold Forever's items (Elixir of the Grizzly, Frenzy Potions ...); on Era the Classic ones (Elixir of Giants, Juju Power ...).
+
 ### Profiles
 
 - [ ] The page scrolls; the status line and Reset stay put.

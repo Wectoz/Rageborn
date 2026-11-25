@@ -20,6 +20,7 @@ Sounds.lua
 Alerts.lua
 Mover.lua
 Macros.lua
+Consumables.lua
 Options.lua
 Minimap.lua
 Bars.lua
