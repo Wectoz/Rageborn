@@ -891,7 +891,7 @@ local function BuildConsumables()
             if not GameTooltip then return end
             GameTooltip:SetOwner(r, "ANCHOR_RIGHT")
             if r.spell then pcall(GameTooltip.SetSpellByID, GameTooltip, r.spell)
-            else pcall(GameTooltip.SetItemByID, GameTooltip, r.item) end
+            else pcall(GameTooltip.SetItemByID, GameTooltip, r.itemID) end
             GameTooltip:Show()
         end)
         r:SetScript("OnLeave", function()
@@ -917,7 +917,7 @@ local function BuildConsumables()
             for rank, entry in ipairs(section[2]) do
                 n = n + 1
                 local r = rows[n] or row(n)
-                r.item, r.spell = entry[1], entry.spell
+                r.itemID, r.spell = entry[1], entry.spell
                 r.rank:SetText(rank .. ".")
                 if entry.spell then
                     r.name:SetText(U.SpellName(entry.spell) or "")
